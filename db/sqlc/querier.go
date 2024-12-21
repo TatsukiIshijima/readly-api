@@ -12,21 +12,23 @@ import (
 type Querier interface {
 	DeleteAuthor(ctx context.Context, id int64) error
 	DeleteGenre(ctx context.Context, name string) error
+	DeletePublisher(ctx context.Context, id int64) error
 	GetAllAuthors(ctx context.Context) ([]Author, error)
 	GetAllGenres(ctx context.Context) ([]Genre, error)
 	GetAllPublishers(ctx context.Context) ([]Publisher, error)
 	GetAuthorByName(ctx context.Context, name sql.NullString) (Author, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
+	GetPublisherByName(ctx context.Context, name sql.NullString) (Publisher, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id int64) (User, error)
 	GetUserByName(ctx context.Context, name string) (User, error)
 	InsertAuthor(ctx context.Context, name sql.NullString) (Author, error)
 	InsertGenre(ctx context.Context, name string) (Genre, error)
+	InsertPublisher(ctx context.Context, name sql.NullString) (Publisher, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)
 	ListPublishers(ctx context.Context, arg ListPublishersParams) ([]Publisher, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
-	UpdateAuthorName(ctx context.Context, arg UpdateAuthorNameParams) (Author, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error)
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
