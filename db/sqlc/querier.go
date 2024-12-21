@@ -14,6 +14,7 @@ type Querier interface {
 	DeleteGenre(ctx context.Context, name string) error
 	GetAllAuthors(ctx context.Context) ([]Author, error)
 	GetAllGenres(ctx context.Context) ([]Genre, error)
+	GetAllPublishers(ctx context.Context) ([]Publisher, error)
 	GetAuthorByName(ctx context.Context, name sql.NullString) (Author, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
@@ -23,10 +24,12 @@ type Querier interface {
 	InsertGenre(ctx context.Context, name string) (Genre, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)
+	ListPublishers(ctx context.Context, arg ListPublishersParams) ([]Publisher, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateAuthorName(ctx context.Context, arg UpdateAuthorNameParams) (Author, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error)
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (User, error)
+	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

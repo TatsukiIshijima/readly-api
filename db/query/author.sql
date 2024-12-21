@@ -18,7 +18,8 @@ VALUES ($1) RETURNING *;
 
 -- name: UpdateAuthorName :one
 UPDATE authors
-SET name = $2
+SET name       = $2,
+    updated_at = $3
 WHERE id = $1 RETURNING *;
 
 -- name: DeleteAuthor :exec

@@ -28,10 +28,18 @@ VALUES ($1,
 
 -- name: UpdateUserName :one
 UPDATE users
-SET name = $2
+SET name       = $2,
+    updated_at = $3
 WHERE id = $1 RETURNING *;
 
 -- name: UpdateUserEmail :one
 UPDATE users
-SET email = $2
+SET email      = $2,
+    updated_at = $3
+WHERE id = $1 RETURNING *;
+
+-- name: UpdateUserPassword :one
+UPDATE users
+SET hashed_password = $2,
+    updated_at      = $3
 WHERE id = $1 RETURNING *;
