@@ -13,4 +13,7 @@ migrateup:
 migratedown:
 	 migrate -path db/migration -database "postgresql://root:secret@localhost:5432/readly?sslmode=disable" -verbose down
 
-.PHONY: launchpostgres createdb dropdb migrateup migratedown
+sqlc:
+	sqlc generate
+
+.PHONY: launchpostgres createdb dropdb migrateup migratedown sqlc
