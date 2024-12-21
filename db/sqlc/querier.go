@@ -12,7 +12,14 @@ type Querier interface {
 	DeleteGenre(ctx context.Context, name string) error
 	GetAllGenres(ctx context.Context) ([]Genre, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
+	GetUserById(ctx context.Context, id int64) (User, error)
+	GetUserByName(ctx context.Context, name string) (User, error)
 	InsertGenre(ctx context.Context, name string) (Genre, error)
+	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
+	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
+	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error)
+	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)
