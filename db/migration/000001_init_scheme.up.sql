@@ -21,8 +21,8 @@ CREATE TABLE "books"
     "description"     varchar,
     "cover_image_url" varchar,
     "url"             varchar,
-    "author_id"       bigserial   NOT NULL,
-    "publisher_id"    bigserial   NOT NULL,
+    "author_name"     varchar     NOT NULL,
+    "publisher_name"  varchar     NOT NULL,
     "published_date"  timestamptz,
     "isbn"            char(13),
     "created_at"      timestamptz NOT NULL DEFAULT (now()),
@@ -31,18 +31,14 @@ CREATE TABLE "books"
 
 CREATE TABLE "authors"
 (
-    "id"         bigserial PRIMARY KEY,
-    "name"       varchar,
-    "created_at" timestamptz NOT NULL DEFAULT (now()),
-    "updated_at" timestamptz NOT NULL DEFAULT (now())
+    "name"       varchar PRIMARY KEY,
+    "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "publishers"
 (
-    "id"         bigserial PRIMARY KEY,
-    "name"       varchar,
-    "created_at" timestamptz NOT NULL DEFAULT (now()),
-    "updated_at" timestamptz NOT NULL DEFAULT (now())
+    "name"       varchar PRIMARY KEY,
+    "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "genres"
@@ -76,17 +72,13 @@ CREATE INDEX ON "users" ("email");
 
 CREATE INDEX ON "books" ("title");
 
-CREATE INDEX ON "books" ("author_id");
+CREATE INDEX ON "books" ("author_name");
 
-CREATE INDEX ON "books" ("publisher_id");
+CREATE INDEX ON "books" ("publisher_name");
 
 CREATE INDEX ON "books" ("published_date");
 
 CREATE INDEX ON "books" ("isbn");
-
-CREATE INDEX ON "authors" ("name");
-
-CREATE INDEX ON "publishers" ("name");
 
 CREATE INDEX ON "reading_histories" ("user_id", "status");
 
@@ -112,10 +104,10 @@ COMMENT
 ON TABLE "reading_histories" IS 'Stores reading history.';
 
 ALTER TABLE "books"
-    ADD FOREIGN KEY ("author_id") REFERENCES "authors" ("id");
+    ADD FOREIGN KEY ("author_name") REFERENCES "authors" ("name");
 
 ALTER TABLE "books"
-    ADD FOREIGN KEY ("publisher_id") REFERENCES "publishers" ("id");
+    ADD FOREIGN KEY ("publisher_name") REFERENCES "publishers" ("name");
 
 ALTER TABLE "book_genres"
     ADD FOREIGN KEY ("book_id") REFERENCES "books" ("id");
