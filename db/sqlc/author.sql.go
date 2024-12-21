@@ -8,7 +8,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const deleteAuthor = `-- name: DeleteAuthor :exec
@@ -127,29 +126,4 @@ func (q *Queries) ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Aut
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateAuthorName = `-- name: UpdateAuthorName :one
-UPDATE authors
-SET name       = $2,
-    updated_at = $3
-WHERE id = $1 RETURNING id, name, created_at, updated_at
-`
-
-type UpdateAuthorNameParams struct {
-	ID        int64          `json:"id"`
-	Name      sql.NullString `json:"name"`
-	UpdatedAt time.Time      `json:"updated_at"`
-}
-
-func (q *Queries) UpdateAuthorName(ctx context.Context, arg UpdateAuthorNameParams) (Author, error) {
-	row := q.db.QueryRowContext(ctx, updateAuthorName, arg.ID, arg.Name, arg.UpdatedAt)
-	var i Author
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
 }
