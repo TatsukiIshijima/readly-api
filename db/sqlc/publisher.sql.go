@@ -7,22 +7,21 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 const deletePublisher = `-- name: DeletePublisher :exec
 DELETE
 FROM publishers
-WHERE id = $1
+WHERE name = $1
 `
 
-func (q *Queries) DeletePublisher(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deletePublisher, id)
+func (q *Queries) DeletePublisher(ctx context.Context, name string) error {
+	_, err := q.db.ExecContext(ctx, deletePublisher, name)
 	return err
 }
 
 const getAllPublishers = `-- name: GetAllPublishers :many
-SELECT id, name, created_at, updated_at
+SELECT name, created_at
 FROM publishers
 `
 
@@ -35,12 +34,7 @@ func (q *Queries) GetAllPublishers(ctx context.Context) ([]Publisher, error) {
 	var items []Publisher
 	for rows.Next() {
 		var i Publisher
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
+		if err := rows.Scan(&i.Name, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -55,42 +49,32 @@ func (q *Queries) GetAllPublishers(ctx context.Context) ([]Publisher, error) {
 }
 
 const getPublisherByName = `-- name: GetPublisherByName :one
-SELECT id, name, created_at, updated_at
+SELECT name, created_at
 FROM publishers
 WHERE name = $1
 `
 
-func (q *Queries) GetPublisherByName(ctx context.Context, name sql.NullString) (Publisher, error) {
+func (q *Queries) GetPublisherByName(ctx context.Context, name string) (Publisher, error) {
 	row := q.db.QueryRowContext(ctx, getPublisherByName, name)
 	var i Publisher
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
+	err := row.Scan(&i.Name, &i.CreatedAt)
 	return i, err
 }
 
 const insertPublisher = `-- name: InsertPublisher :one
 INSERT INTO publishers (name)
-VALUES ($1) RETURNING id, name, created_at, updated_at
+VALUES ($1) RETURNING name, created_at
 `
 
-func (q *Queries) InsertPublisher(ctx context.Context, name sql.NullString) (Publisher, error) {
+func (q *Queries) InsertPublisher(ctx context.Context, name string) (Publisher, error) {
 	row := q.db.QueryRowContext(ctx, insertPublisher, name)
 	var i Publisher
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
+	err := row.Scan(&i.Name, &i.CreatedAt)
 	return i, err
 }
 
 const listPublishers = `-- name: ListPublishers :many
-SELECT id, name, created_at, updated_at
+SELECT name, created_at
 FROM publishers LIMIT $1
 OFFSET $2
 `
@@ -109,12 +93,7 @@ func (q *Queries) ListPublishers(ctx context.Context, arg ListPublishersParams) 
 	var items []Publisher
 	for rows.Next() {
 		var i Publisher
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-		); err != nil {
+		if err := rows.Scan(&i.Name, &i.CreatedAt); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

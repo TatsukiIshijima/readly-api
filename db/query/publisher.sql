@@ -19,4 +19,4 @@ VALUES ($1) RETURNING *;
 -- name: DeletePublisher :exec
 DELETE
 FROM publishers
-WHERE id = $1;
+WHERE name = $1;

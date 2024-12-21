@@ -6,25 +6,24 @@ package db
 
 import (
 	"context"
-	"database/sql"
 )
 
 type Querier interface {
-	DeleteAuthor(ctx context.Context, id int64) error
+	DeleteAuthor(ctx context.Context, name string) error
 	DeleteGenre(ctx context.Context, name string) error
-	DeletePublisher(ctx context.Context, id int64) error
+	DeletePublisher(ctx context.Context, name string) error
 	GetAllAuthors(ctx context.Context) ([]Author, error)
 	GetAllGenres(ctx context.Context) ([]Genre, error)
 	GetAllPublishers(ctx context.Context) ([]Publisher, error)
-	GetAuthorByName(ctx context.Context, name sql.NullString) (Author, error)
+	GetAuthorByName(ctx context.Context, name string) (Author, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
-	GetPublisherByName(ctx context.Context, name sql.NullString) (Publisher, error)
+	GetPublisherByName(ctx context.Context, name string) (Publisher, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id int64) (User, error)
 	GetUserByName(ctx context.Context, name string) (User, error)
-	InsertAuthor(ctx context.Context, name sql.NullString) (Author, error)
+	InsertAuthor(ctx context.Context, name string) (Author, error)
 	InsertGenre(ctx context.Context, name string) (Genre, error)
-	InsertPublisher(ctx context.Context, name sql.NullString) (Publisher, error)
+	InsertPublisher(ctx context.Context, name string) (Publisher, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)
 	ListPublishers(ctx context.Context, arg ListPublishersParams) ([]Publisher, error)

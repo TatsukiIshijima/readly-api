@@ -56,10 +56,8 @@ func (ns NullReadingStatus) Value() (driver.Value, error) {
 
 // Stores author data.
 type Author struct {
-	ID        int64          `json:"id"`
-	Name      sql.NullString `json:"name"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // Stores book data.
@@ -69,8 +67,8 @@ type Book struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorID      int64          `json:"author_id"`
-	PublisherID   int64          `json:"publisher_id"`
+	AuthorName    string         `json:"author_name"`
+	PublisherName string         `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 	CreatedAt     time.Time      `json:"created_at"`
@@ -91,10 +89,8 @@ type Genre struct {
 
 // Stores publisher data.
 type Publisher struct {
-	ID        int64          `json:"id"`
-	Name      sql.NullString `json:"name"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 // Stores reading history.
