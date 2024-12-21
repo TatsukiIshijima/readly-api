@@ -79,16 +79,14 @@ type Book struct {
 
 // Stores book and genre. Normalize using intermediate tables because of the many-to-many relationship between books and genres.
 type BookGenre struct {
-	BookID  int64 `json:"book_id"`
-	GenreID int32 `json:"genre_id"`
+	BookID    int64  `json:"book_id"`
+	GenreName string `json:"genre_name"`
 }
 
 // Stores genre data.
 type Genre struct {
-	ID        int32     `json:"id"`
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // Stores publisher data.

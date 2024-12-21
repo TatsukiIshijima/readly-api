@@ -2,21 +2,16 @@
 SELECT *
 FROM genres;
 
--- name: GetGenreByID :one
+-- name: GetGenreByName :one
 SELECT *
 FROM genres
-WHERE id = $1;
+WHERE name = $1;
 
--- name: InsertGenre :exec
+-- name: InsertGenre :one
 INSERT INTO genres (name)
-VALUES ($1);
-
--- name: UpdateGenre :exec
-UPDATE genres
-SET name = $1
-WHERE id = $2;
+VALUES ($1) RETURNING *;
 
 -- name: DeleteGenre :exec
 DELETE
 FROM genres
-WHERE id = $1;
+WHERE name = $1;

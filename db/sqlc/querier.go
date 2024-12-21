@@ -9,11 +9,10 @@ import (
 )
 
 type Querier interface {
-	DeleteGenre(ctx context.Context, id int32) error
+	DeleteGenre(ctx context.Context, name string) error
 	GetAllGenres(ctx context.Context) ([]Genre, error)
-	GetGenreByID(ctx context.Context, id int32) (Genre, error)
-	InsertGenre(ctx context.Context, name string) error
-	UpdateGenre(ctx context.Context, arg UpdateGenreParams) error
+	GetGenreByName(ctx context.Context, name string) (Genre, error)
+	InsertGenre(ctx context.Context, name string) (Genre, error)
 }
 
 var _ Querier = (*Queries)(nil)
