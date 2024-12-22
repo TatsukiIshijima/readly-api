@@ -10,35 +10,37 @@ import (
 )
 
 type Querier interface {
+	CreateAuthor(ctx context.Context, name string) (Author, error)
+	CreateBook(ctx context.Context, arg CreateBookParams) (Book, error)
+	CreateBookGenre(ctx context.Context, arg CreateBookGenreParams) error
+	CreateGenre(ctx context.Context, name string) (Genre, error)
+	CreatePublisher(ctx context.Context, name string) (Publisher, error)
+	CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) error
+	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAuthor(ctx context.Context, name string) error
+	DeleteBook(ctx context.Context, id int64) error
 	DeleteGenre(ctx context.Context, name string) error
+	DeleteGenreForBook(ctx context.Context, arg DeleteGenreForBookParams) error
 	DeletePublisher(ctx context.Context, name string) error
-	GetAllAuthors(ctx context.Context) ([]Author, error)
-	GetAllGenres(ctx context.Context) ([]Genre, error)
-	GetAllPublishers(ctx context.Context) ([]Publisher, error)
+	DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) error
+	DeleteUser(ctx context.Context, id int64) error
+	GetAllAuthors(ctx context.Context, arg GetAllAuthorsParams) ([]Author, error)
+	GetAllGenres(ctx context.Context, arg GetAllGenresParams) ([]Genre, error)
+	GetAllPublishers(ctx context.Context, arg GetAllPublishersParams) ([]Publisher, error)
+	GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]User, error)
 	GetAuthorByName(ctx context.Context, name string) (Author, error)
-	GetBooksByGenreName(ctx context.Context, genreName string) ([]int64, error)
+	GetBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error)
+	GetBooksByGenreName(ctx context.Context, arg GetBooksByGenreNameParams) ([]int64, error)
+	GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error)
+	GetBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
-	GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error)
+	GetGenresByBookID(ctx context.Context, arg GetGenresByBookIDParams) ([]string, error)
 	GetPublisherByName(ctx context.Context, name string) (Publisher, error)
 	GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (ReadingHistory, error)
 	GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]ReadingHistory, error)
-	GetReadingHistoryByUserID(ctx context.Context, userID int64) ([]ReadingHistory, error)
+	GetReadingHistoryByUserID(ctx context.Context, arg GetReadingHistoryByUserIDParams) ([]ReadingHistory, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id int64) (User, error)
-	InsertAuthor(ctx context.Context, name string) (Author, error)
-	InsertBook(ctx context.Context, arg InsertBookParams) (Book, error)
-	InsertBookGenre(ctx context.Context, arg InsertBookGenreParams) error
-	InsertGenre(ctx context.Context, name string) (Genre, error)
-	InsertPublisher(ctx context.Context, name string) (Publisher, error)
-	InsertReadingHistory(ctx context.Context, arg InsertReadingHistoryParams) error
-	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
-	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)
-	ListBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error)
-	ListBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error)
-	ListBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error)
-	ListPublishers(ctx context.Context, arg ListPublishersParams) ([]Publisher, error)
-	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
 	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)
 	UpdateGenreForBook(ctx context.Context, arg UpdateGenreForBookParams) error
 	UpdateReadingDates(ctx context.Context, arg UpdateReadingDatesParams) error

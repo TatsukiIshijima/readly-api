@@ -1,9 +1,5 @@
 -- name: GetAllPublishers :many
 SELECT *
-FROM publishers;
-
--- name: ListPublishers :many
-SELECT *
 FROM publishers LIMIT $1
 OFFSET $2;
 
@@ -12,7 +8,7 @@ SELECT *
 FROM publishers
 WHERE name = $1;
 
--- name: InsertPublisher :one
+-- name: CreatePublisher :one
 INSERT INTO publishers (name)
 VALUES ($1) RETURNING *;
 

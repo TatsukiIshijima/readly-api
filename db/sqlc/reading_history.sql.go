@@ -10,6 +10,47 @@ import (
 	"database/sql"
 )
 
+const createReadingHistory = `-- name: CreateReadingHistory :exec
+INSERT INTO reading_histories (user_id, book_id, status, start_date, end_date)
+VALUES ($1, $2, $3, $4, $5)
+`
+
+type CreateReadingHistoryParams struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+}
+
+func (q *Queries) CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) error {
+	_, err := q.db.ExecContext(ctx, createReadingHistory,
+		arg.UserID,
+		arg.BookID,
+		arg.Status,
+		arg.StartDate,
+		arg.EndDate,
+	)
+	return err
+}
+
+const deleteReadingHistory = `-- name: DeleteReadingHistory :exec
+DELETE
+FROM reading_histories
+WHERE user_id = $1
+  AND book_id = $2
+`
+
+type DeleteReadingHistoryParams struct {
+	UserID int64 `json:"user_id"`
+	BookID int64 `json:"book_id"`
+}
+
+func (q *Queries) DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) error {
+	_, err := q.db.ExecContext(ctx, deleteReadingHistory, arg.UserID, arg.BookID)
+	return err
+}
+
 const getReadingHistoryByUserAndBook = `-- name: GetReadingHistoryByUserAndBook :one
 SELECT user_id, book_id, status, start_date, end_date, created_at, updated_at
 FROM reading_histories
@@ -42,15 +83,24 @@ SELECT user_id, book_id, status, start_date, end_date, created_at, updated_at
 FROM reading_histories
 WHERE user_id = $1
   AND status = $2
+ORDER BY status LIMIT $3
+OFFSET $4
 `
 
 type GetReadingHistoryByUserAndStatusParams struct {
 	UserID int64         `json:"user_id"`
 	Status ReadingStatus `json:"status"`
+	Limit  int32         `json:"limit"`
+	Offset int32         `json:"offset"`
 }
 
 func (q *Queries) GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]ReadingHistory, error) {
-	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUserAndStatus, arg.UserID, arg.Status)
+	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUserAndStatus,
+		arg.UserID,
+		arg.Status,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -84,10 +134,18 @@ const getReadingHistoryByUserID = `-- name: GetReadingHistoryByUserID :many
 SELECT user_id, book_id, status, start_date, end_date, created_at, updated_at
 FROM reading_histories
 WHERE user_id = $1
+ORDER BY user_id LIMIT $2
+OFFSET $3
 `
 
-func (q *Queries) GetReadingHistoryByUserID(ctx context.Context, userID int64) ([]ReadingHistory, error) {
-	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUserID, userID)
+type GetReadingHistoryByUserIDParams struct {
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetReadingHistoryByUserID(ctx context.Context, arg GetReadingHistoryByUserIDParams) ([]ReadingHistory, error) {
+	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUserID, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -115,30 +173,6 @@ func (q *Queries) GetReadingHistoryByUserID(ctx context.Context, userID int64) (
 		return nil, err
 	}
 	return items, nil
-}
-
-const insertReadingHistory = `-- name: InsertReadingHistory :exec
-INSERT INTO reading_histories (user_id, book_id, status, start_date, end_date)
-VALUES ($1, $2, $3, $4, $5)
-`
-
-type InsertReadingHistoryParams struct {
-	UserID    int64         `json:"user_id"`
-	BookID    int64         `json:"book_id"`
-	Status    ReadingStatus `json:"status"`
-	StartDate sql.NullTime  `json:"start_date"`
-	EndDate   sql.NullTime  `json:"end_date"`
-}
-
-func (q *Queries) InsertReadingHistory(ctx context.Context, arg InsertReadingHistoryParams) error {
-	_, err := q.db.ExecContext(ctx, insertReadingHistory,
-		arg.UserID,
-		arg.BookID,
-		arg.Status,
-		arg.StartDate,
-		arg.EndDate,
-	)
-	return err
 }
 
 const updateReadingDates = `-- name: UpdateReadingDates :exec

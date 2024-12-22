@@ -1,9 +1,5 @@
 -- name: GetAllAuthors :many
 SELECT *
-FROM authors;
-
--- name: ListAuthors :many
-SELECT *
 FROM authors LIMIT $1
 OFFSET $2;
 
@@ -12,7 +8,7 @@ SELECT *
 FROM authors
 WHERE name = $1;
 
--- name: InsertAuthor :one
+-- name: CreateAuthor :one
 INSERT INTO authors (name)
 VALUES ($1) RETURNING *;
 

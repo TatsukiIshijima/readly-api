@@ -9,6 +9,18 @@ import (
 	"context"
 )
 
+const createPublisher = `-- name: CreatePublisher :one
+INSERT INTO publishers (name)
+VALUES ($1) RETURNING name, created_at
+`
+
+func (q *Queries) CreatePublisher(ctx context.Context, name string) (Publisher, error) {
+	row := q.db.QueryRowContext(ctx, createPublisher, name)
+	var i Publisher
+	err := row.Scan(&i.Name, &i.CreatedAt)
+	return i, err
+}
+
 const deletePublisher = `-- name: DeletePublisher :exec
 DELETE
 FROM publishers
@@ -22,11 +34,17 @@ func (q *Queries) DeletePublisher(ctx context.Context, name string) error {
 
 const getAllPublishers = `-- name: GetAllPublishers :many
 SELECT name, created_at
-FROM publishers
+FROM publishers LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) GetAllPublishers(ctx context.Context) ([]Publisher, error) {
-	rows, err := q.db.QueryContext(ctx, getAllPublishers)
+type GetAllPublishersParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllPublishers(ctx context.Context, arg GetAllPublishersParams) ([]Publisher, error) {
+	rows, err := q.db.QueryContext(ctx, getAllPublishers, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -59,50 +77,4 @@ func (q *Queries) GetPublisherByName(ctx context.Context, name string) (Publishe
 	var i Publisher
 	err := row.Scan(&i.Name, &i.CreatedAt)
 	return i, err
-}
-
-const insertPublisher = `-- name: InsertPublisher :one
-INSERT INTO publishers (name)
-VALUES ($1) RETURNING name, created_at
-`
-
-func (q *Queries) InsertPublisher(ctx context.Context, name string) (Publisher, error) {
-	row := q.db.QueryRowContext(ctx, insertPublisher, name)
-	var i Publisher
-	err := row.Scan(&i.Name, &i.CreatedAt)
-	return i, err
-}
-
-const listPublishers = `-- name: ListPublishers :many
-SELECT name, created_at
-FROM publishers LIMIT $1
-OFFSET $2
-`
-
-type ListPublishersParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-func (q *Queries) ListPublishers(ctx context.Context, arg ListPublishersParams) ([]Publisher, error) {
-	rows, err := q.db.QueryContext(ctx, listPublishers, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Publisher
-	for rows.Next() {
-		var i Publisher
-		if err := rows.Scan(&i.Name, &i.CreatedAt); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
