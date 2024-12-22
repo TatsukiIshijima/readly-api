@@ -6,6 +6,7 @@ package db
 
 import (
 	"context"
+	"database/sql"
 )
 
 type Querier interface {
@@ -22,12 +23,17 @@ type Querier interface {
 	GetUserById(ctx context.Context, id int64) (User, error)
 	GetUserByName(ctx context.Context, name string) (User, error)
 	InsertAuthor(ctx context.Context, name string) (Author, error)
+	InsertBook(ctx context.Context, arg InsertBookParams) (Book, error)
 	InsertGenre(ctx context.Context, name string) (Genre, error)
 	InsertPublisher(ctx context.Context, name string) (Publisher, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 	ListAuthors(ctx context.Context, arg ListAuthorsParams) ([]Author, error)
+	ListBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error)
+	ListBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error)
+	ListBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error)
 	ListPublishers(ctx context.Context, arg ListPublishersParams) ([]Publisher, error)
 	ListUsers(ctx context.Context, arg ListUsersParams) ([]User, error)
+	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)
 	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error)
 	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (User, error)
 	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
