@@ -9,13 +9,13 @@ import (
 )
 
 func TestInsertUser(t *testing.T) {
-	arg := db.InsertUserParams{
-		Name:           "test1",
-		Email:          "test1@example.com",
-		HashedPassword: "hashed_password",
+	arg := db.CreateUserParams{
+		Name:           randomString(12),
+		Email:          randomString(6) + "@example.com",
+		HashedPassword: randomString(16),
 	}
 
-	user, err := testQueries.InsertUser(context.Background(), arg)
+	user, err := testQueries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
