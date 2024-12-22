@@ -1,6 +1,7 @@
--- name: ListUsers :many
+-- name: GetAllUsers :many
 SELECT *
-FROM users LIMIT $1
+FROM users
+ORDER BY id LIMIT $1
 OFFSET $2;
 
 -- name: GetUserById :one
@@ -13,7 +14,7 @@ SELECT *
 FROM users
 WHERE email = $1;
 
--- name: InsertUser :one
+-- name: CreateUser :one
 INSERT INTO users (name,
                    email,
                    hashed_password)
@@ -28,3 +29,8 @@ SET name            = $2,
     hashed_password = $4,
     updated_at      = now()
 WHERE id = $1 RETURNING *;
+
+-- name: DeleteUser :exec
+DELETE
+FROM users
+WHERE id = $1;

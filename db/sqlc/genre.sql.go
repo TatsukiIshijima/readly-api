@@ -9,6 +9,18 @@ import (
 	"context"
 )
 
+const createGenre = `-- name: CreateGenre :one
+INSERT INTO genres (name)
+VALUES ($1) RETURNING name, created_at
+`
+
+func (q *Queries) CreateGenre(ctx context.Context, name string) (Genre, error) {
+	row := q.db.QueryRowContext(ctx, createGenre, name)
+	var i Genre
+	err := row.Scan(&i.Name, &i.CreatedAt)
+	return i, err
+}
+
 const deleteGenre = `-- name: DeleteGenre :exec
 DELETE
 FROM genres
@@ -22,11 +34,17 @@ func (q *Queries) DeleteGenre(ctx context.Context, name string) error {
 
 const getAllGenres = `-- name: GetAllGenres :many
 SELECT name, created_at
-FROM genres
+FROM genres LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) GetAllGenres(ctx context.Context) ([]Genre, error) {
-	rows, err := q.db.QueryContext(ctx, getAllGenres)
+type GetAllGenresParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetAllGenres(ctx context.Context, arg GetAllGenresParams) ([]Genre, error) {
+	rows, err := q.db.QueryContext(ctx, getAllGenres, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -56,18 +74,6 @@ WHERE name = $1
 
 func (q *Queries) GetGenreByName(ctx context.Context, name string) (Genre, error) {
 	row := q.db.QueryRowContext(ctx, getGenreByName, name)
-	var i Genre
-	err := row.Scan(&i.Name, &i.CreatedAt)
-	return i, err
-}
-
-const insertGenre = `-- name: InsertGenre :one
-INSERT INTO genres (name)
-VALUES ($1) RETURNING name, created_at
-`
-
-func (q *Queries) InsertGenre(ctx context.Context, name string) (Genre, error) {
-	row := q.db.QueryRowContext(ctx, insertGenre, name)
 	var i Genre
 	err := row.Scan(&i.Name, &i.CreatedAt)
 	return i, err

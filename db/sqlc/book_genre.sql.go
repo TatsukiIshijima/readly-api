@@ -9,14 +9,54 @@ import (
 	"context"
 )
 
+const createBookGenre = `-- name: CreateBookGenre :exec
+INSERT INTO book_genres (book_id, genre_name)
+VALUES ($1, $2)
+`
+
+type CreateBookGenreParams struct {
+	BookID    int64  `json:"book_id"`
+	GenreName string `json:"genre_name"`
+}
+
+func (q *Queries) CreateBookGenre(ctx context.Context, arg CreateBookGenreParams) error {
+	_, err := q.db.ExecContext(ctx, createBookGenre, arg.BookID, arg.GenreName)
+	return err
+}
+
+const deleteGenreForBook = `-- name: DeleteGenreForBook :exec
+DELETE
+FROM book_genres
+WHERE book_id = $1
+  AND genre_name = $2
+`
+
+type DeleteGenreForBookParams struct {
+	BookID    int64  `json:"book_id"`
+	GenreName string `json:"genre_name"`
+}
+
+func (q *Queries) DeleteGenreForBook(ctx context.Context, arg DeleteGenreForBookParams) error {
+	_, err := q.db.ExecContext(ctx, deleteGenreForBook, arg.BookID, arg.GenreName)
+	return err
+}
+
 const getBooksByGenreName = `-- name: GetBooksByGenreName :many
 SELECT book_id
 FROM book_genres
 WHERE genre_name = $1
+ORDER BY book_id LIMIT $2
+OFFSET $3
 `
 
-func (q *Queries) GetBooksByGenreName(ctx context.Context, genreName string) ([]int64, error) {
-	rows, err := q.db.QueryContext(ctx, getBooksByGenreName, genreName)
+type GetBooksByGenreNameParams struct {
+	GenreName string `json:"genre_name"`
+	Limit     int32  `json:"limit"`
+	Offset    int32  `json:"offset"`
+}
+
+func (q *Queries) GetBooksByGenreName(ctx context.Context, arg GetBooksByGenreNameParams) ([]int64, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksByGenreName, arg.GenreName, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -42,10 +82,18 @@ const getGenresByBookID = `-- name: GetGenresByBookID :many
 SELECT genre_name
 FROM book_genres
 WHERE book_id = $1
+ORDER BY book_id LIMIT $2
+OFFSET $3
 `
 
-func (q *Queries) GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, getGenresByBookID, bookID)
+type GetGenresByBookIDParams struct {
+	BookID int64 `json:"book_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) GetGenresByBookID(ctx context.Context, arg GetGenresByBookIDParams) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getGenresByBookID, arg.BookID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -65,21 +113,6 @@ func (q *Queries) GetGenresByBookID(ctx context.Context, bookID int64) ([]string
 		return nil, err
 	}
 	return items, nil
-}
-
-const insertBookGenre = `-- name: InsertBookGenre :exec
-INSERT INTO book_genres (book_id, genre_name)
-VALUES ($1, $2)
-`
-
-type InsertBookGenreParams struct {
-	BookID    int64  `json:"book_id"`
-	GenreName string `json:"genre_name"`
-}
-
-func (q *Queries) InsertBookGenre(ctx context.Context, arg InsertBookGenreParams) error {
-	_, err := q.db.ExecContext(ctx, insertBookGenre, arg.BookID, arg.GenreName)
-	return err
 }
 
 const updateGenreForBook = `-- name: UpdateGenreForBook :exec
