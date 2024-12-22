@@ -26,7 +26,6 @@ type Querier interface {
 	GetReadingHistoryByUserID(ctx context.Context, userID int64) ([]ReadingHistory, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id int64) (User, error)
-	GetUserByName(ctx context.Context, name string) (User, error)
 	InsertAuthor(ctx context.Context, name string) (Author, error)
 	InsertBook(ctx context.Context, arg InsertBookParams) (Book, error)
 	InsertBookGenre(ctx context.Context, arg InsertBookGenreParams) error
@@ -44,9 +43,7 @@ type Querier interface {
 	UpdateGenreForBook(ctx context.Context, arg UpdateGenreForBookParams) error
 	UpdateReadingDates(ctx context.Context, arg UpdateReadingDatesParams) error
 	UpdateReadingStatus(ctx context.Context, arg UpdateReadingStatusParams) error
-	UpdateUserEmail(ctx context.Context, arg UpdateUserEmailParams) (User, error)
-	UpdateUserName(ctx context.Context, arg UpdateUserNameParams) (User, error)
-	UpdateUserPassword(ctx context.Context, arg UpdateUserPasswordParams) (User, error)
+	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 
 var _ Querier = (*Queries)(nil)

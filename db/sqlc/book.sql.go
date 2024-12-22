@@ -8,7 +8,6 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const insertBook = `-- name: InsertBook :one
@@ -187,15 +186,15 @@ func (q *Queries) ListBooksByTitle(ctx context.Context, title sql.NullString) ([
 
 const updateBook = `-- name: UpdateBook :one
 UPDATE books
-SET title            = $2,
-    description      = $3,
-    cover_image_url  = $4,
-    url              = $5,
-    author_name      = $6,
-    publisher_name   = $7,
-    published_date   = $8,
-    isbn             = $9,
-    updated_at       = $10
+SET title           = $2,
+    description     = $3,
+    cover_image_url = $4,
+    url             = $5,
+    author_name     = $6,
+    publisher_name  = $7,
+    published_date  = $8,
+    isbn            = $9,
+    updated_at      = now()
 WHERE id = $1 RETURNING id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
 `
 
@@ -209,7 +208,6 @@ type UpdateBookParams struct {
 	PublisherName string         `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
-	UpdatedAt     time.Time      `json:"updated_at"`
 }
 
 func (q *Queries) UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error) {
@@ -223,7 +221,6 @@ func (q *Queries) UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, e
 		arg.PublisherName,
 		arg.PublishedDate,
 		arg.Isbn,
-		arg.UpdatedAt,
 	)
 	var i Book
 	err := row.Scan(
