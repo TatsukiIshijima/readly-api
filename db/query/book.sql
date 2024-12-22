@@ -1,19 +1,19 @@
--- name: ListBooksByTitle :many
+-- name: GetBooksByTitle :many
 SELECT *
 FROM books
 WHERE title LIKE $1;
 
--- name: ListBooksByIsbn :many
+-- name: GetBooksByIsbn :many
 SELECT *
 FROM books
 WHERE isbn = $1;
 
--- name: ListBooksByAuthorName :many
+-- name: GetBooksByAuthorName :many
 SELECT *
 FROM books
 WHERE author_name LIKE $1;
 
--- name: InsertBook :one
+-- name: CreateBook :one
 INSERT INTO books (title,
                    description,
                    cover_image_url,
@@ -36,3 +36,8 @@ SET title           = $2,
     isbn            = $9,
     updated_at      = now()
 WHERE id = $1 RETURNING *;
+
+-- name: DeleteBook :exec
+DELETE
+FROM books
+WHERE id = $1;

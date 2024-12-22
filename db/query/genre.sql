@@ -1,13 +1,14 @@
 -- name: GetAllGenres :many
 SELECT *
-FROM genres;
+FROM genres LIMIT $1
+OFFSET $2;
 
 -- name: GetGenreByName :one
 SELECT *
 FROM genres
 WHERE name = $1;
 
--- name: InsertGenre :one
+-- name: CreateGenre :one
 INSERT INTO genres (name)
 VALUES ($1) RETURNING *;
 

@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const insertBook = `-- name: InsertBook :one
+const createBook = `-- name: CreateBook :one
 INSERT INTO books (title,
                    description,
                    cover_image_url,
@@ -22,7 +22,7 @@ INSERT INTO books (title,
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
 `
 
-type InsertBookParams struct {
+type CreateBookParams struct {
 	Title         sql.NullString `json:"title"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
@@ -33,8 +33,8 @@ type InsertBookParams struct {
 	Isbn          sql.NullString `json:"isbn"`
 }
 
-func (q *Queries) InsertBook(ctx context.Context, arg InsertBookParams) (Book, error) {
-	row := q.db.QueryRowContext(ctx, insertBook,
+func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, error) {
+	row := q.db.QueryRowContext(ctx, createBook,
 		arg.Title,
 		arg.Description,
 		arg.CoverImageUrl,
@@ -61,14 +61,25 @@ func (q *Queries) InsertBook(ctx context.Context, arg InsertBookParams) (Book, e
 	return i, err
 }
 
-const listBooksByAuthorName = `-- name: ListBooksByAuthorName :many
+const deleteBook = `-- name: DeleteBook :exec
+DELETE
+FROM books
+WHERE id = $1
+`
+
+func (q *Queries) DeleteBook(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteBook, id)
+	return err
+}
+
+const getBooksByAuthorName = `-- name: GetBooksByAuthorName :many
 SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
 FROM books
 WHERE author_name LIKE $1
 `
 
-func (q *Queries) ListBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, listBooksByAuthorName, authorName)
+func (q *Queries) GetBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksByAuthorName, authorName)
 	if err != nil {
 		return nil, err
 	}
@@ -102,14 +113,14 @@ func (q *Queries) ListBooksByAuthorName(ctx context.Context, authorName string) 
 	return items, nil
 }
 
-const listBooksByIsbn = `-- name: ListBooksByIsbn :many
+const getBooksByIsbn = `-- name: GetBooksByIsbn :many
 SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
 FROM books
 WHERE isbn = $1
 `
 
-func (q *Queries) ListBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, listBooksByIsbn, isbn)
+func (q *Queries) GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksByIsbn, isbn)
 	if err != nil {
 		return nil, err
 	}
@@ -143,14 +154,14 @@ func (q *Queries) ListBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]B
 	return items, nil
 }
 
-const listBooksByTitle = `-- name: ListBooksByTitle :many
+const getBooksByTitle = `-- name: GetBooksByTitle :many
 SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
 FROM books
 WHERE title LIKE $1
 `
 
-func (q *Queries) ListBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, listBooksByTitle, title)
+func (q *Queries) GetBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksByTitle, title)
 	if err != nil {
 		return nil, err
 	}
