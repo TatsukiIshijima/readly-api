@@ -10,9 +10,9 @@ import (
 	"database/sql"
 )
 
-const createReadingHistory = `-- name: CreateReadingHistory :exec
+const createReadingHistory = `-- name: CreateReadingHistory :one
 INSERT INTO reading_histories (user_id, book_id, status, start_date, end_date)
-VALUES ($1, $2, $3, $4, $5)
+VALUES ($1, $2, $3, $4, $5) RETURNING user_id, book_id, status, start_date, end_date, created_at, updated_at
 `
 
 type CreateReadingHistoryParams struct {
@@ -23,15 +23,25 @@ type CreateReadingHistoryParams struct {
 	EndDate   sql.NullTime  `json:"end_date"`
 }
 
-func (q *Queries) CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) error {
-	_, err := q.db.ExecContext(ctx, createReadingHistory,
+func (q *Queries) CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) (ReadingHistory, error) {
+	row := q.db.QueryRowContext(ctx, createReadingHistory,
 		arg.UserID,
 		arg.BookID,
 		arg.Status,
 		arg.StartDate,
 		arg.EndDate,
 	)
-	return err
+	var i ReadingHistory
+	err := row.Scan(
+		&i.UserID,
+		&i.BookID,
+		&i.Status,
+		&i.StartDate,
+		&i.EndDate,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const deleteReadingHistory = `-- name: DeleteReadingHistory :exec
@@ -175,47 +185,41 @@ func (q *Queries) GetReadingHistoryByUserID(ctx context.Context, arg GetReadingH
 	return items, nil
 }
 
-const updateReadingDates = `-- name: UpdateReadingDates :exec
+const updateReadingHistory = `-- name: UpdateReadingHistory :one
 UPDATE reading_histories
-SET start_date = $3,
-    end_date   = $4,
+SET status     = $3,
+    start_date = $4,
+    end_date   = $5,
     updated_at = now()
 WHERE user_id = $1
-  AND book_id = $2
+  AND book_id = $2 RETURNING user_id, book_id, status, start_date, end_date, created_at, updated_at
 `
 
-type UpdateReadingDatesParams struct {
-	UserID    int64        `json:"user_id"`
-	BookID    int64        `json:"book_id"`
-	StartDate sql.NullTime `json:"start_date"`
-	EndDate   sql.NullTime `json:"end_date"`
+type UpdateReadingHistoryParams struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
 }
 
-func (q *Queries) UpdateReadingDates(ctx context.Context, arg UpdateReadingDatesParams) error {
-	_, err := q.db.ExecContext(ctx, updateReadingDates,
+func (q *Queries) UpdateReadingHistory(ctx context.Context, arg UpdateReadingHistoryParams) (ReadingHistory, error) {
+	row := q.db.QueryRowContext(ctx, updateReadingHistory,
 		arg.UserID,
 		arg.BookID,
+		arg.Status,
 		arg.StartDate,
 		arg.EndDate,
 	)
-	return err
-}
-
-const updateReadingStatus = `-- name: UpdateReadingStatus :exec
-UPDATE reading_histories
-SET status     = $3,
-    updated_at = now()
-WHERE user_id = $1
-  AND book_id = $2
-`
-
-type UpdateReadingStatusParams struct {
-	UserID int64         `json:"user_id"`
-	BookID int64         `json:"book_id"`
-	Status ReadingStatus `json:"status"`
-}
-
-func (q *Queries) UpdateReadingStatus(ctx context.Context, arg UpdateReadingStatusParams) error {
-	_, err := q.db.ExecContext(ctx, updateReadingStatus, arg.UserID, arg.BookID, arg.Status)
-	return err
+	var i ReadingHistory
+	err := row.Scan(
+		&i.UserID,
+		&i.BookID,
+		&i.Status,
+		&i.StartDate,
+		&i.EndDate,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

@@ -12,10 +12,10 @@ import (
 type Querier interface {
 	CreateAuthor(ctx context.Context, name string) (Author, error)
 	CreateBook(ctx context.Context, arg CreateBookParams) (Book, error)
-	CreateBookGenre(ctx context.Context, arg CreateBookGenreParams) error
+	CreateBookGenre(ctx context.Context, arg CreateBookGenreParams) (BookGenre, error)
 	CreateGenre(ctx context.Context, name string) (Genre, error)
 	CreatePublisher(ctx context.Context, name string) (Publisher, error)
-	CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) error
+	CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) (ReadingHistory, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAuthor(ctx context.Context, name string) error
 	DeleteBook(ctx context.Context, id int64) error
@@ -29,12 +29,13 @@ type Querier interface {
 	GetAllPublishers(ctx context.Context, arg GetAllPublishersParams) ([]Publisher, error)
 	GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]User, error)
 	GetAuthorByName(ctx context.Context, name string) (Author, error)
+	GetBookById(ctx context.Context, id int64) (Book, error)
 	GetBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error)
 	GetBooksByGenreName(ctx context.Context, arg GetBooksByGenreNameParams) ([]int64, error)
 	GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error)
 	GetBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
-	GetGenresByBookID(ctx context.Context, arg GetGenresByBookIDParams) ([]string, error)
+	GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error)
 	GetPublisherByName(ctx context.Context, name string) (Publisher, error)
 	GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (ReadingHistory, error)
 	GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]ReadingHistory, error)
@@ -42,9 +43,7 @@ type Querier interface {
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserById(ctx context.Context, id int64) (User, error)
 	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)
-	UpdateGenreForBook(ctx context.Context, arg UpdateGenreForBookParams) error
-	UpdateReadingDates(ctx context.Context, arg UpdateReadingDatesParams) error
-	UpdateReadingStatus(ctx context.Context, arg UpdateReadingStatusParams) error
+	UpdateReadingHistory(ctx context.Context, arg UpdateReadingHistoryParams) (ReadingHistory, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 

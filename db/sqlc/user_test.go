@@ -1,17 +1,16 @@
-package sqlc
+package db
 
 import (
 	"context"
 	"database/sql"
-	"readly/db/sqlc"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomUser(t *testing.T) db.User {
-	arg := db.CreateUserParams{
+func createRandomUser(t *testing.T) User {
+	arg := CreateUserParams{
 		Name:           randomString(12),
 		Email:          randomString(6) + "@example.com",
 		HashedPassword: randomString(16),
@@ -31,7 +30,7 @@ func createRandomUser(t *testing.T) db.User {
 	return user
 }
 
-func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
+func checkSameUser(t *testing.T, user1 User, user2 User) {
 	require.Equal(t, user1.ID, user2.ID)
 	require.Equal(t, user1.Name, user2.Name)
 	require.Equal(t, user1.Email, user2.Email)
@@ -65,7 +64,7 @@ func TestGetUserByEmail(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
-	arg := db.UpdateUserParams{
+	arg := UpdateUserParams{
 		ID:             user1.ID,
 		Name:           randomString(12),
 		Email:          user1.Email,
@@ -100,7 +99,7 @@ func TestGetAllUsers(t *testing.T) {
 		createRandomUser(t)
 	}
 
-	arg1 := db.GetAllUsersParams{
+	arg1 := GetAllUsersParams{
 		Limit:  5,
 		Offset: 0,
 	}
@@ -113,7 +112,7 @@ func TestGetAllUsers(t *testing.T) {
 		require.NotEmpty(t, user)
 	}
 
-	arg2 := db.GetAllUsersParams{
+	arg2 := GetAllUsersParams{
 		Limit:  5,
 		Offset: 5,
 	}

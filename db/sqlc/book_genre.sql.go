@@ -9,9 +9,9 @@ import (
 	"context"
 )
 
-const createBookGenre = `-- name: CreateBookGenre :exec
+const createBookGenre = `-- name: CreateBookGenre :one
 INSERT INTO book_genres (book_id, genre_name)
-VALUES ($1, $2)
+VALUES ($1, $2) RETURNING book_id, genre_name
 `
 
 type CreateBookGenreParams struct {
@@ -19,9 +19,11 @@ type CreateBookGenreParams struct {
 	GenreName string `json:"genre_name"`
 }
 
-func (q *Queries) CreateBookGenre(ctx context.Context, arg CreateBookGenreParams) error {
-	_, err := q.db.ExecContext(ctx, createBookGenre, arg.BookID, arg.GenreName)
-	return err
+func (q *Queries) CreateBookGenre(ctx context.Context, arg CreateBookGenreParams) (BookGenre, error) {
+	row := q.db.QueryRowContext(ctx, createBookGenre, arg.BookID, arg.GenreName)
+	var i BookGenre
+	err := row.Scan(&i.BookID, &i.GenreName)
+	return i, err
 }
 
 const deleteGenreForBook = `-- name: DeleteGenreForBook :exec
@@ -82,18 +84,10 @@ const getGenresByBookID = `-- name: GetGenresByBookID :many
 SELECT genre_name
 FROM book_genres
 WHERE book_id = $1
-ORDER BY book_id LIMIT $2
-OFFSET $3
 `
 
-type GetGenresByBookIDParams struct {
-	BookID int64 `json:"book_id"`
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-func (q *Queries) GetGenresByBookID(ctx context.Context, arg GetGenresByBookIDParams) ([]string, error) {
-	rows, err := q.db.QueryContext(ctx, getGenresByBookID, arg.BookID, arg.Limit, arg.Offset)
+func (q *Queries) GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getGenresByBookID, bookID)
 	if err != nil {
 		return nil, err
 	}
@@ -113,22 +107,4 @@ func (q *Queries) GetGenresByBookID(ctx context.Context, arg GetGenresByBookIDPa
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateGenreForBook = `-- name: UpdateGenreForBook :exec
-UPDATE book_genres
-SET genre_name = $3
-WHERE book_id = $1
-  AND genre_name = $2
-`
-
-type UpdateGenreForBookParams struct {
-	BookID      int64  `json:"book_id"`
-	GenreName   string `json:"genre_name"`
-	GenreName_2 string `json:"genre_name_2"`
-}
-
-func (q *Queries) UpdateGenreForBook(ctx context.Context, arg UpdateGenreForBookParams) error {
-	_, err := q.db.ExecContext(ctx, updateGenreForBook, arg.BookID, arg.GenreName, arg.GenreName_2)
-	return err
 }

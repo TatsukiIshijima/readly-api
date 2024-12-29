@@ -1,11 +1,10 @@
-package sqlc
+package db
 
 import (
 	"database/sql"
 	"log"
 	"math/rand"
 	"os"
-	db "readly/db/sqlc"
 	"strings"
 	"testing"
 	"time"
@@ -19,7 +18,7 @@ const (
 	alplhabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 
-var testQueries *db.Queries
+var testQueries *Queries
 
 func init() {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -46,7 +45,7 @@ func TestMain(m *testing.M) {
 		log.Fatal("cannot connect to db:", err)
 	}
 
-	testQueries = db.New(conn)
+	testQueries = New(conn)
 
 	os.Exit(m.Run())
 }
