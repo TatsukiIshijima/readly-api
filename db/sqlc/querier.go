@@ -29,6 +29,7 @@ type Querier interface {
 	GetAllPublishers(ctx context.Context, arg GetAllPublishersParams) ([]Publisher, error)
 	GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]User, error)
 	GetAuthorByName(ctx context.Context, name string) (Author, error)
+	GetBookById(ctx context.Context, id int64) (Book, error)
 	GetBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error)
 	GetBooksByGenreName(ctx context.Context, arg GetBooksByGenreNameParams) ([]int64, error)
 	GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error)

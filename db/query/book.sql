@@ -3,6 +3,11 @@ SELECT *
 FROM books
 WHERE title LIKE $1;
 
+-- name: GetBookById :one
+SELECT *
+FROM books
+WHERE id = $1;
+
 -- name: GetBooksByIsbn :many
 SELECT *
 FROM books

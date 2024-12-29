@@ -72,6 +72,31 @@ func (q *Queries) DeleteBook(ctx context.Context, id int64) error {
 	return err
 }
 
+const getBookById = `-- name: GetBookById :one
+SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
+FROM books
+WHERE id = $1
+`
+
+func (q *Queries) GetBookById(ctx context.Context, id int64) (Book, error) {
+	row := q.db.QueryRowContext(ctx, getBookById, id)
+	var i Book
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Description,
+		&i.CoverImageUrl,
+		&i.Url,
+		&i.AuthorName,
+		&i.PublisherName,
+		&i.PublishedDate,
+		&i.Isbn,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getBooksByAuthorName = `-- name: GetBooksByAuthorName :many
 SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
 FROM books
