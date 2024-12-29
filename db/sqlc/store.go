@@ -7,19 +7,22 @@ import (
 )
 
 type Store struct {
-	*Queries
-	db *sql.DB
+	DB DBTX
 }
 
-func NewStore(db *sql.DB) *Store {
+func NewStore(DB DBTX) *Store {
 	return &Store{
-		db:      db,
-		Queries: New(db),
+		DB: DB,
 	}
 }
 
-func (store *Store) execTx(ctx context.Context, fn func(queries *Queries) error) error {
-	tx, err := store.db.BeginTx(ctx, nil)
+func (store *Store) ExecTx(ctx context.Context, fn func(*Queries) error) error {
+	db, ok := store.DB.(*sql.DB)
+	if !ok {
+		return fmt.Errorf("store.DB is not a sql.DB")
+	}
+
+	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
