@@ -1,6 +1,7 @@
 package test
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"math/rand"
@@ -41,4 +42,13 @@ func Connect() {
 		log.Fatal("cannot connect to db:", err)
 	}
 	Queries = db.New(DB)
+}
+
+func CreateRandomUser() (db.User, error) {
+	arg := db.CreateUserParams{
+		Name:           RandomString(12),
+		Email:          RandomString(6) + "@example.com",
+		HashedPassword: RandomString(16),
+	}
+	return Queries.CreateUser(context.Background(), arg)
 }

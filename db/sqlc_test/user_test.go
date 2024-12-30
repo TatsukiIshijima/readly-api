@@ -12,23 +12,9 @@ import (
 )
 
 func createRandomUser(t *testing.T) db.User {
-	arg := db.CreateUserParams{
-		Name:           test.RandomString(12),
-		Email:          test.RandomString(6) + "@example.com",
-		HashedPassword: test.RandomString(16),
-	}
-
-	user, err := test.Queries.CreateUser(context.Background(), arg)
+	user, err := test.CreateRandomUser()
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
-
-	require.NotZero(t, user.ID)
-	require.Equal(t, arg.Name, user.Name)
-	require.Equal(t, arg.Email, user.Email)
-	require.Equal(t, arg.HashedPassword, user.HashedPassword)
-	require.NotZero(t, user.CreatedAt)
-	require.NotZero(t, user.UpdatedAt)
-
 	return user
 }
 
@@ -42,7 +28,21 @@ func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
 }
 
 func TestCreateUser(t *testing.T) {
-	createRandomUser(t)
+	arg := db.CreateUserParams{
+		Name:           test.RandomString(12),
+		Email:          test.RandomString(6) + "@example.com",
+		HashedPassword: test.RandomString(16),
+	}
+	user, err := test.Queries.CreateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user)
+
+	require.NotZero(t, user.ID)
+	require.Equal(t, arg.Name, user.Name)
+	require.Equal(t, arg.Email, user.Email)
+	require.Equal(t, arg.HashedPassword, user.HashedPassword)
+	require.NotZero(t, user.CreatedAt)
+	require.NotZero(t, user.UpdatedAt)
 }
 
 func TestGetUserById(t *testing.T) {
