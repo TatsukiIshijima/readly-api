@@ -1,33 +1,31 @@
-package db
+package repository
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	sqlc "readly/db/sqlc"
 )
 
 type Store struct {
-	DB DBTX
+	*sqlc.Queries
+	db *sql.DB
 }
 
-func NewStore(DB DBTX) *Store {
+func NewStore(db *sql.DB) *Store {
 	return &Store{
-		DB: DB,
+		Queries: sqlc.New(db),
+		db:      db,
 	}
 }
 
-func (store *Store) ExecTx(ctx context.Context, fn func(*Queries) error) error {
-	db, ok := store.DB.(*sql.DB)
-	if !ok {
-		return fmt.Errorf("store.DB is not a sql.DB")
-	}
-
-	tx, err := db.BeginTx(ctx, nil)
+func (store *Store) execTx(ctx context.Context, fn func(queries *sqlc.Queries) error) error {
+	tx, err := store.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
 
-	q := New(tx)
+	q := sqlc.New(tx)
 	err = fn(q)
 	if err != nil {
 		if rbErr := tx.Rollback(); rbErr != nil {
