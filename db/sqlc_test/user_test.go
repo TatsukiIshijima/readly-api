@@ -1,22 +1,24 @@
-package db
+package sqlc_test
 
 import (
 	"context"
 	"database/sql"
+	"readly/db/sqlc"
+	"readly/test"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomUser(t *testing.T) User {
-	arg := CreateUserParams{
-		Name:           randomString(12),
-		Email:          randomString(6) + "@example.com",
-		HashedPassword: randomString(16),
+func createRandomUser(t *testing.T) db.User {
+	arg := db.CreateUserParams{
+		Name:           test.RandomString(12),
+		Email:          test.RandomString(6) + "@example.com",
+		HashedPassword: test.RandomString(16),
 	}
 
-	user, err := testQueries.CreateUser(context.Background(), arg)
+	user, err := test.Queries.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -30,7 +32,7 @@ func createRandomUser(t *testing.T) User {
 	return user
 }
 
-func checkSameUser(t *testing.T, user1 User, user2 User) {
+func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
 	require.Equal(t, user1.ID, user2.ID)
 	require.Equal(t, user1.Name, user2.Name)
 	require.Equal(t, user1.Email, user2.Email)
@@ -45,7 +47,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUserById(t *testing.T) {
 	user1 := createRandomUser(t)
-	user2, err := testQueries.GetUserById(context.Background(), user1.ID)
+	user2, err := test.Queries.GetUserById(context.Background(), user1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -54,7 +56,7 @@ func TestGetUserById(t *testing.T) {
 
 func TestGetUserByEmail(t *testing.T) {
 	user1 := createRandomUser(t)
-	user2, err := testQueries.GetUserByEmail(context.Background(), user1.Email)
+	user2, err := test.Queries.GetUserByEmail(context.Background(), user1.Email)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -64,14 +66,14 @@ func TestGetUserByEmail(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
-	arg := UpdateUserParams{
+	arg := db.UpdateUserParams{
 		ID:             user1.ID,
-		Name:           randomString(12),
+		Name:           test.RandomString(12),
 		Email:          user1.Email,
 		HashedPassword: user1.HashedPassword,
 	}
 
-	user2, err := testQueries.UpdateUser(context.Background(), arg)
+	user2, err := test.Queries.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -85,10 +87,10 @@ func TestUpdateUser(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	user1 := createRandomUser(t)
-	err := testQueries.DeleteUser(context.Background(), user1.ID)
+	err := test.Queries.DeleteUser(context.Background(), user1.ID)
 	require.NoError(t, err)
 
-	user2, err := testQueries.GetUserById(context.Background(), user1.ID)
+	user2, err := test.Queries.GetUserById(context.Background(), user1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, user2)
@@ -99,12 +101,12 @@ func TestGetAllUsers(t *testing.T) {
 		createRandomUser(t)
 	}
 
-	arg1 := GetAllUsersParams{
+	arg1 := db.GetAllUsersParams{
 		Limit:  5,
 		Offset: 0,
 	}
 
-	users1, err := testQueries.GetAllUsers(context.Background(), arg1)
+	users1, err := test.Queries.GetAllUsers(context.Background(), arg1)
 	require.NoError(t, err)
 	require.Len(t, users1, 5)
 
@@ -112,12 +114,12 @@ func TestGetAllUsers(t *testing.T) {
 		require.NotEmpty(t, user)
 	}
 
-	arg2 := GetAllUsersParams{
+	arg2 := db.GetAllUsersParams{
 		Limit:  5,
 		Offset: 5,
 	}
 
-	users2, err := testQueries.GetAllUsers(context.Background(), arg2)
+	users2, err := test.Queries.GetAllUsers(context.Background(), arg2)
 	require.NoError(t, err)
 	require.Len(t, users2, 5)
 

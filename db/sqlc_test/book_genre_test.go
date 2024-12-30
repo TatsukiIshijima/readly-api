@@ -1,17 +1,19 @@
-package db
+package sqlc_test
 
 import (
 	"context"
 	"github.com/stretchr/testify/require"
+	"readly/db/sqlc"
+	"readly/test"
 	"testing"
 )
 
-func createRandomBookGenre(t *testing.T, book Book, genre Genre) {
-	arg := CreateBookGenreParams{
+func createRandomBookGenre(t *testing.T, book db.Book, genre db.Genre) {
+	arg := db.CreateBookGenreParams{
 		BookID:    book.ID,
 		GenreName: genre.Name,
 	}
-	bookGenre, err := testQueries.CreateBookGenre(context.Background(), arg)
+	bookGenre, err := test.Queries.CreateBookGenre(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, bookGenre)
 	require.NotZero(t, bookGenre.BookID)
@@ -33,13 +35,13 @@ func TestGetBooksByGenreName(t *testing.T) {
 	createRandomBookGenre(t, book1, genre)
 	createRandomBookGenre(t, book2, genre)
 
-	args := GetBooksByGenreNameParams{
+	args := db.GetBooksByGenreNameParams{
 		GenreName: genre.Name,
 		Limit:     5,
 		Offset:    0,
 	}
 
-	books, err := testQueries.GetBooksByGenreName(context.Background(), args)
+	books, err := test.Queries.GetBooksByGenreName(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, books)
 	require.Len(t, books, 2)
@@ -52,7 +54,7 @@ func TestGetGenresByBookID(t *testing.T) {
 	createRandomBookGenre(t, book, genre1)
 	createRandomBookGenre(t, book, genre2)
 
-	genres, err := testQueries.GetGenresByBookID(context.Background(), book.ID)
+	genres, err := test.Queries.GetGenresByBookID(context.Background(), book.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, genres)
 	require.Len(t, genres, 2)
@@ -63,24 +65,24 @@ func TestDeleteBookGenre(t *testing.T) {
 	genre := createRandomGenre(t)
 	createRandomBookGenre(t, book, genre)
 
-	arg1 := DeleteGenreForBookParams{
+	arg1 := db.DeleteGenreForBookParams{
 		BookID:    book.ID,
 		GenreName: genre.Name,
 	}
-	err := testQueries.DeleteGenreForBook(context.Background(), arg1)
+	err := test.Queries.DeleteGenreForBook(context.Background(), arg1)
 	require.NoError(t, err)
 
-	arg2 := GetBooksByGenreNameParams{
+	arg2 := db.GetBooksByGenreNameParams{
 		GenreName: genre.Name,
 		Limit:     5,
 		Offset:    0,
 	}
 
-	books, err := testQueries.GetBooksByGenreName(context.Background(), arg2)
+	books, err := test.Queries.GetBooksByGenreName(context.Background(), arg2)
 	require.NoError(t, err)
 	require.Len(t, books, 0)
 
-	genres, err := testQueries.GetGenresByBookID(context.Background(), book.ID)
+	genres, err := test.Queries.GetGenresByBookID(context.Background(), book.ID)
 	require.NoError(t, err)
 	require.Len(t, genres, 0)
 }
