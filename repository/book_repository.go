@@ -9,7 +9,7 @@ import (
 )
 
 type BookRepository interface {
-	Register(ctx context.Context, args RegisterBookParams) error
+	Register(ctx context.Context, args RegisterBookParams) (RegisterBookResult, error)
 }
 
 type BookRepositoryImpl struct {
@@ -33,7 +33,22 @@ type RegisterBookParams struct {
 	ISBN          string
 }
 
-func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterBookParams) error {
+type RegisterBookResult struct {
+	BookID        int64
+	Title         string
+	Genres        []string
+	Description   string
+	CoverImageURL string
+	URL           string
+	AuthorName    string
+	PublisherName string
+	PublishDate   time.Time
+	ISBN          string
+}
+
+func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterBookParams) (RegisterBookResult, error) {
+	var result RegisterBookResult
+
 	err := r.store.execTx(ctx, func(q *db.Queries) error {
 		if err := r.registerAuthorIfNotExist(ctx, q, args.AuthorName); err != nil {
 			return err
@@ -76,9 +91,25 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterBookParam
 		}); err != nil {
 			return err
 		}
+		genres, err := q.GetGenresByBookID(ctx, book.ID)
+		if err != nil {
+			return err
+		}
+		result = RegisterBookResult{
+			BookID:        book.ID,
+			Title:         book.Title.String,
+			Genres:        genres,
+			Description:   book.Description.String,
+			CoverImageURL: book.CoverImageUrl.String,
+			URL:           book.Url.String,
+			AuthorName:    book.AuthorName,
+			PublisherName: book.PublisherName,
+			PublishDate:   book.PublishedDate.Time,
+			ISBN:          book.Isbn.String,
+		}
 		return nil
 	})
-	return err
+	return result, err
 }
 
 func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q *db.Queries, name string) error {
