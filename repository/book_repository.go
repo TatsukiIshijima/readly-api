@@ -12,10 +12,10 @@ type BookRepository interface {
 }
 
 type BookRepositoryImpl struct {
-	store *db.Store
+	store *Store
 }
 
-func NewBookRepository(store *db.Store) BookRepository {
+func NewBookRepository(store *Store) BookRepository {
 	return &BookRepositoryImpl{store: store}
 }
 
@@ -34,7 +34,7 @@ type RegisterBookParams struct {
 }
 
 func (repo BookRepositoryImpl) Register(ctx context.Context, args RegisterBookParams) error {
-	err := repo.store.ExecTx(ctx, func(q *db.Queries) error {
+	err := repo.store.execTx(ctx, func(q *db.Queries) error {
 		// 1. Author保存
 		_, err := q.CreateAuthor(ctx, args.AuthorName)
 		if err != nil {
