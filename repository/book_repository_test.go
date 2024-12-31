@@ -99,6 +99,7 @@ func TestList(t *testing.T) {
 	require.NoError(t, err)
 
 	n := 3
+	requests := make([]RegisterRequest, 0, n)
 	for i := 0; i < n; i++ {
 		registerReq := RegisterRequest{
 			UserID:        user.ID,
@@ -112,6 +113,7 @@ func TestList(t *testing.T) {
 			PublishDate:   time.Now(),
 			ISBN:          test.RandomString(13),
 		}
+		requests = append(requests, registerReq)
 		book, err := repo.Register(context.Background(), registerReq)
 		require.NoError(t, err)
 		require.NotEmpty(t, book)
@@ -125,4 +127,16 @@ func TestList(t *testing.T) {
 	books, err := repo.List(context.Background(), listReq)
 	require.NoError(t, err)
 	require.Equal(t, n, len(books))
+
+	for i, book := range books {
+		require.Equal(t, requests[i].Title, book.Title)
+		require.Equal(t, requests[i].Genres[0], book.Genres[0])
+		require.Equal(t, requests[i].Description, book.Description)
+		require.Equal(t, requests[i].CoverImageURL, book.CoverImageURL)
+		require.Equal(t, requests[i].URL, book.URL)
+		require.Equal(t, requests[i].AuthorName, book.AuthorName)
+		require.Equal(t, requests[i].PublisherName, book.PublisherName)
+		require.WithinDuration(t, requests[i].PublishDate, book.PublishDate, time.Second)
+		require.Equal(t, requests[i].ISBN, book.ISBN)
+	}
 }
