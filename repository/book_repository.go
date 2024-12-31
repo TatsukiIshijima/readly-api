@@ -11,7 +11,7 @@ import (
 type BookRepository interface {
 	Register(ctx context.Context, req RegisterRequest) (BookResponse, error)
 	List(ctx context.Context, req ListRequest) ([]*BookResponse, error)
-	Delete(ctx context.Context, bookID int64) error
+	Delete(ctx context.Context, req DeleteRequest) error
 }
 
 type BookRepositoryImpl struct {
@@ -206,9 +206,45 @@ func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*BookRes
 	}, nil
 }
 
-func (r BookRepositoryImpl) Delete(ctx context.Context, bookID int64) error {
-	// reading_historyから削除
-	// book_genreから削除
-	// bookから削除
+type DeleteRequest struct {
+	UserID int64
+	BookID int64
+}
+
+func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error {
+	err := r.store.execTx(ctx, func(q *db.Queries) error {
+		deleteHistoryParam := db.DeleteReadingHistoryParams{
+			UserID: req.UserID,
+			BookID: req.BookID,
+		}
+		if err := r.store.Queries.DeleteReadingHistory(ctx, deleteHistoryParam); err != nil {
+			return err
+		}
+		if err := r.deleteBookGenres(ctx, req.BookID); err != nil {
+			return err
+		}
+		if err := r.store.Queries.DeleteBook(ctx, req.BookID); err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
+func (r BookRepositoryImpl) deleteBookGenres(ctx context.Context, bookID int64) error {
+	bookGenres, err := r.store.Queries.GetGenresByBookID(ctx, bookID)
+	if err != nil {
+		return err
+	}
+	for _, genre := range bookGenres {
+		param := db.DeleteGenreForBookParams{
+			BookID:    bookID,
+			GenreName: genre,
+		}
+		err := r.store.Queries.DeleteGenreForBook(ctx, param)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
