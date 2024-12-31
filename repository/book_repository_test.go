@@ -9,24 +9,22 @@ import (
 	"time"
 )
 
-func TestRegisterBook(t *testing.T) {
-	store := NewStore(test.DB)
-	repo := NewBookRepository(store)
-
+func TestRegister(t *testing.T) {
 	user, err := test.CreateRandomUser()
 	require.NoError(t, err)
 
 	n := 3
-	results := make(chan RegisterBookResult)
+	results := make(chan BookResponse)
 	errs := make(chan error)
 
 	for i := 0; i < n; i++ {
 		go func() {
+			// TODO:チェネルでジャンルを増やす&共有
 			genres := make([]string, i+1)
 			for j := 0; j <= i; j++ {
 				genres[j] = test.RandomString(6)
 			}
-			arg := RegisterBookParams{
+			arg := RegisterRequest{
 				UserID:        user.ID,
 				Title:         test.RandomString(6),
 				Genres:        genres,
@@ -60,7 +58,7 @@ func TestRegisterBook(t *testing.T) {
 		require.NotEmpty(t, publisher)
 		require.Equal(t, result.PublisherName, publisher.Name)
 
-		genres, err := store.GetGenresByBookID(context.Background(), result.BookID)
+		genres, err := store.GetGenresByBookID(context.Background(), result.ID)
 		require.NoError(t, err)
 		require.Equal(t, len(result.Genres), len(genres))
 		for _, g := range genres {
@@ -69,7 +67,7 @@ func TestRegisterBook(t *testing.T) {
 			require.NotEmpty(t, genre)
 		}
 
-		book, err := store.GetBookById(context.Background(), result.BookID)
+		book, err := store.GetBookById(context.Background(), result.ID)
 		require.NoError(t, err)
 		require.NotEmpty(t, book)
 		require.Equal(t, result.Title, book.Title.String)
@@ -94,4 +92,37 @@ func TestRegisterBook(t *testing.T) {
 			require.Equal(t, db.ReadingStatusUnread, h.Status)
 		}
 	}
+}
+
+func TestList(t *testing.T) {
+	user, err := test.CreateRandomUser()
+	require.NoError(t, err)
+
+	n := 3
+	for i := 0; i < n; i++ {
+		registerReq := RegisterRequest{
+			UserID:        user.ID,
+			Title:         test.RandomString(6),
+			Genres:        []string{test.RandomString(6)},
+			Description:   test.RandomString(12),
+			CoverImageURL: "https://example.com",
+			URL:           "https://example.com",
+			AuthorName:    test.RandomString(6),
+			PublisherName: test.RandomString(6),
+			PublishDate:   time.Now(),
+			ISBN:          test.RandomString(13),
+		}
+		book, err := repo.Register(context.Background(), registerReq)
+		require.NoError(t, err)
+		require.NotEmpty(t, book)
+	}
+
+	listReq := ListRequest{
+		UserID: user.ID,
+		Limit:  int32(n),
+		Offset: 0,
+	}
+	books, err := repo.List(context.Background(), listReq)
+	require.NoError(t, err)
+	require.Equal(t, n, len(books))
 }

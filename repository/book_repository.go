@@ -167,6 +167,8 @@ type ListRequest struct {
 func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*BookResponse, error) {
 	historyParams := db.GetReadingHistoryByUserIDParams{
 		UserID: req.UserID,
+		Limit:  req.Limit,
+		Offset: req.Offset,
 	}
 	histories, err := r.store.Queries.GetReadingHistoryByUserID(ctx, historyParams)
 	if err != nil {
