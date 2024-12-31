@@ -15,7 +15,7 @@ func TestRegister(t *testing.T) {
 	require.NoError(t, err)
 
 	n := 3
-	results := make(chan BookResponse)
+	results := make(chan bookResponse)
 	errs := make(chan error)
 
 	for i := 0; i < n; i++ {
@@ -25,7 +25,7 @@ func TestRegister(t *testing.T) {
 			for j := 0; j <= i; j++ {
 				genres[j] = test.RandomString(6)
 			}
-			arg := RegisterRequest{
+			arg := registerRequest{
 				UserID:        user.ID,
 				Title:         test.RandomString(6),
 				Genres:        genres,
@@ -100,9 +100,9 @@ func TestList(t *testing.T) {
 	require.NoError(t, err)
 
 	n := 3
-	requests := make([]RegisterRequest, 0, n)
+	requests := make([]registerRequest, 0, n)
 	for i := 0; i < n; i++ {
-		registerReq := RegisterRequest{
+		registerReq := registerRequest{
 			UserID:        user.ID,
 			Title:         test.RandomString(6),
 			Genres:        []string{test.RandomString(6)},
@@ -120,7 +120,7 @@ func TestList(t *testing.T) {
 		require.NotEmpty(t, book)
 	}
 
-	listReq := ListRequest{
+	listReq := listRequest{
 		UserID: user.ID,
 		Limit:  int32(n),
 		Offset: 0,
@@ -146,7 +146,7 @@ func TestDelete(t *testing.T) {
 	user, err := test.CreateRandomUser()
 	require.NoError(t, err)
 
-	registerReq := RegisterRequest{
+	registerReq := registerRequest{
 		UserID:        user.ID,
 		Title:         test.RandomString(6),
 		Genres:        []string{test.RandomString(6)},
@@ -161,7 +161,7 @@ func TestDelete(t *testing.T) {
 	registeredBook, err := repo.Register(context.Background(), registerReq)
 	require.NoError(t, err)
 
-	err = repo.Delete(context.Background(), DeleteRequest{
+	err = repo.Delete(context.Background(), deleteRequest{
 		UserID: user.ID,
 		BookID: registeredBook.ID,
 	})

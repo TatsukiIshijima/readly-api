@@ -9,9 +9,9 @@ import (
 )
 
 type BookRepository interface {
-	Register(ctx context.Context, req RegisterRequest) (BookResponse, error)
-	List(ctx context.Context, req ListRequest) ([]*BookResponse, error)
-	Delete(ctx context.Context, req DeleteRequest) error
+	Register(ctx context.Context, req registerRequest) (bookResponse, error)
+	List(ctx context.Context, req listRequest) ([]*bookResponse, error)
+	Delete(ctx context.Context, req deleteRequest) error
 }
 
 type BookRepositoryImpl struct {
@@ -22,7 +22,7 @@ func NewBookRepository(store *Store) BookRepository {
 	return BookRepositoryImpl{store: store}
 }
 
-type BookResponse struct {
+type bookResponse struct {
 	ID            int64
 	Title         string
 	Genres        []string
@@ -35,7 +35,7 @@ type BookResponse struct {
 	ISBN          string
 }
 
-type RegisterRequest struct {
+type registerRequest struct {
 	UserID        int64
 	Title         string
 	Genres        []string
@@ -48,8 +48,8 @@ type RegisterRequest struct {
 	ISBN          string
 }
 
-func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) (BookResponse, error) {
-	var result BookResponse
+func (r BookRepositoryImpl) Register(ctx context.Context, args registerRequest) (bookResponse, error) {
+	var result bookResponse
 
 	err := r.store.execTx(ctx, func(q *db.Queries) error {
 		if err := r.registerAuthorIfNotExist(ctx, q, args.AuthorName); err != nil {
@@ -97,7 +97,7 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) 
 		if err != nil {
 			return err
 		}
-		result = BookResponse{
+		result = bookResponse{
 			ID:            book.ID,
 			Title:         book.Title.String,
 			Genres:        genres,
@@ -158,13 +158,13 @@ func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q *db.Q
 	return nil
 }
 
-type ListRequest struct {
+type listRequest struct {
 	UserID int64
 	Limit  int32
 	Offset int32
 }
 
-func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*BookResponse, error) {
+func (r BookRepositoryImpl) List(ctx context.Context, req listRequest) ([]*bookResponse, error) {
 	historyParams := db.GetReadingHistoryByUserIDParams{
 		UserID: req.UserID,
 		Limit:  req.Limit,
@@ -174,7 +174,7 @@ func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*BookR
 	if err != nil {
 		return nil, err
 	}
-	res := make([]*BookResponse, 0, len(histories))
+	res := make([]*bookResponse, 0, len(histories))
 	for _, history := range histories {
 		book, err := r.getBook(ctx, history.BookID)
 		if err != nil {
@@ -185,7 +185,7 @@ func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*BookR
 	return res, nil
 }
 
-func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*BookResponse, error) {
+func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*bookResponse, error) {
 	book, err := r.store.Queries.GetBookById(ctx, bookID)
 	if err != nil {
 		return nil, err
@@ -194,7 +194,7 @@ func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*BookRes
 	if err != nil {
 		return nil, err
 	}
-	return &BookResponse{
+	return &bookResponse{
 		ID:            book.ID,
 		Title:         book.Title.String,
 		Genres:        genres,
@@ -208,12 +208,12 @@ func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*BookRes
 	}, nil
 }
 
-type DeleteRequest struct {
+type deleteRequest struct {
 	UserID int64
 	BookID int64
 }
 
-func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error {
+func (r BookRepositoryImpl) Delete(ctx context.Context, req deleteRequest) error {
 	err := r.store.execTx(ctx, func(q *db.Queries) error {
 		deleteHistoryParam := db.DeleteReadingHistoryParams{
 			UserID: req.UserID,
