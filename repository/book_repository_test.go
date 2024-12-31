@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"github.com/stretchr/testify/require"
 	db "readly/db/sqlc"
 	"readly/test"
@@ -139,4 +140,47 @@ func TestList(t *testing.T) {
 		require.WithinDuration(t, requests[i].PublishDate, book.PublishDate, time.Second)
 		require.Equal(t, requests[i].ISBN, book.ISBN)
 	}
+}
+
+func TestDelete(t *testing.T) {
+	user, err := test.CreateRandomUser()
+	require.NoError(t, err)
+
+	registerReq := RegisterRequest{
+		UserID:        user.ID,
+		Title:         test.RandomString(6),
+		Genres:        []string{test.RandomString(6)},
+		Description:   test.RandomString(12),
+		CoverImageURL: "https://example.com",
+		URL:           "https://example.com",
+		AuthorName:    test.RandomString(6),
+		PublisherName: test.RandomString(6),
+		PublishDate:   time.Now(),
+		ISBN:          test.RandomString(13),
+	}
+	registeredBook, err := repo.Register(context.Background(), registerReq)
+	require.NoError(t, err)
+
+	err = repo.Delete(context.Background(), DeleteRequest{
+		UserID: user.ID,
+		BookID: registeredBook.ID,
+	})
+	require.NoError(t, err)
+
+	historyParam := db.GetReadingHistoryByUserIDParams{
+		UserID: user.ID,
+		Limit:  10,
+		Offset: 0,
+	}
+	histories, err := store.GetReadingHistoryByUserID(context.Background(), historyParam)
+	require.NoError(t, err)
+	require.Empty(t, histories)
+
+	genres, err := store.GetGenresByBookID(context.Background(), registeredBook.ID)
+	require.Nil(t, genres)
+	require.NoError(t, err)
+
+	deletedBook, err := store.GetBookById(context.Background(), registeredBook.ID)
+	require.Zero(t, deletedBook)
+	require.ErrorIs(t, err, sql.ErrNoRows)
 }
