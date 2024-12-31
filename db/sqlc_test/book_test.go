@@ -1,23 +1,25 @@
-package db
+package sqlc_test
 
 import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
+	"readly/db/sqlc"
+	"readly/test"
 	"testing"
 	"time"
 )
 
-func createRandomBook(t *testing.T) Book {
+func createRandomBook(t *testing.T) db.Book {
 	author := createRandomAuthor(t)
 	publisher := createRandomPublisher(t)
-	arg := CreateBookParams{
+	arg := db.CreateBookParams{
 		Title: sql.NullString{
-			String: randomString(6),
+			String: test.RandomString(6),
 			Valid:  true,
 		},
 		Description: sql.NullString{
-			String: randomString(12),
+			String: test.RandomString(12),
 			Valid:  true,
 		},
 		CoverImageUrl: sql.NullString{
@@ -35,12 +37,12 @@ func createRandomBook(t *testing.T) Book {
 			Valid: true,
 		},
 		Isbn: sql.NullString{
-			String: randomString(13),
+			String: test.RandomString(13),
 			Valid:  true,
 		},
 	}
 
-	book, err := testQueries.CreateBook(context.Background(), arg)
+	book, err := test.Queries.CreateBook(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, book)
 
@@ -57,7 +59,7 @@ func createRandomBook(t *testing.T) Book {
 	return book
 }
 
-func checkSameBook(t *testing.T, book1 Book, book2 Book) {
+func checkSameBook(t *testing.T, book1 db.Book, book2 db.Book) {
 	require.Equal(t, book1.ID, book2.ID)
 	require.Equal(t, book1.Title, book2.Title)
 	require.Equal(t, book1.Description, book2.Description)
@@ -75,7 +77,7 @@ func TestCreateBook(t *testing.T) {
 
 func TestGetBookById(t *testing.T) {
 	book1 := createRandomBook(t)
-	book2, err := testQueries.GetBookById(context.Background(), book1.ID)
+	book2, err := test.Queries.GetBookById(context.Background(), book1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, book2)
 
@@ -88,7 +90,7 @@ func TestGetBooksByAuthorName(t *testing.T) {
 		createRandomBook(t)
 	}
 
-	books, err := testQueries.GetBooksByAuthorName(context.Background(), author.Name)
+	books, err := test.Queries.GetBooksByAuthorName(context.Background(), author.Name)
 	require.NoError(t, err)
 
 	for _, book := range books {
@@ -99,7 +101,7 @@ func TestGetBooksByAuthorName(t *testing.T) {
 
 func TestGetBooksByIsbn(t *testing.T) {
 	book1 := createRandomBook(t)
-	books, err := testQueries.GetBooksByIsbn(context.Background(), book1.Isbn)
+	books, err := test.Queries.GetBooksByIsbn(context.Background(), book1.Isbn)
 	require.NoError(t, err)
 	require.Equal(t, len(books), 1)
 	book2 := books[0]
@@ -109,7 +111,7 @@ func TestGetBooksByIsbn(t *testing.T) {
 
 func TestGetBooksByTitle(t *testing.T) {
 	book1 := createRandomBook(t)
-	books, err := testQueries.GetBooksByTitle(context.Background(), book1.Title)
+	books, err := test.Queries.GetBooksByTitle(context.Background(), book1.Title)
 	require.NoError(t, err)
 	require.Equal(t, len(books), 1)
 	book2 := books[0]
@@ -120,10 +122,10 @@ func TestGetBooksByTitle(t *testing.T) {
 func TestUpdateBook(t *testing.T) {
 	book1 := createRandomBook(t)
 
-	arg := UpdateBookParams{
+	arg := db.UpdateBookParams{
 		ID:            book1.ID,
 		Title:         book1.Title,
-		Description:   sql.NullString{String: randomString(12), Valid: true},
+		Description:   sql.NullString{String: test.RandomString(12), Valid: true},
 		CoverImageUrl: book1.CoverImageUrl,
 		Url:           book1.Url,
 		AuthorName:    book1.AuthorName,
@@ -132,7 +134,7 @@ func TestUpdateBook(t *testing.T) {
 		Isbn:          book1.Isbn,
 	}
 
-	book2, err := testQueries.UpdateBook(context.Background(), arg)
+	book2, err := test.Queries.UpdateBook(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, book2)
 
@@ -149,10 +151,10 @@ func TestUpdateBook(t *testing.T) {
 
 func TestDeleteBook(t *testing.T) {
 	book1 := createRandomBook(t)
-	err := testQueries.DeleteBook(context.Background(), book1.ID)
+	err := test.Queries.DeleteBook(context.Background(), book1.ID)
 	require.NoError(t, err)
 
-	book2, err := testQueries.GetBookById(context.Background(), book1.ID)
+	book2, err := test.Queries.GetBookById(context.Background(), book1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, book2)

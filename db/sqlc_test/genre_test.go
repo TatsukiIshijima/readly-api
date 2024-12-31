@@ -1,16 +1,18 @@
-package db
+package sqlc_test
 
 import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
+	"readly/db/sqlc"
+	"readly/test"
 	"testing"
 	"time"
 )
 
-func createRandomGenre(t *testing.T) Genre {
-	arg := randomString(6)
-	genre, err := testQueries.CreateGenre(context.Background(), arg)
+func createRandomGenre(t *testing.T) db.Genre {
+	arg := test.RandomString(6)
+	genre, err := test.Queries.CreateGenre(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, genre)
 	return genre
@@ -22,7 +24,7 @@ func TestCreateGenre(t *testing.T) {
 
 func TestGetGenreByName(t *testing.T) {
 	genre1 := createRandomGenre(t)
-	genre2, err := testQueries.GetGenreByName(context.Background(), genre1.Name)
+	genre2, err := test.Queries.GetGenreByName(context.Background(), genre1.Name)
 	require.NoError(t, err)
 	require.NotEmpty(t, genre2)
 	require.Equal(t, genre1.Name, genre2.Name)
@@ -31,10 +33,10 @@ func TestGetGenreByName(t *testing.T) {
 
 func TestDeleteGenre(t *testing.T) {
 	genre1 := createRandomGenre(t)
-	err := testQueries.DeleteGenre(context.Background(), genre1.Name)
+	err := test.Queries.DeleteGenre(context.Background(), genre1.Name)
 	require.NoError(t, err)
 
-	genre2, err := testQueries.GetGenreByName(context.Background(), genre1.Name)
+	genre2, err := test.Queries.GetGenreByName(context.Background(), genre1.Name)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, genre2)
@@ -45,12 +47,12 @@ func TestGetAllGenre(t *testing.T) {
 		createRandomGenre(t)
 	}
 
-	arg := GetAllGenresParams{
+	arg := db.GetAllGenresParams{
 		Limit:  2,
 		Offset: 0,
 	}
 
-	genres, err := testQueries.GetAllGenres(context.Background(), arg)
+	genres, err := test.Queries.GetAllGenres(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, genres, 2)
 
@@ -58,12 +60,12 @@ func TestGetAllGenre(t *testing.T) {
 		require.NotEmpty(t, genre)
 	}
 
-	arg = GetAllGenresParams{
+	arg = db.GetAllGenresParams{
 		Limit:  2,
 		Offset: 2,
 	}
 
-	genres, err = testQueries.GetAllGenres(context.Background(), arg)
+	genres, err = test.Queries.GetAllGenres(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, genres, 2)
 

@@ -1,13 +1,12 @@
-package db
+package test
 
 import (
+	"context"
 	"database/sql"
 	"log"
 	"math/rand"
-	"os"
+	"readly/db/sqlc"
 	"strings"
-	"testing"
-	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -18,17 +17,14 @@ const (
 	alplhabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 
-var testQueries *Queries
+var DB *sql.DB
+var Queries *db.Queries
 
-func init() {
-	rand.New(rand.NewSource(time.Now().UnixNano()))
-}
-
-func randomInt(min int64, max int64) int64 {
+func RandomInt(min int64, max int64) int64 {
 	return min + rand.Int63n(max-min+1)
 }
 
-func randomString(n int) string {
+func RandomString(n int) string {
 	var sb strings.Builder
 	k := len(alplhabet)
 
@@ -39,13 +35,20 @@ func randomString(n int) string {
 	return sb.String()
 }
 
-func TestMain(m *testing.M) {
-	conn, err := sql.Open(dbDriver, dbSource)
+func Connect() {
+	var err error
+	DB, err = sql.Open(dbDriver, dbSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}
+	Queries = db.New(DB)
+}
 
-	testQueries = New(conn)
-
-	os.Exit(m.Run())
+func CreateRandomUser() (db.User, error) {
+	arg := db.CreateUserParams{
+		Name:           RandomString(12),
+		Email:          RandomString(6) + "@example.com",
+		HashedPassword: RandomString(16),
+	}
+	return Queries.CreateUser(context.Background(), arg)
 }
