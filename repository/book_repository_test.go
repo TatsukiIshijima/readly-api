@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	db "readly/db/sqlc"
+	"readly/domain"
 	"readly/test"
 	"testing"
 	"time"
@@ -15,7 +16,7 @@ func TestRegister(t *testing.T) {
 	require.NoError(t, err)
 
 	n := 3
-	results := make(chan BookResponse)
+	results := make(chan domain.Book)
 	errs := make(chan error)
 
 	for i := 0; i < n; i++ {
@@ -79,20 +80,53 @@ func TestRegister(t *testing.T) {
 		require.Equal(t, result.PublisherName, book.PublisherName)
 		require.WithinDuration(t, result.PublishDate, book.PublishedDate.Time.UTC(), time.Second)
 		require.Equal(t, result.ISBN, book.Isbn.String)
-
-		param := db.GetReadingHistoryByUserIDParams{
-			UserID: user.ID,
-			Limit:  10,
-			Offset: 0,
-		}
-		histories, err := store.GetReadingHistoryByUserID(context.Background(), param)
-		require.NoError(t, err)
-		require.Equal(t, n, len(histories))
-		for _, h := range histories {
-			require.Equal(t, user.ID, h.UserID)
-			require.Equal(t, db.ReadingStatusUnread, h.Status)
-		}
 	}
+
+	param := db.GetReadingHistoryByUserIDParams{
+		UserID: user.ID,
+		Limit:  10,
+		Offset: 0,
+	}
+	histories, err := store.GetReadingHistoryByUserID(context.Background(), param)
+	require.NoError(t, err)
+	require.Equal(t, n, len(histories))
+	for _, h := range histories {
+		require.Equal(t, user.ID, h.UserID)
+		require.Equal(t, db.ReadingStatusUnread, h.Status)
+	}
+}
+
+func TestGet(t *testing.T) {
+	user, err := test.CreateRandomUser()
+	require.NoError(t, err)
+
+	registerReq := RegisterRequest{
+		UserID:        user.ID,
+		Title:         test.RandomString(6),
+		Genres:        []string{test.RandomString(6)},
+		Description:   test.RandomString(12),
+		CoverImageURL: "https://example.com",
+		URL:           "https://example.com",
+		AuthorName:    test.RandomString(6),
+		PublisherName: test.RandomString(6),
+		PublishDate:   time.Now(),
+		ISBN:          test.RandomString(13),
+	}
+	registeredBook, err := repo.Register(context.Background(), registerReq)
+	require.NoError(t, err)
+
+	book, err := repo.Get(context.Background(), registeredBook.ID)
+	require.NoError(t, err)
+	require.Equal(t, registeredBook.ID, book.ID)
+	require.Equal(t, registeredBook.Title, book.Title)
+	require.Equal(t, registeredBook.Genres[0], book.Genres[0])
+	require.Equal(t, registeredBook.Description, book.Description)
+	require.Equal(t, registeredBook.CoverImageURL, book.CoverImageURL)
+	require.Equal(t, registeredBook.URL, book.URL)
+	require.Equal(t, registeredBook.AuthorName, book.AuthorName)
+	require.Equal(t, registeredBook.PublisherName, book.PublisherName)
+	require.WithinDuration(t, registeredBook.PublishDate, book.PublishDate, time.Second)
+	require.Equal(t, registeredBook.ISBN, book.ISBN)
 }
 
 func TestList(t *testing.T) {
@@ -177,8 +211,8 @@ func TestDelete(t *testing.T) {
 	require.Empty(t, histories)
 
 	genres, err := store.GetGenresByBookID(context.Background(), registeredBook.ID)
-	require.Nil(t, genres)
 	require.NoError(t, err)
+	require.Empty(t, genres)
 
 	deletedBook, err := store.GetBookById(context.Background(), registeredBook.ID)
 	require.Zero(t, deletedBook)

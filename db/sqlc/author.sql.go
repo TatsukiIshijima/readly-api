@@ -49,7 +49,7 @@ func (q *Queries) GetAllAuthors(ctx context.Context, arg GetAllAuthorsParams) ([
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Author
+	items := []Author{}
 	for rows.Next() {
 		var i Author
 		if err := rows.Scan(&i.Name, &i.CreatedAt); err != nil {

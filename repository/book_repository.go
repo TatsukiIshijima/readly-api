@@ -5,12 +5,14 @@ import (
 	"database/sql"
 	"errors"
 	db "readly/db/sqlc"
+	"readly/domain"
 	"time"
 )
 
 type BookRepository interface {
-	Register(ctx context.Context, req RegisterRequest) (BookResponse, error)
-	List(ctx context.Context, req ListRequest) ([]*BookResponse, error)
+	Register(ctx context.Context, req RegisterRequest) (domain.Book, error)
+	Get(ctx context.Context, id int64) (*domain.Book, error)
+	List(ctx context.Context, req ListRequest) ([]*domain.Book, error)
 	Delete(ctx context.Context, req DeleteRequest) error
 }
 
@@ -20,19 +22,6 @@ type BookRepositoryImpl struct {
 
 func NewBookRepository(store *Store) BookRepository {
 	return BookRepositoryImpl{store: store}
-}
-
-type BookResponse struct {
-	ID            int64
-	Title         string
-	Genres        []string
-	Description   string
-	CoverImageURL string
-	URL           string
-	AuthorName    string
-	PublisherName string
-	PublishDate   time.Time
-	ISBN          string
 }
 
 type RegisterRequest struct {
@@ -48,8 +37,8 @@ type RegisterRequest struct {
 	ISBN          string
 }
 
-func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) (BookResponse, error) {
-	var result BookResponse
+func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) (domain.Book, error) {
+	var result domain.Book
 
 	err := r.store.execTx(ctx, func(q *db.Queries) error {
 		if err := r.registerAuthorIfNotExist(ctx, q, args.AuthorName); err != nil {
@@ -97,7 +86,7 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) 
 		if err != nil {
 			return err
 		}
-		result = BookResponse{
+		result = domain.Book{
 			ID:            book.ID,
 			Title:         book.Title.String,
 			Genres:        genres,
@@ -158,43 +147,16 @@ func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q *db.Q
 	return nil
 }
 
-type ListRequest struct {
-	UserID int64
-	Limit  int32
-	Offset int32
-}
-
-func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*BookResponse, error) {
-	historyParams := db.GetReadingHistoryByUserIDParams{
-		UserID: req.UserID,
-		Limit:  req.Limit,
-		Offset: req.Offset,
-	}
-	histories, err := r.store.Queries.GetReadingHistoryByUserID(ctx, historyParams)
+func (r BookRepositoryImpl) Get(ctx context.Context, id int64) (*domain.Book, error) {
+	book, err := r.store.Queries.GetBookById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	res := make([]*BookResponse, 0, len(histories))
-	for _, history := range histories {
-		book, err := r.getBook(ctx, history.BookID)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, book)
-	}
-	return res, nil
-}
-
-func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*BookResponse, error) {
-	book, err := r.store.Queries.GetBookById(ctx, bookID)
+	genres, err := r.store.Queries.GetGenresByBookID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	genres, err := r.store.Queries.GetGenresByBookID(ctx, bookID)
-	if err != nil {
-		return nil, err
-	}
-	return &BookResponse{
+	return &domain.Book{
 		ID:            book.ID,
 		Title:         book.Title.String,
 		Genres:        genres,
@@ -206,6 +168,33 @@ func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*BookRes
 		PublishDate:   book.PublishedDate.Time,
 		ISBN:          book.Isbn.String,
 	}, nil
+}
+
+type ListRequest struct {
+	UserID int64
+	Limit  int32
+	Offset int32
+}
+
+func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*domain.Book, error) {
+	historyParams := db.GetReadingHistoryByUserIDParams{
+		UserID: req.UserID,
+		Limit:  req.Limit,
+		Offset: req.Offset,
+	}
+	histories, err := r.store.Queries.GetReadingHistoryByUserID(ctx, historyParams)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]*domain.Book, 0, len(histories))
+	for _, history := range histories {
+		book, err := r.Get(ctx, history.BookID)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, book)
+	}
+	return res, nil
 }
 
 type DeleteRequest struct {

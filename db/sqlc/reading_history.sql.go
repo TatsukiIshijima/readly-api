@@ -115,7 +115,7 @@ func (q *Queries) GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetR
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ReadingHistory
+	items := []ReadingHistory{}
 	for rows.Next() {
 		var i ReadingHistory
 		if err := rows.Scan(
@@ -160,7 +160,7 @@ func (q *Queries) GetReadingHistoryByUserID(ctx context.Context, arg GetReadingH
 		return nil, err
 	}
 	defer rows.Close()
-	var items []ReadingHistory
+	items := []ReadingHistory{}
 	for rows.Next() {
 		var i ReadingHistory
 		if err := rows.Scan(
