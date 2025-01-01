@@ -14,12 +14,16 @@ func NewServer(repo repository.BookRepository) *Server {
 	server := &Server{bookRepo: repo}
 	router := gin.Default()
 
-	//router.POST("/books", server.createBook)
-	//router.GET("/books", server.listBooks)
-	//router.GET("/books/:id", server.getBook)
-	//router.PUT("/books/:id", server.updateBook)
-	//router.DELETE("/books/:id", server.deleteBook)
+	router.POST("/books", server.registerBook)
 
 	server.router = router
 	return server
+}
+
+func (server *Server) Start(address string) error {
+	return server.router.Run(address)
+}
+
+func errorResponse(err error) gin.H {
+	return gin.H{"error": err.Error()}
 }
