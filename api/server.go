@@ -15,6 +15,7 @@ func NewServer(repo repository.BookRepository) *Server {
 	router := gin.Default()
 
 	router.POST("/books", server.registerBook)
+	router.GET("/books/:id", server.getBook)
 
 	server.router = router
 	return server

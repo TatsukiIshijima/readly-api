@@ -53,3 +53,23 @@ func (server *Server) registerBook(ctx *gin.Context) {
 	res := registerResponse{Book: book}
 	ctx.JSON(http.StatusOK, res)
 }
+
+type getBookRequest struct {
+	ID int64 `uri:"id" binding:"required"`
+}
+
+func (server *Server) getBook(ctx *gin.Context) {
+	var req getBookRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	book, err := server.bookRepo.Get(ctx, req.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, book)
+}
