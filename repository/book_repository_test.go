@@ -96,6 +96,39 @@ func TestRegister(t *testing.T) {
 	}
 }
 
+func TestGet(t *testing.T) {
+	user, err := test.CreateRandomUser()
+	require.NoError(t, err)
+
+	registerReq := RegisterRequest{
+		UserID:        user.ID,
+		Title:         test.RandomString(6),
+		Genres:        []string{test.RandomString(6)},
+		Description:   test.RandomString(12),
+		CoverImageURL: "https://example.com",
+		URL:           "https://example.com",
+		AuthorName:    test.RandomString(6),
+		PublisherName: test.RandomString(6),
+		PublishDate:   time.Now(),
+		ISBN:          test.RandomString(13),
+	}
+	registeredBook, err := repo.Register(context.Background(), registerReq)
+	require.NoError(t, err)
+
+	book, err := repo.Get(context.Background(), registeredBook.ID)
+	require.NoError(t, err)
+	require.Equal(t, registeredBook.ID, book.ID)
+	require.Equal(t, registeredBook.Title, book.Title)
+	require.Equal(t, registeredBook.Genres[0], book.Genres[0])
+	require.Equal(t, registeredBook.Description, book.Description)
+	require.Equal(t, registeredBook.CoverImageURL, book.CoverImageURL)
+	require.Equal(t, registeredBook.URL, book.URL)
+	require.Equal(t, registeredBook.AuthorName, book.AuthorName)
+	require.Equal(t, registeredBook.PublisherName, book.PublisherName)
+	require.WithinDuration(t, registeredBook.PublishDate, book.PublishDate, time.Second)
+	require.Equal(t, registeredBook.ISBN, book.ISBN)
+}
+
 func TestList(t *testing.T) {
 	user, err := test.CreateRandomUser()
 	require.NoError(t, err)

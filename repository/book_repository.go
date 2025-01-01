@@ -11,6 +11,7 @@ import (
 
 type BookRepository interface {
 	Register(ctx context.Context, req RegisterRequest) (domain.Book, error)
+	Get(ctx context.Context, id int64) (*domain.Book, error)
 	List(ctx context.Context, req listRequest) ([]*domain.Book, error)
 	Delete(ctx context.Context, req deleteRequest) error
 }
@@ -146,6 +147,29 @@ func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q *db.Q
 	return nil
 }
 
+func (r BookRepositoryImpl) Get(ctx context.Context, id int64) (*domain.Book, error) {
+	book, err := r.store.Queries.GetBookById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	genres, err := r.store.Queries.GetGenresByBookID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.Book{
+		ID:            book.ID,
+		Title:         book.Title.String,
+		Genres:        genres,
+		Description:   book.Description.String,
+		CoverImageURL: book.CoverImageUrl.String,
+		URL:           book.Url.String,
+		AuthorName:    book.AuthorName,
+		PublisherName: book.PublisherName,
+		PublishDate:   book.PublishedDate.Time,
+		ISBN:          book.Isbn.String,
+	}, nil
+}
+
 type listRequest struct {
 	UserID int64
 	Limit  int32
@@ -164,36 +188,13 @@ func (r BookRepositoryImpl) List(ctx context.Context, req listRequest) ([]*domai
 	}
 	res := make([]*domain.Book, 0, len(histories))
 	for _, history := range histories {
-		book, err := r.getBook(ctx, history.BookID)
+		book, err := r.Get(ctx, history.BookID)
 		if err != nil {
 			return nil, err
 		}
 		res = append(res, book)
 	}
 	return res, nil
-}
-
-func (r BookRepositoryImpl) getBook(ctx context.Context, bookID int64) (*domain.Book, error) {
-	book, err := r.store.Queries.GetBookById(ctx, bookID)
-	if err != nil {
-		return nil, err
-	}
-	genres, err := r.store.Queries.GetGenresByBookID(ctx, bookID)
-	if err != nil {
-		return nil, err
-	}
-	return &domain.Book{
-		ID:            book.ID,
-		Title:         book.Title.String,
-		Genres:        genres,
-		Description:   book.Description.String,
-		CoverImageURL: book.CoverImageUrl.String,
-		URL:           book.Url.String,
-		AuthorName:    book.AuthorName,
-		PublisherName: book.PublisherName,
-		PublishDate:   book.PublishedDate.Time,
-		ISBN:          book.Isbn.String,
-	}, nil
 }
 
 type deleteRequest struct {
