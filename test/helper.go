@@ -12,8 +12,6 @@ import (
 )
 
 const (
-	dbDriver  = "postgres"
-	dbSource  = "postgresql://root:secret@localhost:5432/readly?sslmode=disable"
 	alplhabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 
@@ -35,7 +33,7 @@ func RandomString(n int) string {
 	return sb.String()
 }
 
-func Connect() {
+func Connect(dbDriver string, dbSource string) {
 	var err error
 	DB, err = sql.Open(dbDriver, dbSource)
 	if err != nil {
