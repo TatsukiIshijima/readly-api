@@ -9,6 +9,7 @@ import (
 )
 
 type registerRequest struct {
+	// TODO:削除（ログイン情報から取得するため）
 	UserID        int64     `json:"user_id" binding:"required"`
 	Title         string    `json:"title" binding:"required"`
 	Genres        []string  `json:"genres"`
@@ -50,12 +51,15 @@ func (server *Server) registerBook(ctx *gin.Context) {
 		return
 	}
 
-	res := registerResponse{Book: book}
-	ctx.JSON(http.StatusOK, res)
+	ctx.JSON(http.StatusOK, registerResponse{Book: book})
 }
 
 type getBookRequest struct {
 	ID int64 `uri:"id" binding:"required"`
+}
+
+type getBookResponse struct {
+	domain.Book
 }
 
 func (server *Server) getBook(ctx *gin.Context) {
@@ -71,5 +75,43 @@ func (server *Server) getBook(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, book)
+	ctx.JSON(http.StatusOK, getBookResponse{Book: *book})
+}
+
+type listBooksRequest struct {
+	// limitとoffsetのままだと0が始点になる。requiredタグを使用した場合
+	// int32のゼロ値は無効な値として扱われるため、ページング処理を入れる
+	Page int32 `form:"page" binding:"required,min=1"`
+	Size int32 `form:"size" binding:"required,min=10,max=50"`
+}
+
+// TODO:削除（ログイン情報から取得するため）
+type listBooksTempRequest struct {
+	UserID int64 `json:"user_id" binding:"required"`
+}
+
+func (server *Server) listBook(ctx *gin.Context) {
+	var req listBooksRequest
+	if err := ctx.ShouldBindQuery(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var tempReq listBooksTempRequest
+	if err := ctx.ShouldBindJSON(&tempReq); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	books, err := server.bookRepo.List(ctx, repository.ListRequest{
+		UserID: tempReq.UserID,
+		Limit:  req.Size,
+		Offset: (req.Page - 1) * req.Size,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, books)
 }

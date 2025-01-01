@@ -12,7 +12,7 @@ import (
 type BookRepository interface {
 	Register(ctx context.Context, req RegisterRequest) (domain.Book, error)
 	Get(ctx context.Context, id int64) (*domain.Book, error)
-	List(ctx context.Context, req listRequest) ([]*domain.Book, error)
+	List(ctx context.Context, req ListRequest) ([]*domain.Book, error)
 	Delete(ctx context.Context, req deleteRequest) error
 }
 
@@ -170,13 +170,13 @@ func (r BookRepositoryImpl) Get(ctx context.Context, id int64) (*domain.Book, er
 	}, nil
 }
 
-type listRequest struct {
+type ListRequest struct {
 	UserID int64
 	Limit  int32
 	Offset int32
 }
 
-func (r BookRepositoryImpl) List(ctx context.Context, req listRequest) ([]*domain.Book, error) {
+func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*domain.Book, error) {
 	historyParams := db.GetReadingHistoryByUserIDParams{
 		UserID: req.UserID,
 		Limit:  req.Limit,

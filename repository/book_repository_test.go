@@ -154,7 +154,7 @@ func TestList(t *testing.T) {
 		require.NotEmpty(t, book)
 	}
 
-	listReq := listRequest{
+	listReq := ListRequest{
 		UserID: user.ID,
 		Limit:  int32(n),
 		Offset: 0,
