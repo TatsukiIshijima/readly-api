@@ -211,8 +211,8 @@ func TestDelete(t *testing.T) {
 	require.Empty(t, histories)
 
 	genres, err := store.GetGenresByBookID(context.Background(), registeredBook.ID)
-	require.Nil(t, genres)
 	require.NoError(t, err)
+	require.Empty(t, genres)
 
 	deletedBook, err := store.GetBookById(context.Background(), registeredBook.ID)
 	require.Zero(t, deletedBook)
