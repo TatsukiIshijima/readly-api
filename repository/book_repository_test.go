@@ -195,7 +195,7 @@ func TestDelete(t *testing.T) {
 	registeredBook, err := repo.Register(context.Background(), registerReq)
 	require.NoError(t, err)
 
-	err = repo.Delete(context.Background(), deleteRequest{
+	err = repo.Delete(context.Background(), DeleteRequest{
 		UserID: user.ID,
 		BookID: registeredBook.ID,
 	})

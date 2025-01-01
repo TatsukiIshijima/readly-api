@@ -13,7 +13,7 @@ type BookRepository interface {
 	Register(ctx context.Context, req RegisterRequest) (domain.Book, error)
 	Get(ctx context.Context, id int64) (*domain.Book, error)
 	List(ctx context.Context, req ListRequest) ([]*domain.Book, error)
-	Delete(ctx context.Context, req deleteRequest) error
+	Delete(ctx context.Context, req DeleteRequest) error
 }
 
 type BookRepositoryImpl struct {
@@ -197,12 +197,12 @@ func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*domai
 	return res, nil
 }
 
-type deleteRequest struct {
+type DeleteRequest struct {
 	UserID int64
 	BookID int64
 }
 
-func (r BookRepositoryImpl) Delete(ctx context.Context, req deleteRequest) error {
+func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error {
 	err := r.store.execTx(ctx, func(q *db.Queries) error {
 		deleteHistoryParam := db.DeleteReadingHistoryParams{
 			UserID: req.UserID,

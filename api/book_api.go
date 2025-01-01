@@ -115,3 +115,29 @@ func (server *Server) listBook(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, books)
 }
+
+type deleteBookRequest struct {
+	// TODO:削除（ログイン情報から取得するため）
+	UserID int64 `json:"user_id" binding:"required"`
+	BookID int64 `json:"book_id" binding:"required"`
+}
+
+func (server *Server) deleteBook(ctx *gin.Context) {
+	var req deleteBookRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	args := repository.DeleteRequest{
+		UserID: req.UserID,
+		BookID: req.BookID,
+	}
+	err := server.bookRepo.Delete(ctx, args)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}
