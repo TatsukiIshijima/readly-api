@@ -80,19 +80,19 @@ func TestRegister(t *testing.T) {
 		require.Equal(t, result.PublisherName, book.PublisherName)
 		require.WithinDuration(t, result.PublishDate, book.PublishedDate.Time.UTC(), time.Second)
 		require.Equal(t, result.ISBN, book.Isbn.String)
+	}
 
-		param := db.GetReadingHistoryByUserIDParams{
-			UserID: user.ID,
-			Limit:  10,
-			Offset: 0,
-		}
-		histories, err := store.GetReadingHistoryByUserID(context.Background(), param)
-		require.NoError(t, err)
-		require.Equal(t, n, len(histories))
-		for _, h := range histories {
-			require.Equal(t, user.ID, h.UserID)
-			require.Equal(t, db.ReadingStatusUnread, h.Status)
-		}
+	param := db.GetReadingHistoryByUserIDParams{
+		UserID: user.ID,
+		Limit:  10,
+		Offset: 0,
+	}
+	histories, err := store.GetReadingHistoryByUserID(context.Background(), param)
+	require.NoError(t, err)
+	require.Equal(t, n, len(histories))
+	for _, h := range histories {
+		require.Equal(t, user.ID, h.UserID)
+		require.Equal(t, db.ReadingStatusUnread, h.Status)
 	}
 }
 
