@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	db "readly/db/sqlc"
+	"readly/domain"
 	"readly/test"
 	"testing"
 	"time"
@@ -15,7 +16,7 @@ func TestRegister(t *testing.T) {
 	require.NoError(t, err)
 
 	n := 3
-	results := make(chan bookResponse)
+	results := make(chan domain.Book)
 	errs := make(chan error)
 
 	for i := 0; i < n; i++ {
@@ -25,7 +26,7 @@ func TestRegister(t *testing.T) {
 			for j := 0; j <= i; j++ {
 				genres[j] = test.RandomString(6)
 			}
-			arg := registerRequest{
+			arg := RegisterRequest{
 				UserID:        user.ID,
 				Title:         test.RandomString(6),
 				Genres:        genres,
@@ -100,9 +101,9 @@ func TestList(t *testing.T) {
 	require.NoError(t, err)
 
 	n := 3
-	requests := make([]registerRequest, 0, n)
+	requests := make([]RegisterRequest, 0, n)
 	for i := 0; i < n; i++ {
-		registerReq := registerRequest{
+		registerReq := RegisterRequest{
 			UserID:        user.ID,
 			Title:         test.RandomString(6),
 			Genres:        []string{test.RandomString(6)},
@@ -146,7 +147,7 @@ func TestDelete(t *testing.T) {
 	user, err := test.CreateRandomUser()
 	require.NoError(t, err)
 
-	registerReq := registerRequest{
+	registerReq := RegisterRequest{
 		UserID:        user.ID,
 		Title:         test.RandomString(6),
 		Genres:        []string{test.RandomString(6)},
