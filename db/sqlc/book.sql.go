@@ -109,7 +109,7 @@ func (q *Queries) GetBooksByAuthorName(ctx context.Context, authorName string) (
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Book
+	items := []Book{}
 	for rows.Next() {
 		var i Book
 		if err := rows.Scan(
@@ -150,7 +150,7 @@ func (q *Queries) GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Bo
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Book
+	items := []Book{}
 	for rows.Next() {
 		var i Book
 		if err := rows.Scan(
@@ -191,7 +191,7 @@ func (q *Queries) GetBooksByTitle(ctx context.Context, title sql.NullString) ([]
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Book
+	items := []Book{}
 	for rows.Next() {
 		var i Book
 		if err := rows.Scan(

@@ -49,7 +49,7 @@ func (q *Queries) GetAllPublishers(ctx context.Context, arg GetAllPublishersPara
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Publisher
+	items := []Publisher{}
 	for rows.Next() {
 		var i Publisher
 		if err := rows.Scan(&i.Name, &i.CreatedAt); err != nil {

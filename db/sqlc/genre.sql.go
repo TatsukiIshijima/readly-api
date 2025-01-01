@@ -49,7 +49,7 @@ func (q *Queries) GetAllGenres(ctx context.Context, arg GetAllGenresParams) ([]G
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Genre
+	items := []Genre{}
 	for rows.Next() {
 		var i Genre
 		if err := rows.Scan(&i.Name, &i.CreatedAt); err != nil {

@@ -63,7 +63,7 @@ func (q *Queries) GetBooksByGenreName(ctx context.Context, arg GetBooksByGenreNa
 		return nil, err
 	}
 	defer rows.Close()
-	var items []int64
+	items := []int64{}
 	for rows.Next() {
 		var book_id int64
 		if err := rows.Scan(&book_id); err != nil {
@@ -92,7 +92,7 @@ func (q *Queries) GetGenresByBookID(ctx context.Context, bookID int64) ([]string
 		return nil, err
 	}
 	defer rows.Close()
-	var items []string
+	items := []string{}
 	for rows.Next() {
 		var genre_name string
 		if err := rows.Scan(&genre_name); err != nil {
