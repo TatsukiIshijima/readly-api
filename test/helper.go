@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"log"
 	"math/rand"
+	"path/filepath"
 	"readly/db/sqlc"
+	"readly/env"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -33,9 +35,12 @@ func RandomString(n int) string {
 	return sb.String()
 }
 
-func Connect(dbDriver string, dbSource string) {
-	var err error
-	DB, err = sql.Open(dbDriver, dbSource)
+func Connect() {
+	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+	DB, err = sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db:", err)
 	}

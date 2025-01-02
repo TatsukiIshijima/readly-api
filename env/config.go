@@ -1,6 +1,10 @@
 package env
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+	"os"
+	"path/filepath"
+)
 
 type Config struct {
 	DBDriver      string `mapstructure:"DB_DRIVER"`
@@ -22,4 +26,26 @@ func Load(path string) (config Config, err error) {
 
 	err = viper.Unmarshal(&config)
 	return
+}
+
+func ProjectRoot() string {
+	wd, err := os.Getwd()
+	if err != nil {
+		return ""
+	}
+
+	for {
+		_, err := os.ReadFile(filepath.Join(wd, "go.mod"))
+		if os.IsNotExist(err) {
+			if wd == filepath.Dir(wd) {
+				return ""
+			}
+			wd = filepath.Dir(wd)
+			continue
+		} else if err != nil {
+			return ""
+		}
+		break
+	}
+	return wd
 }

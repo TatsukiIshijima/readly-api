@@ -1,10 +1,8 @@
 package sqlc_test
 
 import (
-	"log"
 	"math/rand"
 	"os"
-	"readly/env"
 	"readly/test"
 	"testing"
 	"time"
@@ -15,10 +13,6 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	config, err := env.Load("../../env")
-	if err != nil {
-		log.Fatal("cannot load config:", err)
-	}
-	test.Connect(config.DBDriver, config.DBSource)
+	test.Connect()
 	os.Exit(m.Run())
 }
