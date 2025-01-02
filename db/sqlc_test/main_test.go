@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"os"
 	sqlc "readly/db/sqlc"
-	"readly/test"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -19,7 +18,7 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	h := &test.DBAdapter{}
+	h := &sqlc.DBAdapter{}
 	_, q := h.Connect()
 	querier = q
 	os.Exit(m.Run())
