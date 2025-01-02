@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	db "readly/db/sqlc"
 	"readly/domain"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -24,19 +24,19 @@ func TestRegister(t *testing.T) {
 			// TODO:チェネルでジャンルを増やす&共有
 			genres := make([]string, i+1)
 			for j := 0; j <= i; j++ {
-				genres[j] = test.RandomString(6)
+				genres[j] = testdata.RandomString(6)
 			}
 			arg := RegisterRequest{
 				UserID:        user.ID,
-				Title:         test.RandomString(6),
+				Title:         testdata.RandomString(6),
 				Genres:        genres,
-				Description:   test.RandomString(12),
+				Description:   testdata.RandomString(12),
 				CoverImageURL: "https://example.com",
 				URL:           "https://example.com",
-				AuthorName:    test.RandomString(6),
-				PublisherName: test.RandomString(6),
+				AuthorName:    testdata.RandomString(6),
+				PublisherName: testdata.RandomString(6),
 				PublishDate:   time.Now(),
-				ISBN:          test.RandomString(13),
+				ISBN:          testdata.RandomString(13),
 			}
 			result, err := repo.Register(context.Background(), arg)
 			errs <- err
@@ -102,15 +102,15 @@ func TestGet(t *testing.T) {
 
 	registerReq := RegisterRequest{
 		UserID:        user.ID,
-		Title:         test.RandomString(6),
-		Genres:        []string{test.RandomString(6)},
-		Description:   test.RandomString(12),
+		Title:         testdata.RandomString(6),
+		Genres:        []string{testdata.RandomString(6)},
+		Description:   testdata.RandomString(12),
 		CoverImageURL: "https://example.com",
 		URL:           "https://example.com",
-		AuthorName:    test.RandomString(6),
-		PublisherName: test.RandomString(6),
+		AuthorName:    testdata.RandomString(6),
+		PublisherName: testdata.RandomString(6),
 		PublishDate:   time.Now(),
-		ISBN:          test.RandomString(13),
+		ISBN:          testdata.RandomString(13),
 	}
 	registeredBook, err := repo.Register(context.Background(), registerReq)
 	require.NoError(t, err)
@@ -138,15 +138,15 @@ func TestList(t *testing.T) {
 	for i := 0; i < n; i++ {
 		registerReq := RegisterRequest{
 			UserID:        user.ID,
-			Title:         test.RandomString(6),
-			Genres:        []string{test.RandomString(6)},
-			Description:   test.RandomString(12),
+			Title:         testdata.RandomString(6),
+			Genres:        []string{testdata.RandomString(6)},
+			Description:   testdata.RandomString(12),
 			CoverImageURL: "https://example.com",
 			URL:           "https://example.com",
-			AuthorName:    test.RandomString(6),
-			PublisherName: test.RandomString(6),
+			AuthorName:    testdata.RandomString(6),
+			PublisherName: testdata.RandomString(6),
 			PublishDate:   time.Now(),
-			ISBN:          test.RandomString(13),
+			ISBN:          testdata.RandomString(13),
 		}
 		requests = append(requests, registerReq)
 		book, err := repo.Register(context.Background(), registerReq)
@@ -182,15 +182,15 @@ func TestDelete(t *testing.T) {
 
 	registerReq := RegisterRequest{
 		UserID:        user.ID,
-		Title:         test.RandomString(6),
-		Genres:        []string{test.RandomString(6)},
-		Description:   test.RandomString(12),
+		Title:         testdata.RandomString(6),
+		Genres:        []string{testdata.RandomString(6)},
+		Description:   testdata.RandomString(12),
 		CoverImageURL: "https://example.com",
 		URL:           "https://example.com",
-		AuthorName:    test.RandomString(6),
-		PublisherName: test.RandomString(6),
+		AuthorName:    testdata.RandomString(6),
+		PublisherName: testdata.RandomString(6),
 		PublishDate:   time.Now(),
-		ISBN:          test.RandomString(13),
+		ISBN:          testdata.RandomString(13),
 	}
 	registeredBook, err := repo.Register(context.Background(), registerReq)
 	require.NoError(t, err)

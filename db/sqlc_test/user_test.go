@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"readly/db/sqlc"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 
@@ -22,9 +22,9 @@ func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
 
 func TestCreateUser(t *testing.T) {
 	arg := db.CreateUserParams{
-		Name:           test.RandomString(12),
-		Email:          test.RandomString(6) + "@example.com",
-		HashedPassword: test.RandomString(16),
+		Name:           testdata.RandomString(12),
+		Email:          testdata.RandomString(6) + "@example.com",
+		HashedPassword: testdata.RandomString(16),
 	}
 	user, err := querier.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
@@ -61,7 +61,7 @@ func TestUpdateUser(t *testing.T) {
 
 	arg := db.UpdateUserParams{
 		ID:             user1.ID,
-		Name:           test.RandomString(12),
+		Name:           testdata.RandomString(12),
 		Email:          user1.Email,
 		HashedPassword: user1.HashedPassword,
 	}

@@ -6,6 +6,7 @@ import (
 	"os"
 	sqlc "readly/db/sqlc"
 	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -27,9 +28,9 @@ func TestMain(m *testing.M) {
 
 func createRandomUser() (sqlc.User, error) {
 	arg := sqlc.CreateUserParams{
-		Name:           test.RandomString(12),
-		Email:          test.RandomString(6) + "@example.com",
-		HashedPassword: test.RandomString(16),
+		Name:           testdata.RandomString(12),
+		Email:          testdata.RandomString(6) + "@example.com",
+		HashedPassword: testdata.RandomString(16),
 	}
 	return store.CreateUser(context.Background(), arg)
 }

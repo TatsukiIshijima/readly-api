@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
 
 func createRandomGenre(t *testing.T) db.Genre {
-	arg := test.RandomString(6)
+	arg := testdata.RandomString(6)
 	genre, err := querier.CreateGenre(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, genre)

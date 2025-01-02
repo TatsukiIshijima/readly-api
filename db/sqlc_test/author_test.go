@@ -5,13 +5,13 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
 
 func createRandomAuthor(t *testing.T) db.Author {
-	arg := test.RandomString(6)
+	arg := testdata.RandomString(6)
 	author, err := querier.CreateAuthor(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, author)

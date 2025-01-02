@@ -4,12 +4,12 @@ import (
 	"context"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 )
 
 func createRandomPublisher(t *testing.T) db.Publisher {
-	arg := test.RandomString(6)
+	arg := testdata.RandomString(6)
 	publisher, err := querier.CreatePublisher(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, publisher)

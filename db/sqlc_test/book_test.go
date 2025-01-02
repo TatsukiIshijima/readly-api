@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -15,11 +15,11 @@ func createRandomBook(t *testing.T) db.Book {
 	publisher := createRandomPublisher(t)
 	arg := db.CreateBookParams{
 		Title: sql.NullString{
-			String: test.RandomString(6),
+			String: testdata.RandomString(6),
 			Valid:  true,
 		},
 		Description: sql.NullString{
-			String: test.RandomString(12),
+			String: testdata.RandomString(12),
 			Valid:  true,
 		},
 		CoverImageUrl: sql.NullString{
@@ -37,7 +37,7 @@ func createRandomBook(t *testing.T) db.Book {
 			Valid: true,
 		},
 		Isbn: sql.NullString{
-			String: test.RandomString(13),
+			String: testdata.RandomString(13),
 			Valid:  true,
 		},
 	}
@@ -125,7 +125,7 @@ func TestUpdateBook(t *testing.T) {
 	arg := db.UpdateBookParams{
 		ID:            book1.ID,
 		Title:         book1.Title,
-		Description:   sql.NullString{String: test.RandomString(12), Valid: true},
+		Description:   sql.NullString{String: testdata.RandomString(12), Valid: true},
 		CoverImageUrl: book1.CoverImageUrl,
 		Url:           book1.Url,
 		AuthorName:    book1.AuthorName,
