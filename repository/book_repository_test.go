@@ -12,7 +12,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	n := 3
@@ -97,7 +97,7 @@ func TestRegister(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	registerReq := RegisterRequest{
@@ -130,7 +130,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	n := 3
@@ -177,7 +177,7 @@ func TestList(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	registerReq := RegisterRequest{

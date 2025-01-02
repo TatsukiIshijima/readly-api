@@ -17,10 +17,10 @@ type BookRepository interface {
 }
 
 type BookRepositoryImpl struct {
-	store *Store
+	store Store
 }
 
-func NewBookRepository(store *Store) BookRepository {
+func NewBookRepository(store Store) BookRepository {
 	return BookRepositoryImpl{store: store}
 }
 
@@ -40,7 +40,7 @@ type RegisterRequest struct {
 func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) (domain.Book, error) {
 	var result domain.Book
 
-	err := r.store.execTx(ctx, func(q *db.Queries) error {
+	err := r.store.execTx(ctx, func(q db.Querier) error {
 		if err := r.registerAuthorIfNotExist(ctx, q, args.AuthorName); err != nil {
 			return err
 		}
@@ -104,7 +104,7 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) 
 	return result, err
 }
 
-func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q *db.Queries, name string) error {
+func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q db.Querier, name string) error {
 	var err error
 	_, err = q.GetAuthorByName(ctx, name)
 	if err != nil {
@@ -119,7 +119,7 @@ func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q *db.
 	return nil
 }
 
-func (r BookRepositoryImpl) registerPublisherIfNotExist(ctx context.Context, q *db.Queries, name string) error {
+func (r BookRepositoryImpl) registerPublisherIfNotExist(ctx context.Context, q db.Querier, name string) error {
 	_, err := q.GetPublisherByName(ctx, name)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
@@ -133,7 +133,7 @@ func (r BookRepositoryImpl) registerPublisherIfNotExist(ctx context.Context, q *
 	return nil
 }
 
-func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q *db.Queries, name string) error {
+func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q db.Querier, name string) error {
 	_, err := q.GetGenreByName(ctx, name)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
@@ -148,11 +148,11 @@ func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q *db.Q
 }
 
 func (r BookRepositoryImpl) Get(ctx context.Context, id int64) (*domain.Book, error) {
-	book, err := r.store.Queries.GetBookById(ctx, id)
+	book, err := r.store.GetBookById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	genres, err := r.store.Queries.GetGenresByBookID(ctx, id)
+	genres, err := r.store.GetGenresByBookID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -182,7 +182,7 @@ func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*domai
 		Limit:  req.Limit,
 		Offset: req.Offset,
 	}
-	histories, err := r.store.Queries.GetReadingHistoryByUserID(ctx, historyParams)
+	histories, err := r.store.GetReadingHistoryByUserID(ctx, historyParams)
 	if err != nil {
 		return nil, err
 	}
@@ -203,18 +203,18 @@ type DeleteRequest struct {
 }
 
 func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error {
-	err := r.store.execTx(ctx, func(q *db.Queries) error {
+	err := r.store.execTx(ctx, func(q db.Querier) error {
 		deleteHistoryParam := db.DeleteReadingHistoryParams{
 			UserID: req.UserID,
 			BookID: req.BookID,
 		}
-		if err := r.store.Queries.DeleteReadingHistory(ctx, deleteHistoryParam); err != nil {
+		if err := r.store.DeleteReadingHistory(ctx, deleteHistoryParam); err != nil {
 			return err
 		}
 		if err := r.deleteBookGenres(ctx, req.BookID); err != nil {
 			return err
 		}
-		if err := r.store.Queries.DeleteBook(ctx, req.BookID); err != nil {
+		if err := r.store.DeleteBook(ctx, req.BookID); err != nil {
 			return err
 		}
 		return nil
@@ -223,7 +223,7 @@ func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error
 }
 
 func (r BookRepositoryImpl) deleteBookGenres(ctx context.Context, bookID int64) error {
-	bookGenres, err := r.store.Queries.GetGenresByBookID(ctx, bookID)
+	bookGenres, err := r.store.GetGenresByBookID(ctx, bookID)
 	if err != nil {
 		return err
 	}
@@ -232,7 +232,7 @@ func (r BookRepositoryImpl) deleteBookGenres(ctx context.Context, bookID int64) 
 			BookID:    bookID,
 			GenreName: genre,
 		}
-		err := r.store.Queries.DeleteGenreForBook(ctx, param)
+		err := r.store.DeleteGenreForBook(ctx, param)
 		if err != nil {
 			return err
 		}

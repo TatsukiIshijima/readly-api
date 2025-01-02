@@ -1,29 +1,57 @@
 package test
 
 import (
-	"context"
 	"database/sql"
 	"log"
 	"math/rand"
 	"path/filepath"
-	"readly/db/sqlc"
+	sqlc "readly/db/sqlc"
 	"readly/env"
 	"strings"
 
 	_ "github.com/lib/pq"
 )
 
+// TODO:ファイル名変更(helper→db_adapter)&dbパッケージへ移動
+
+// FIXME:移動
 const (
 	alplhabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 )
 
-var DB *sql.DB
-var Queries *db.Queries
+type DBConnector interface {
+	Connect() (sqlc.DBTX, sqlc.Querier)
+}
 
+type DBAdapter struct{}
+
+type FakeDBAdapter struct{}
+
+func (a *DBAdapter) Connect() (sqlc.DBTX, sqlc.Querier) {
+	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+	db, err := sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Fatal("cannot connect to db:", err)
+	}
+	q := sqlc.New(db)
+	return db, q
+}
+
+func (f *FakeDBAdapter) Connect() (sqlc.DBTX, sqlc.Querier) {
+	db := sqlc.FakeDB{}
+	q := &sqlc.FakeQuerier{}
+	return db, q
+}
+
+// RandomInt FIXME:移動
 func RandomInt(min int64, max int64) int64 {
 	return min + rand.Int63n(max-min+1)
 }
 
+// RandomString FIXME:移動
 func RandomString(n int) string {
 	var sb strings.Builder
 	k := len(alplhabet)
@@ -33,25 +61,4 @@ func RandomString(n int) string {
 		sb.WriteByte(c)
 	}
 	return sb.String()
-}
-
-func Connect() {
-	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
-	if err != nil {
-		log.Fatal("cannot load config:", err)
-	}
-	DB, err = sql.Open(config.DBDriver, config.DBSource)
-	if err != nil {
-		log.Fatal("cannot connect to db:", err)
-	}
-	Queries = db.New(DB)
-}
-
-func CreateRandomUser() (db.User, error) {
-	arg := db.CreateUserParams{
-		Name:           RandomString(12),
-		Email:          RandomString(6) + "@example.com",
-		HashedPassword: RandomString(16),
-	}
-	return Queries.CreateUser(context.Background(), arg)
 }

@@ -11,13 +11,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomUser(t *testing.T) db.User {
-	user, err := test.CreateRandomUser()
-	require.NoError(t, err)
-	require.NotEmpty(t, user)
-	return user
-}
-
 func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
 	require.Equal(t, user1.ID, user2.ID)
 	require.Equal(t, user1.Name, user2.Name)
@@ -33,7 +26,7 @@ func TestCreateUser(t *testing.T) {
 		Email:          test.RandomString(6) + "@example.com",
 		HashedPassword: test.RandomString(16),
 	}
-	user, err := test.Queries.CreateUser(context.Background(), arg)
+	user, err := querier.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 
@@ -47,7 +40,7 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetUserById(t *testing.T) {
 	user1 := createRandomUser(t)
-	user2, err := test.Queries.GetUserById(context.Background(), user1.ID)
+	user2, err := querier.GetUserById(context.Background(), user1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -56,7 +49,7 @@ func TestGetUserById(t *testing.T) {
 
 func TestGetUserByEmail(t *testing.T) {
 	user1 := createRandomUser(t)
-	user2, err := test.Queries.GetUserByEmail(context.Background(), user1.Email)
+	user2, err := querier.GetUserByEmail(context.Background(), user1.Email)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -73,7 +66,7 @@ func TestUpdateUser(t *testing.T) {
 		HashedPassword: user1.HashedPassword,
 	}
 
-	user2, err := test.Queries.UpdateUser(context.Background(), arg)
+	user2, err := querier.UpdateUser(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
@@ -87,10 +80,10 @@ func TestUpdateUser(t *testing.T) {
 
 func TestDeleteUser(t *testing.T) {
 	user1 := createRandomUser(t)
-	err := test.Queries.DeleteUser(context.Background(), user1.ID)
+	err := querier.DeleteUser(context.Background(), user1.ID)
 	require.NoError(t, err)
 
-	user2, err := test.Queries.GetUserById(context.Background(), user1.ID)
+	user2, err := querier.GetUserById(context.Background(), user1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, user2)
@@ -106,7 +99,7 @@ func TestGetAllUsers(t *testing.T) {
 		Offset: 0,
 	}
 
-	users1, err := test.Queries.GetAllUsers(context.Background(), arg1)
+	users1, err := querier.GetAllUsers(context.Background(), arg1)
 	require.NoError(t, err)
 	require.Len(t, users1, 5)
 
@@ -119,7 +112,7 @@ func TestGetAllUsers(t *testing.T) {
 		Offset: 5,
 	}
 
-	users2, err := test.Queries.GetAllUsers(context.Background(), arg2)
+	users2, err := querier.GetAllUsers(context.Background(), arg2)
 	require.NoError(t, err)
 	require.Len(t, users2, 5)
 
