@@ -2,9 +2,12 @@ package repository
 
 import (
 	"context"
+	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	sqlc "readly/db/sqlc"
+	"readly/env"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -18,8 +21,12 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
+	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
 	a := &sqlc.Adapter{}
-	db, q := a.Connect()
+	db, q := a.Connect(config.DBDriver, config.DBSource)
 	querier = q
 	repo = NewBookRepository(db, q)
 	os.Exit(m.Run())

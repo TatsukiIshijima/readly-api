@@ -3,9 +3,12 @@ package sqlc_test
 import (
 	"context"
 	"github.com/stretchr/testify/require"
+	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	sqlc "readly/db/sqlc"
+	"readly/env"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -18,8 +21,12 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
+	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
 	h := &sqlc.Adapter{}
-	_, q := h.Connect()
+	_, q := h.Connect(config.DBDriver, config.DBSource)
 	querier = q
 	os.Exit(m.Run())
 }
