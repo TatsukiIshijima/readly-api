@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var store Store
+var querier sqlc.Querier
 var repo BookRepository
 
 func init() {
@@ -18,10 +18,10 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	a := &sqlc.DBAdapter{}
-	db, _ := a.Connect()
-	store = NewStore(db)
-	repo = NewBookRepository(store)
+	a := &sqlc.Adapter{}
+	db, q := a.Connect()
+	querier = q
+	repo = NewBookRepository(db, q)
 	os.Exit(m.Run())
 }
 
@@ -31,5 +31,5 @@ func createRandomUser() (sqlc.User, error) {
 		Email:          testdata.RandomString(6) + "@example.com",
 		HashedPassword: testdata.RandomString(16),
 	}
-	return store.CreateUser(context.Background(), arg)
+	return querier.CreateUser(context.Background(), arg)
 }

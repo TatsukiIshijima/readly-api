@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"readly/api"
+	db "readly/db/sqlc"
 	"readly/env"
 	"readly/repository"
 
@@ -20,8 +21,7 @@ func main() {
 		log.Fatal("cannot connect to db:", err)
 	}
 
-	store := repository.NewStore(conn)
-	bookRepo := repository.NewBookRepository(store)
+	bookRepo := repository.NewBookRepository(conn, db.New(conn))
 	server := api.NewServer(bookRepo)
 
 	err = server.Start(config.ServerAddress)

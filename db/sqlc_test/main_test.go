@@ -18,7 +18,7 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	h := &sqlc.DBAdapter{}
+	h := &sqlc.Adapter{}
 	_, q := h.Connect()
 	querier = q
 	os.Exit(m.Run())

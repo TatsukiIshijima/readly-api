@@ -50,26 +50,26 @@ func TestRegister(t *testing.T) {
 
 		result := <-results
 
-		author, err := store.GetAuthorByName(context.Background(), result.AuthorName)
+		author, err := querier.GetAuthorByName(context.Background(), result.AuthorName)
 		require.NoError(t, err)
 		require.NotEmpty(t, author)
 		require.Equal(t, result.AuthorName, author.Name)
 
-		publisher, err := store.GetPublisherByName(context.Background(), result.PublisherName)
+		publisher, err := querier.GetPublisherByName(context.Background(), result.PublisherName)
 		require.NoError(t, err)
 		require.NotEmpty(t, publisher)
 		require.Equal(t, result.PublisherName, publisher.Name)
 
-		genres, err := store.GetGenresByBookID(context.Background(), result.ID)
+		genres, err := querier.GetGenresByBookID(context.Background(), result.ID)
 		require.NoError(t, err)
 		require.Equal(t, len(result.Genres), len(genres))
 		for _, g := range genres {
-			genre, err := store.GetGenreByName(context.Background(), g)
+			genre, err := querier.GetGenreByName(context.Background(), g)
 			require.NoError(t, err)
 			require.NotEmpty(t, genre)
 		}
 
-		book, err := store.GetBookById(context.Background(), result.ID)
+		book, err := querier.GetBookById(context.Background(), result.ID)
 		require.NoError(t, err)
 		require.NotEmpty(t, book)
 		require.Equal(t, result.Title, book.Title.String)
@@ -87,7 +87,7 @@ func TestRegister(t *testing.T) {
 		Limit:  10,
 		Offset: 0,
 	}
-	histories, err := store.GetReadingHistoryByUserID(context.Background(), param)
+	histories, err := querier.GetReadingHistoryByUserID(context.Background(), param)
 	require.NoError(t, err)
 	require.Equal(t, n, len(histories))
 	for _, h := range histories {
@@ -206,15 +206,15 @@ func TestDelete(t *testing.T) {
 		Limit:  10,
 		Offset: 0,
 	}
-	histories, err := store.GetReadingHistoryByUserID(context.Background(), historyParam)
+	histories, err := querier.GetReadingHistoryByUserID(context.Background(), historyParam)
 	require.NoError(t, err)
 	require.Empty(t, histories)
 
-	genres, err := store.GetGenresByBookID(context.Background(), registeredBook.ID)
+	genres, err := querier.GetGenresByBookID(context.Background(), registeredBook.ID)
 	require.NoError(t, err)
 	require.Empty(t, genres)
 
-	deletedBook, err := store.GetBookById(context.Background(), registeredBook.ID)
+	deletedBook, err := querier.GetBookById(context.Background(), registeredBook.ID)
 	require.Zero(t, deletedBook)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
