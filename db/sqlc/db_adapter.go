@@ -8,15 +8,15 @@ import (
 	"readly/env"
 )
 
-type DBConnector interface {
+type Connector interface {
 	Connect() (DBTX, Querier)
 }
 
-type DBAdapter struct{}
+type Adapter struct{}
 
-type FakeDBAdapter struct{}
+type FakeAdapter struct{}
 
-func (a *DBAdapter) Connect() (DBTX, Querier) {
+func (a *Adapter) Connect() (DBTX, Querier) {
 	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
 	if err != nil {
 		log.Fatal("cannot load config:", err)
@@ -29,7 +29,7 @@ func (a *DBAdapter) Connect() (DBTX, Querier) {
 	return db, q
 }
 
-func (f *FakeDBAdapter) Connect() (DBTX, Querier) {
+func (f *FakeAdapter) Connect() (DBTX, Querier) {
 	db := FakeDB{}
 	q := &FakeQuerier{}
 	return db, q
