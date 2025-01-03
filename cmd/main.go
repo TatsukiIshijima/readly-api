@@ -1,9 +1,10 @@
 package main
 
 import (
-	"database/sql"
 	"log"
+	"path/filepath"
 	"readly/api"
+	sqlc "readly/db/sqlc"
 	"readly/env"
 	"readly/repository"
 
@@ -11,17 +12,13 @@ import (
 )
 
 func main() {
-	config, err := env.Load("./env")
+	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
-	conn, err := sql.Open(config.DBDriver, config.DBSource)
-	if err != nil {
-		log.Fatal("cannot connect to db:", err)
-	}
-
-	store := repository.NewStore(conn)
-	bookRepo := repository.NewBookRepository(store)
+	a := sqlc.Adapter{}
+	db, q := a.Connect(config.DBDriver, config.DBSource)
+	bookRepo := repository.NewBookRepository(db, q)
 	server := api.NewServer(bookRepo)
 
 	err = server.Start(config.ServerAddress)

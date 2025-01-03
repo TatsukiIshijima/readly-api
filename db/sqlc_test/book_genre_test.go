@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
 	"testing"
 )
 
@@ -13,7 +12,7 @@ func createRandomBookGenre(t *testing.T, book db.Book, genre db.Genre) {
 		BookID:    book.ID,
 		GenreName: genre.Name,
 	}
-	bookGenre, err := test.Queries.CreateBookGenre(context.Background(), arg)
+	bookGenre, err := querier.CreateBookGenre(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, bookGenre)
 	require.NotZero(t, bookGenre.BookID)
@@ -41,7 +40,7 @@ func TestGetBooksByGenreName(t *testing.T) {
 		Offset:    0,
 	}
 
-	books, err := test.Queries.GetBooksByGenreName(context.Background(), args)
+	books, err := querier.GetBooksByGenreName(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, books)
 	require.Len(t, books, 2)
@@ -54,7 +53,7 @@ func TestGetGenresByBookID(t *testing.T) {
 	createRandomBookGenre(t, book, genre1)
 	createRandomBookGenre(t, book, genre2)
 
-	genres, err := test.Queries.GetGenresByBookID(context.Background(), book.ID)
+	genres, err := querier.GetGenresByBookID(context.Background(), book.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, genres)
 	require.Len(t, genres, 2)
@@ -69,7 +68,7 @@ func TestDeleteBookGenre(t *testing.T) {
 		BookID:    book.ID,
 		GenreName: genre.Name,
 	}
-	err := test.Queries.DeleteGenreForBook(context.Background(), arg1)
+	err := querier.DeleteGenreForBook(context.Background(), arg1)
 	require.NoError(t, err)
 
 	arg2 := db.GetBooksByGenreNameParams{
@@ -78,11 +77,11 @@ func TestDeleteBookGenre(t *testing.T) {
 		Offset:    0,
 	}
 
-	books, err := test.Queries.GetBooksByGenreName(context.Background(), arg2)
+	books, err := querier.GetBooksByGenreName(context.Background(), arg2)
 	require.NoError(t, err)
 	require.Len(t, books, 0)
 
-	genres, err := test.Queries.GetGenresByBookID(context.Background(), book.ID)
+	genres, err := querier.GetGenresByBookID(context.Background(), book.ID)
 	require.NoError(t, err)
 	require.Len(t, genres, 0)
 }

@@ -6,13 +6,13 @@ import (
 	"github.com/stretchr/testify/require"
 	db "readly/db/sqlc"
 	"readly/domain"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
 
 func TestRegister(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	n := 3
@@ -24,19 +24,19 @@ func TestRegister(t *testing.T) {
 			// TODO:チェネルでジャンルを増やす&共有
 			genres := make([]string, i+1)
 			for j := 0; j <= i; j++ {
-				genres[j] = test.RandomString(6)
+				genres[j] = testdata.RandomString(6)
 			}
 			arg := RegisterRequest{
 				UserID:        user.ID,
-				Title:         test.RandomString(6),
+				Title:         testdata.RandomString(6),
 				Genres:        genres,
-				Description:   test.RandomString(12),
+				Description:   testdata.RandomString(12),
 				CoverImageURL: "https://example.com",
 				URL:           "https://example.com",
-				AuthorName:    test.RandomString(6),
-				PublisherName: test.RandomString(6),
+				AuthorName:    testdata.RandomString(6),
+				PublisherName: testdata.RandomString(6),
 				PublishDate:   time.Now(),
-				ISBN:          test.RandomString(13),
+				ISBN:          testdata.RandomString(13),
 			}
 			result, err := repo.Register(context.Background(), arg)
 			errs <- err
@@ -50,26 +50,26 @@ func TestRegister(t *testing.T) {
 
 		result := <-results
 
-		author, err := store.GetAuthorByName(context.Background(), result.AuthorName)
+		author, err := querier.GetAuthorByName(context.Background(), result.AuthorName)
 		require.NoError(t, err)
 		require.NotEmpty(t, author)
 		require.Equal(t, result.AuthorName, author.Name)
 
-		publisher, err := store.GetPublisherByName(context.Background(), result.PublisherName)
+		publisher, err := querier.GetPublisherByName(context.Background(), result.PublisherName)
 		require.NoError(t, err)
 		require.NotEmpty(t, publisher)
 		require.Equal(t, result.PublisherName, publisher.Name)
 
-		genres, err := store.GetGenresByBookID(context.Background(), result.ID)
+		genres, err := querier.GetGenresByBookID(context.Background(), result.ID)
 		require.NoError(t, err)
 		require.Equal(t, len(result.Genres), len(genres))
 		for _, g := range genres {
-			genre, err := store.GetGenreByName(context.Background(), g)
+			genre, err := querier.GetGenreByName(context.Background(), g)
 			require.NoError(t, err)
 			require.NotEmpty(t, genre)
 		}
 
-		book, err := store.GetBookById(context.Background(), result.ID)
+		book, err := querier.GetBookById(context.Background(), result.ID)
 		require.NoError(t, err)
 		require.NotEmpty(t, book)
 		require.Equal(t, result.Title, book.Title.String)
@@ -87,7 +87,7 @@ func TestRegister(t *testing.T) {
 		Limit:  10,
 		Offset: 0,
 	}
-	histories, err := store.GetReadingHistoryByUserID(context.Background(), param)
+	histories, err := querier.GetReadingHistoryByUserID(context.Background(), param)
 	require.NoError(t, err)
 	require.Equal(t, n, len(histories))
 	for _, h := range histories {
@@ -97,20 +97,20 @@ func TestRegister(t *testing.T) {
 }
 
 func TestGet(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	registerReq := RegisterRequest{
 		UserID:        user.ID,
-		Title:         test.RandomString(6),
-		Genres:        []string{test.RandomString(6)},
-		Description:   test.RandomString(12),
+		Title:         testdata.RandomString(6),
+		Genres:        []string{testdata.RandomString(6)},
+		Description:   testdata.RandomString(12),
 		CoverImageURL: "https://example.com",
 		URL:           "https://example.com",
-		AuthorName:    test.RandomString(6),
-		PublisherName: test.RandomString(6),
+		AuthorName:    testdata.RandomString(6),
+		PublisherName: testdata.RandomString(6),
 		PublishDate:   time.Now(),
-		ISBN:          test.RandomString(13),
+		ISBN:          testdata.RandomString(13),
 	}
 	registeredBook, err := repo.Register(context.Background(), registerReq)
 	require.NoError(t, err)
@@ -130,7 +130,7 @@ func TestGet(t *testing.T) {
 }
 
 func TestList(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	n := 3
@@ -138,15 +138,15 @@ func TestList(t *testing.T) {
 	for i := 0; i < n; i++ {
 		registerReq := RegisterRequest{
 			UserID:        user.ID,
-			Title:         test.RandomString(6),
-			Genres:        []string{test.RandomString(6)},
-			Description:   test.RandomString(12),
+			Title:         testdata.RandomString(6),
+			Genres:        []string{testdata.RandomString(6)},
+			Description:   testdata.RandomString(12),
 			CoverImageURL: "https://example.com",
 			URL:           "https://example.com",
-			AuthorName:    test.RandomString(6),
-			PublisherName: test.RandomString(6),
+			AuthorName:    testdata.RandomString(6),
+			PublisherName: testdata.RandomString(6),
 			PublishDate:   time.Now(),
-			ISBN:          test.RandomString(13),
+			ISBN:          testdata.RandomString(13),
 		}
 		requests = append(requests, registerReq)
 		book, err := repo.Register(context.Background(), registerReq)
@@ -177,20 +177,20 @@ func TestList(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	user, err := test.CreateRandomUser()
+	user, err := createRandomUser()
 	require.NoError(t, err)
 
 	registerReq := RegisterRequest{
 		UserID:        user.ID,
-		Title:         test.RandomString(6),
-		Genres:        []string{test.RandomString(6)},
-		Description:   test.RandomString(12),
+		Title:         testdata.RandomString(6),
+		Genres:        []string{testdata.RandomString(6)},
+		Description:   testdata.RandomString(12),
 		CoverImageURL: "https://example.com",
 		URL:           "https://example.com",
-		AuthorName:    test.RandomString(6),
-		PublisherName: test.RandomString(6),
+		AuthorName:    testdata.RandomString(6),
+		PublisherName: testdata.RandomString(6),
 		PublishDate:   time.Now(),
-		ISBN:          test.RandomString(13),
+		ISBN:          testdata.RandomString(13),
 	}
 	registeredBook, err := repo.Register(context.Background(), registerReq)
 	require.NoError(t, err)
@@ -206,15 +206,15 @@ func TestDelete(t *testing.T) {
 		Limit:  10,
 		Offset: 0,
 	}
-	histories, err := store.GetReadingHistoryByUserID(context.Background(), historyParam)
+	histories, err := querier.GetReadingHistoryByUserID(context.Background(), historyParam)
 	require.NoError(t, err)
 	require.Empty(t, histories)
 
-	genres, err := store.GetGenresByBookID(context.Background(), registeredBook.ID)
+	genres, err := querier.GetGenresByBookID(context.Background(), registeredBook.ID)
 	require.NoError(t, err)
 	require.Empty(t, genres)
 
-	deletedBook, err := store.GetBookById(context.Background(), registeredBook.ID)
+	deletedBook, err := querier.GetBookById(context.Background(), registeredBook.ID)
 	require.Zero(t, deletedBook)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }

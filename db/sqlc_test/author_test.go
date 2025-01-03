@@ -5,14 +5,14 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
 
 func createRandomAuthor(t *testing.T) db.Author {
-	arg := test.RandomString(6)
-	author, err := test.Queries.CreateAuthor(context.Background(), arg)
+	arg := testdata.RandomString(6)
+	author, err := querier.CreateAuthor(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, author)
 	return author
@@ -24,7 +24,7 @@ func TestCreateAuthor(t *testing.T) {
 
 func TestGetAuthorByName(t *testing.T) {
 	author1 := createRandomAuthor(t)
-	author2, err := test.Queries.GetAuthorByName(context.Background(), author1.Name)
+	author2, err := querier.GetAuthorByName(context.Background(), author1.Name)
 	require.NoError(t, err)
 	require.NotEmpty(t, author2)
 	require.Equal(t, author1.Name, author2.Name)
@@ -33,10 +33,10 @@ func TestGetAuthorByName(t *testing.T) {
 
 func TestDeleteAuthor(t *testing.T) {
 	author1 := createRandomAuthor(t)
-	err := test.Queries.DeleteAuthor(context.Background(), author1.Name)
+	err := querier.DeleteAuthor(context.Background(), author1.Name)
 	require.NoError(t, err)
 
-	author2, err := test.Queries.GetAuthorByName(context.Background(), author1.Name)
+	author2, err := querier.GetAuthorByName(context.Background(), author1.Name)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, author2)
@@ -52,7 +52,7 @@ func TestGetAllAuthors(t *testing.T) {
 		Offset: 0,
 	}
 
-	authors, err := test.Queries.GetAllAuthors(context.Background(), arg)
+	authors, err := querier.GetAllAuthors(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, authors, 2)
 

@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -15,11 +15,11 @@ func createRandomBook(t *testing.T) db.Book {
 	publisher := createRandomPublisher(t)
 	arg := db.CreateBookParams{
 		Title: sql.NullString{
-			String: test.RandomString(6),
+			String: testdata.RandomString(6),
 			Valid:  true,
 		},
 		Description: sql.NullString{
-			String: test.RandomString(12),
+			String: testdata.RandomString(12),
 			Valid:  true,
 		},
 		CoverImageUrl: sql.NullString{
@@ -37,12 +37,12 @@ func createRandomBook(t *testing.T) db.Book {
 			Valid: true,
 		},
 		Isbn: sql.NullString{
-			String: test.RandomString(13),
+			String: testdata.RandomString(13),
 			Valid:  true,
 		},
 	}
 
-	book, err := test.Queries.CreateBook(context.Background(), arg)
+	book, err := querier.CreateBook(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, book)
 
@@ -77,7 +77,7 @@ func TestCreateBook(t *testing.T) {
 
 func TestGetBookById(t *testing.T) {
 	book1 := createRandomBook(t)
-	book2, err := test.Queries.GetBookById(context.Background(), book1.ID)
+	book2, err := querier.GetBookById(context.Background(), book1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, book2)
 
@@ -90,7 +90,7 @@ func TestGetBooksByAuthorName(t *testing.T) {
 		createRandomBook(t)
 	}
 
-	books, err := test.Queries.GetBooksByAuthorName(context.Background(), author.Name)
+	books, err := querier.GetBooksByAuthorName(context.Background(), author.Name)
 	require.NoError(t, err)
 
 	for _, book := range books {
@@ -101,7 +101,7 @@ func TestGetBooksByAuthorName(t *testing.T) {
 
 func TestGetBooksByIsbn(t *testing.T) {
 	book1 := createRandomBook(t)
-	books, err := test.Queries.GetBooksByIsbn(context.Background(), book1.Isbn)
+	books, err := querier.GetBooksByIsbn(context.Background(), book1.Isbn)
 	require.NoError(t, err)
 	require.Equal(t, len(books), 1)
 	book2 := books[0]
@@ -111,7 +111,7 @@ func TestGetBooksByIsbn(t *testing.T) {
 
 func TestGetBooksByTitle(t *testing.T) {
 	book1 := createRandomBook(t)
-	books, err := test.Queries.GetBooksByTitle(context.Background(), book1.Title)
+	books, err := querier.GetBooksByTitle(context.Background(), book1.Title)
 	require.NoError(t, err)
 	require.Equal(t, len(books), 1)
 	book2 := books[0]
@@ -125,7 +125,7 @@ func TestUpdateBook(t *testing.T) {
 	arg := db.UpdateBookParams{
 		ID:            book1.ID,
 		Title:         book1.Title,
-		Description:   sql.NullString{String: test.RandomString(12), Valid: true},
+		Description:   sql.NullString{String: testdata.RandomString(12), Valid: true},
 		CoverImageUrl: book1.CoverImageUrl,
 		Url:           book1.Url,
 		AuthorName:    book1.AuthorName,
@@ -134,7 +134,7 @@ func TestUpdateBook(t *testing.T) {
 		Isbn:          book1.Isbn,
 	}
 
-	book2, err := test.Queries.UpdateBook(context.Background(), arg)
+	book2, err := querier.UpdateBook(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, book2)
 
@@ -151,10 +151,10 @@ func TestUpdateBook(t *testing.T) {
 
 func TestDeleteBook(t *testing.T) {
 	book1 := createRandomBook(t)
-	err := test.Queries.DeleteBook(context.Background(), book1.ID)
+	err := querier.DeleteBook(context.Background(), book1.ID)
 	require.NoError(t, err)
 
-	book2, err := test.Queries.GetBookById(context.Background(), book1.ID)
+	book2, err := querier.GetBookById(context.Background(), book1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, book2)

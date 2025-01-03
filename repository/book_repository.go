@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	db "readly/db/sqlc"
+	sqlc "readly/db/sqlc"
 	"readly/domain"
 	"time"
 )
@@ -17,11 +17,13 @@ type BookRepository interface {
 }
 
 type BookRepositoryImpl struct {
-	store *Store
+	container sqlc.Container
 }
 
-func NewBookRepository(store *Store) BookRepository {
-	return BookRepositoryImpl{store: store}
+func NewBookRepository(db sqlc.DBTX, q sqlc.Querier) BookRepository {
+	return BookRepositoryImpl{
+		container: sqlc.NewContainer(db, q),
+	}
 }
 
 type RegisterRequest struct {
@@ -40,7 +42,7 @@ type RegisterRequest struct {
 func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) (domain.Book, error) {
 	var result domain.Book
 
-	err := r.store.execTx(ctx, func(q *db.Queries) error {
+	err := r.container.Exec(ctx, func(q sqlc.Querier) error {
 		if err := r.registerAuthorIfNotExist(ctx, q, args.AuthorName); err != nil {
 			return err
 		}
@@ -52,7 +54,7 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) 
 				return err
 			}
 		}
-		book, err := q.CreateBook(ctx, db.CreateBookParams{
+		book, err := q.CreateBook(ctx, sqlc.CreateBookParams{
 			Title:         sql.NullString{String: args.Title, Valid: true},
 			Description:   sql.NullString{String: args.Description, Valid: true},
 			CoverImageUrl: sql.NullString{String: args.CoverImageURL, Valid: true},
@@ -66,17 +68,17 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) 
 			return err
 		}
 		for _, genre := range args.Genres {
-			if _, err := q.CreateBookGenre(ctx, db.CreateBookGenreParams{
+			if _, err := q.CreateBookGenre(ctx, sqlc.CreateBookGenreParams{
 				BookID:    book.ID,
 				GenreName: genre,
 			}); err != nil {
 				return err
 			}
 		}
-		if _, err := q.CreateReadingHistory(ctx, db.CreateReadingHistoryParams{
+		if _, err := q.CreateReadingHistory(ctx, sqlc.CreateReadingHistoryParams{
 			UserID:    args.UserID,
 			BookID:    book.ID,
-			Status:    db.ReadingStatusUnread,
+			Status:    sqlc.ReadingStatusUnread,
 			StartDate: sql.NullTime{Time: time.Time{}, Valid: true},
 			EndDate:   sql.NullTime{Time: time.Time{}, Valid: false},
 		}); err != nil {
@@ -104,7 +106,7 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) 
 	return result, err
 }
 
-func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q *db.Queries, name string) error {
+func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q sqlc.Querier, name string) error {
 	var err error
 	_, err = q.GetAuthorByName(ctx, name)
 	if err != nil {
@@ -119,7 +121,7 @@ func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q *db.
 	return nil
 }
 
-func (r BookRepositoryImpl) registerPublisherIfNotExist(ctx context.Context, q *db.Queries, name string) error {
+func (r BookRepositoryImpl) registerPublisherIfNotExist(ctx context.Context, q sqlc.Querier, name string) error {
 	_, err := q.GetPublisherByName(ctx, name)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
@@ -133,7 +135,7 @@ func (r BookRepositoryImpl) registerPublisherIfNotExist(ctx context.Context, q *
 	return nil
 }
 
-func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q *db.Queries, name string) error {
+func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q sqlc.Querier, name string) error {
 	_, err := q.GetGenreByName(ctx, name)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
@@ -148,11 +150,11 @@ func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q *db.Q
 }
 
 func (r BookRepositoryImpl) Get(ctx context.Context, id int64) (*domain.Book, error) {
-	book, err := r.store.Queries.GetBookById(ctx, id)
+	book, err := r.container.Querier.GetBookById(ctx, id)
 	if err != nil {
 		return nil, err
 	}
-	genres, err := r.store.Queries.GetGenresByBookID(ctx, id)
+	genres, err := r.container.Querier.GetGenresByBookID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -177,12 +179,12 @@ type ListRequest struct {
 }
 
 func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*domain.Book, error) {
-	historyParams := db.GetReadingHistoryByUserIDParams{
+	historyParams := sqlc.GetReadingHistoryByUserIDParams{
 		UserID: req.UserID,
 		Limit:  req.Limit,
 		Offset: req.Offset,
 	}
-	histories, err := r.store.Queries.GetReadingHistoryByUserID(ctx, historyParams)
+	histories, err := r.container.Querier.GetReadingHistoryByUserID(ctx, historyParams)
 	if err != nil {
 		return nil, err
 	}
@@ -203,18 +205,18 @@ type DeleteRequest struct {
 }
 
 func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error {
-	err := r.store.execTx(ctx, func(q *db.Queries) error {
-		deleteHistoryParam := db.DeleteReadingHistoryParams{
+	err := r.container.Exec(ctx, func(q sqlc.Querier) error {
+		deleteHistoryParam := sqlc.DeleteReadingHistoryParams{
 			UserID: req.UserID,
 			BookID: req.BookID,
 		}
-		if err := r.store.Queries.DeleteReadingHistory(ctx, deleteHistoryParam); err != nil {
+		if err := r.container.Querier.DeleteReadingHistory(ctx, deleteHistoryParam); err != nil {
 			return err
 		}
 		if err := r.deleteBookGenres(ctx, req.BookID); err != nil {
 			return err
 		}
-		if err := r.store.Queries.DeleteBook(ctx, req.BookID); err != nil {
+		if err := r.container.Querier.DeleteBook(ctx, req.BookID); err != nil {
 			return err
 		}
 		return nil
@@ -223,16 +225,16 @@ func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error
 }
 
 func (r BookRepositoryImpl) deleteBookGenres(ctx context.Context, bookID int64) error {
-	bookGenres, err := r.store.Queries.GetGenresByBookID(ctx, bookID)
+	bookGenres, err := r.container.Querier.GetGenresByBookID(ctx, bookID)
 	if err != nil {
 		return err
 	}
 	for _, genre := range bookGenres {
-		param := db.DeleteGenreForBookParams{
+		param := sqlc.DeleteGenreForBookParams{
 			BookID:    bookID,
 			GenreName: genre,
 		}
-		err := r.store.Queries.DeleteGenreForBook(ctx, param)
+		err := r.container.Querier.DeleteGenreForBook(ctx, param)
 		if err != nil {
 			return err
 		}

@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
-	"readly/test"
 	"testing"
 	"time"
 )
@@ -25,7 +24,7 @@ func createRandomReadingHistory(t *testing.T, user db.User) db.ReadingHistory {
 			Valid: false,
 		},
 	}
-	readingHistory, err := test.Queries.CreateReadingHistory(context.Background(), arg)
+	readingHistory, err := querier.CreateReadingHistory(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, readingHistory)
 	require.NotZero(t, readingHistory.BookID)
@@ -53,7 +52,7 @@ func TestGetReadingHistoryByUserAndBook(t *testing.T) {
 		UserID: user.ID,
 		BookID: readingHistory1.BookID,
 	}
-	readingHistory2, err := test.Queries.GetReadingHistoryByUserAndBook(context.Background(), args)
+	readingHistory2, err := querier.GetReadingHistoryByUserAndBook(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, readingHistory2)
 	require.Equal(t, readingHistory1.BookID, readingHistory2.BookID)
@@ -76,7 +75,7 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 		Limit:  5,
 		Offset: 0,
 	}
-	readingHistories, err := test.Queries.GetReadingHistoryByUserAndStatus(context.Background(), args)
+	readingHistories, err := querier.GetReadingHistoryByUserAndStatus(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, readingHistories)
 	require.Len(t, readingHistories, 2)
@@ -92,7 +91,7 @@ func TestGetReadingHistoryByUserID(t *testing.T) {
 		Limit:  5,
 		Offset: 0,
 	}
-	readingHistories, err := test.Queries.GetReadingHistoryByUserID(context.Background(), args)
+	readingHistories, err := querier.GetReadingHistoryByUserID(context.Background(), args)
 	require.NoError(t, err)
 	require.NotEmpty(t, readingHistories)
 	require.Len(t, readingHistories, 2)
@@ -115,7 +114,7 @@ func TestUpdateReadingHistory(t *testing.T) {
 			Valid: false,
 		},
 	}
-	readingHistory2, err := test.Queries.UpdateReadingHistory(context.Background(), arg)
+	readingHistory2, err := querier.UpdateReadingHistory(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, readingHistory2)
 	require.Equal(t, readingHistory1.UserID, readingHistory2.UserID)
@@ -137,7 +136,7 @@ func TestDeleteReadingHistory(t *testing.T) {
 		UserID: user.ID,
 		BookID: readingHistory1.BookID,
 	}
-	err := test.Queries.DeleteReadingHistory(context.Background(), args1)
+	err := querier.DeleteReadingHistory(context.Background(), args1)
 	require.NoError(t, err)
 
 	args2 := db.GetReadingHistoryByUserAndBookParams{
@@ -145,7 +144,7 @@ func TestDeleteReadingHistory(t *testing.T) {
 		BookID: readingHistory1.BookID,
 	}
 
-	readingHistory2, err := test.Queries.GetReadingHistoryByUserAndBook(context.Background(), args2)
+	readingHistory2, err := querier.GetReadingHistoryByUserAndBook(context.Background(), args2)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, readingHistory2)
