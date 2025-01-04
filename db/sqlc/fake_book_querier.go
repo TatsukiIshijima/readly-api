@@ -8,6 +8,9 @@ import (
 
 func (q *FakeQuerier) GetBookById(_ context.Context, id int64) (Book, error) {
 	// FIXME:インメモリ管理
+	if id != 1 {
+		return Book{}, sql.ErrNoRows
+	}
 	return Book{
 		ID: 1,
 		Title: sql.NullString{
