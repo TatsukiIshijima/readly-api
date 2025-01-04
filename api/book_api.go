@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type registerRequest struct {
+type RegisterRequest struct {
 	// TODO:削除（ログイン情報から取得するため）
 	UserID        int64     `json:"user_id" binding:"required"`
 	Title         string    `json:"title" binding:"required"`
@@ -22,12 +22,12 @@ type registerRequest struct {
 	ISBN          string    `json:"isbn"`
 }
 
-type registerResponse struct {
+type RegisterResponse struct {
 	domain.Book
 }
 
 func (server *Server) registerBook(ctx *gin.Context) {
-	var req registerRequest
+	var req RegisterRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -51,19 +51,19 @@ func (server *Server) registerBook(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, registerResponse{Book: book})
+	ctx.JSON(http.StatusOK, RegisterResponse{Book: book})
 }
 
-type getBookRequest struct {
+type GetBookRequest struct {
 	ID int64 `uri:"id" binding:"required"`
 }
 
-type getBookResponse struct {
+type GetBookResponse struct {
 	domain.Book
 }
 
 func (server *Server) getBook(ctx *gin.Context) {
-	var req getBookRequest
+	var req GetBookRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -75,10 +75,10 @@ func (server *Server) getBook(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, getBookResponse{Book: *book})
+	ctx.JSON(http.StatusOK, GetBookResponse{Book: *book})
 }
 
-type listBooksRequest struct {
+type ListBooksRequest struct {
 	// limitとoffsetのままだと0が始点になる。requiredタグを使用した場合
 	// int32のゼロ値は無効な値として扱われるため、ページング処理を入れる
 	Page int32 `form:"page" binding:"required,min=1"`
@@ -86,18 +86,18 @@ type listBooksRequest struct {
 }
 
 // TODO:削除（ログイン情報から取得するため）
-type listBooksTempRequest struct {
+type ListBooksTempRequest struct {
 	UserID int64 `json:"user_id" binding:"required"`
 }
 
 func (server *Server) listBook(ctx *gin.Context) {
-	var req listBooksRequest
+	var req ListBooksRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	var tempReq listBooksTempRequest
+	var tempReq ListBooksTempRequest
 	if err := ctx.ShouldBindJSON(&tempReq); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -116,14 +116,14 @@ func (server *Server) listBook(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, books)
 }
 
-type deleteBookRequest struct {
+type DeleteBookRequest struct {
 	// TODO:削除（ログイン情報から取得するため）
 	UserID int64 `json:"user_id" binding:"required"`
 	BookID int64 `json:"book_id" binding:"required"`
 }
 
 func (server *Server) deleteBook(ctx *gin.Context) {
-	var req deleteBookRequest
+	var req DeleteBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
