@@ -6,7 +6,7 @@ import (
 	"readly/testdata"
 )
 
-func (q *FakeQuerier) GetBookById(ctx context.Context, id int64) (Book, error) {
+func (q *FakeQuerier) GetBookById(_ context.Context, id int64) (Book, error) {
 	// FIXME:インメモリ管理
 	return Book{
 		ID: 1,
@@ -41,7 +41,7 @@ func (q *FakeQuerier) GetBookById(ctx context.Context, id int64) (Book, error) {
 	}, nil
 }
 
-func (q *FakeQuerier) GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error) {
+func (q *FakeQuerier) GetGenresByBookID(_ context.Context, bookID int64) ([]string, error) {
 	// FIXME:インメモリ管理
 	if bookID == 1 {
 		return []string{"Genre1", "Genre2"}, nil
