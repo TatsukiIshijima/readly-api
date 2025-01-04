@@ -46,14 +46,5 @@ func TestGetBook(t *testing.T) {
 		ISBN:          "1234567890123",
 	}
 
-	require.Equal(t, act.ID, exp.ID)
-	require.Equal(t, act.Title, exp.Title)
-	require.Equal(t, act.Genres, exp.Genres)
-	require.Equal(t, act.Description, exp.Description)
-	require.Equal(t, act.CoverImageURL, exp.CoverImageURL)
-	require.Equal(t, act.URL, exp.URL)
-	require.Equal(t, act.AuthorName, exp.AuthorName)
-	require.Equal(t, act.PublisherName, exp.PublisherName)
-	require.Equal(t, act.PublishDate, exp.PublishDate)
-	require.Equal(t, act.ISBN, exp.ISBN)
+	require.Equal(t, act.Book, exp)
 }
