@@ -11,15 +11,15 @@ import (
 type RegisterRequest struct {
 	// TODO:削除（ログイン情報から取得するため）
 	UserID        int64     `json:"user_id" binding:"required"`
-	Title         string    `json:"title" binding:"required"`
-	Genres        []string  `json:"genres"`
-	Description   string    `json:"description"`
-	CoverImageURL string    `json:"cover_image_url"`
-	URL           string    `json:"url"`
-	AuthorName    string    `json:"author_name"`
-	PublisherName string    `json:"publisher_name"`
+	Title         string    `json:"title" binding:"required,min=1"`
+	Genres        []string  `json:"genres" binding:"omitempty,max=5"`
+	Description   string    `json:"description" binding:"omitempty,max=200"`
+	CoverImageURL string    `json:"cover_image_url" binding:"omitempty,url"`
+	URL           string    `json:"url" binding:"omitempty,url"`
+	AuthorName    string    `json:"author_name" binding:"omitempty,max=50"`
+	PublisherName string    `json:"publisher_name" binding:"omitempty,max=50"`
 	PublishDate   time.Time `json:"publish_date"`
-	ISBN          string    `json:"isbn"`
+	ISBN          string    `json:"isbn" binding:"omitempty,isbn"`
 }
 
 type RegisterResponse struct {
