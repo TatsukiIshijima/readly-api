@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
-	"time"
+	"readly/testdata"
 )
 
 func (q *FakeQuerier) GetBookById(ctx context.Context, id int64) (Book, error) {
@@ -29,22 +29,22 @@ func (q *FakeQuerier) GetBookById(ctx context.Context, id int64) (Book, error) {
 		AuthorName:    "Author",
 		PublisherName: "Publisher",
 		PublishedDate: sql.NullTime{
-			Time:  time.Now(),
+			Time:  testdata.TimeFrom("1970-01-01 00:00:00"),
 			Valid: true,
 		},
 		Isbn: sql.NullString{
 			String: "1234567890123",
 			Valid:  true,
 		},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: testdata.TimeFrom("2025-01-01 00:00:00"),
+		UpdatedAt: testdata.TimeFrom("2025-01-01 00:00:00"),
 	}, nil
 }
 
 func (q *FakeQuerier) GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error) {
 	// FIXME:インメモリ管理
 	if bookID == 1 {
-		return []string{"genre1", "genre2"}, nil
+		return []string{"Genre1", "Genre2"}, nil
 	} else {
 		return []string{}, nil
 	}

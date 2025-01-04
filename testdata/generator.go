@@ -3,6 +3,7 @@ package testdata
 import (
 	"math/rand"
 	"strings"
+	"time"
 )
 
 const alplhabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -20,4 +21,13 @@ func RandomString(n int) string {
 		sb.WriteByte(c)
 	}
 	return sb.String()
+}
+
+func TimeFrom(dateStr string) time.Time {
+	layout := "2006-01-02 15:04:05"
+	t, err := time.Parse(layout, dateStr)
+	if err != nil {
+		panic(err)
+	}
+	return t
 }
