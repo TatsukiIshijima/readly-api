@@ -47,7 +47,8 @@ func (server *Server) registerBook(ctx *gin.Context) {
 	}
 	book, err := server.bookRepo.Register(ctx, args)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		c, e := handle(err)
+		ctx.JSON(c, errorResponse(e))
 		return
 	}
 
@@ -71,7 +72,8 @@ func (server *Server) getBook(ctx *gin.Context) {
 
 	book, err := server.bookRepo.Get(ctx, req.ID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		c, e := handle(err)
+		ctx.JSON(c, errorResponse(e))
 		return
 	}
 
@@ -109,7 +111,8 @@ func (server *Server) listBook(ctx *gin.Context) {
 		Offset: (req.Page - 1) * req.Size,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		c, e := handle(err)
+		ctx.JSON(c, errorResponse(e))
 		return
 	}
 
@@ -135,7 +138,8 @@ func (server *Server) deleteBook(ctx *gin.Context) {
 	}
 	err := server.bookRepo.Delete(ctx, args)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		c, e := handle(err)
+		ctx.JSON(c, errorResponse(e))
 		return
 	}
 

@@ -32,7 +32,7 @@ func (err *Error) Error() string {
 	return err.Message
 }
 
-func Handle(err error) *Error {
+func handle(err error) error {
 	var code ErrorCode
 
 	if errors.Is(err, sql.ErrNoRows) {
