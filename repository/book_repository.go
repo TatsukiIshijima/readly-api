@@ -103,7 +103,7 @@ func (r BookRepositoryImpl) Register(ctx context.Context, args RegisterRequest) 
 
 		return nil
 	})
-	return result, err
+	return result, handle(err)
 }
 
 func (r BookRepositoryImpl) registerAuthorIfNotExist(ctx context.Context, q sqlc.Querier, name string) error {
@@ -152,11 +152,11 @@ func (r BookRepositoryImpl) registerGenreIfNotExist(ctx context.Context, q sqlc.
 func (r BookRepositoryImpl) Get(ctx context.Context, id int64) (*domain.Book, error) {
 	book, err := r.container.Querier.GetBookById(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, handle(err)
 	}
 	genres, err := r.container.Querier.GetGenresByBookID(ctx, id)
 	if err != nil {
-		return nil, err
+		return nil, handle(err)
 	}
 	return &domain.Book{
 		ID:            book.ID,
@@ -186,13 +186,13 @@ func (r BookRepositoryImpl) List(ctx context.Context, req ListRequest) ([]*domai
 	}
 	histories, err := r.container.Querier.GetReadingHistoryByUserID(ctx, historyParams)
 	if err != nil {
-		return nil, err
+		return nil, handle(err)
 	}
 	res := make([]*domain.Book, 0, len(histories))
 	for _, history := range histories {
 		book, err := r.Get(ctx, history.BookID)
 		if err != nil {
-			return nil, err
+			return nil, handle(err)
 		}
 		res = append(res, book)
 	}
@@ -221,7 +221,7 @@ func (r BookRepositoryImpl) Delete(ctx context.Context, req DeleteRequest) error
 		}
 		return nil
 	})
-	return err
+	return handle(err)
 }
 
 func (r BookRepositoryImpl) deleteBookGenres(ctx context.Context, bookID int64) error {

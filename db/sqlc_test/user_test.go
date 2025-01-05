@@ -23,7 +23,7 @@ func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
 func TestCreateUser(t *testing.T) {
 	arg := db.CreateUserParams{
 		Name:           testdata.RandomString(12),
-		Email:          testdata.RandomString(6) + "@example.com",
+		Email:          testdata.RandomEmail(),
 		HashedPassword: testdata.RandomString(16),
 	}
 	user, err := querier.CreateUser(context.Background(), arg)
