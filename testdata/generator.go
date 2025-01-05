@@ -1,6 +1,7 @@
 package testdata
 
 import (
+	"fmt"
 	"math/rand"
 	"strings"
 	"time"
@@ -21,6 +22,10 @@ func RandomString(n int) string {
 		sb.WriteByte(c)
 	}
 	return sb.String()
+}
+
+func RandomEmail() string {
+	return fmt.Sprintf("%s@example.com", RandomString(6))
 }
 
 func TimeFrom(dateStr string) time.Time {

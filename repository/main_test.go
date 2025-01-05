@@ -35,7 +35,7 @@ func TestMain(m *testing.M) {
 func createRandomUser() (sqlc.User, error) {
 	arg := sqlc.CreateUserParams{
 		Name:           testdata.RandomString(12),
-		Email:          testdata.RandomString(6) + "@example.com",
+		Email:          testdata.RandomEmail(),
 		HashedPassword: testdata.RandomString(16),
 	}
 	return querier.CreateUser(context.Background(), arg)
