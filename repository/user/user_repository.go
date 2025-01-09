@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	sqlc "readly/db/sqlc"
 	"readly/domain"
 )
 
@@ -12,6 +13,16 @@ type Repository interface {
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
 	Update(ctx context.Context, req UpdateRequest) (domain.User, error)
 	Delete(ctx context.Context, id int64) error
+}
+
+type RepositoryImpl struct {
+	container sqlc.Container
+}
+
+func NewRepository(db sqlc.DBTX, q sqlc.Querier) RepositoryImpl {
+	return RepositoryImpl{
+		container: sqlc.NewContainer(db, q),
+	}
 }
 
 type RegisterRequest struct {
@@ -30,4 +41,34 @@ type UpdateRequest struct {
 	Name     string
 	Email    string
 	Password string
+}
+
+func (r RepositoryImpl) Register(ctx context.Context, req RegisterRequest) (domain.User, error) {
+	// TODO: Implement
+	return domain.User{}, nil
+}
+
+func (r RepositoryImpl) Login(ctx context.Context, req LoginRequest) (domain.User, error) {
+	// TODO: Implement
+	return domain.User{}, nil
+}
+
+func (r RepositoryImpl) GetByID(ctx context.Context, id int64) (domain.User, error) {
+	// TODO: Implement
+	return domain.User{}, nil
+}
+
+func (r RepositoryImpl) GetByEmail(ctx context.Context, email string) (domain.User, error) {
+	// TODO: Implement
+	return domain.User{}, nil
+}
+
+func (r RepositoryImpl) Update(ctx context.Context, req UpdateRequest) (domain.User, error) {
+	// TODO: Implement
+	return domain.User{}, nil
+}
+
+func (r RepositoryImpl) Delete(ctx context.Context, id int64) error {
+	// TODO: Implement
+	return nil
 }
