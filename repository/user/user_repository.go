@@ -8,10 +8,10 @@ import (
 
 type Repository interface {
 	Register(ctx context.Context, req RegisterRequest) (*domain.User, error)
-	Login(ctx context.Context, req LoginRequest) (domain.User, error)
-	GetByID(ctx context.Context, id int64) (domain.User, error)
-	GetByEmail(ctx context.Context, email string) (domain.User, error)
-	Update(ctx context.Context, req UpdateRequest) (domain.User, error)
+	Login(ctx context.Context, req LoginRequest) (*domain.User, error)
+	GetByID(ctx context.Context, id int64) (*domain.User, error)
+	GetByEmail(ctx context.Context, email string) (*domain.User, error)
+	Update(ctx context.Context, req UpdateRequest) (*domain.User, error)
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -61,24 +61,40 @@ func (r RepositoryImpl) Register(ctx context.Context, req RegisterRequest) (*dom
 	return res, nil
 }
 
-func (r RepositoryImpl) Login(ctx context.Context, req LoginRequest) (domain.User, error) {
+func (r RepositoryImpl) Login(ctx context.Context, req LoginRequest) (*domain.User, error) {
 	// TODO: Implement
-	return domain.User{}, nil
+	return &domain.User{}, nil
 }
 
-func (r RepositoryImpl) GetByID(ctx context.Context, id int64) (domain.User, error) {
-	// TODO: Implement
-	return domain.User{}, nil
+func (r RepositoryImpl) GetByID(ctx context.Context, id int64) (*domain.User, error) {
+	user, err := r.container.Querier.GetUserById(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	res := &domain.User{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	return res, nil
 }
 
-func (r RepositoryImpl) GetByEmail(ctx context.Context, email string) (domain.User, error) {
-	// TODO: Implement
-	return domain.User{}, nil
+func (r RepositoryImpl) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
+	user, err := r.container.Querier.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	res := &domain.User{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	return res, nil
 }
 
-func (r RepositoryImpl) Update(ctx context.Context, req UpdateRequest) (domain.User, error) {
+func (r RepositoryImpl) Update(ctx context.Context, req UpdateRequest) (*domain.User, error) {
 	// TODO: Implement
-	return domain.User{}, nil
+	return &domain.User{}, nil
 }
 
 func (r RepositoryImpl) Delete(ctx context.Context, id int64) error {
