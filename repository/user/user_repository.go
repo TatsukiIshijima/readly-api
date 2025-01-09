@@ -7,7 +7,7 @@ import (
 )
 
 type Repository interface {
-	Register(ctx context.Context, req RegisterRequest) (domain.User, error)
+	Register(ctx context.Context, req RegisterRequest) (*domain.User, error)
 	Login(ctx context.Context, req LoginRequest) (domain.User, error)
 	GetByID(ctx context.Context, id int64) (domain.User, error)
 	GetByEmail(ctx context.Context, email string) (domain.User, error)
@@ -43,9 +43,22 @@ type UpdateRequest struct {
 	Password string
 }
 
-func (r RepositoryImpl) Register(ctx context.Context, req RegisterRequest) (domain.User, error) {
-	// TODO: Implement
-	return domain.User{}, nil
+func (r RepositoryImpl) Register(ctx context.Context, req RegisterRequest) (*domain.User, error) {
+	args := sqlc.CreateUserParams{
+		Name:           req.Name,
+		Email:          req.Email,
+		HashedPassword: req.Password,
+	}
+	user, err := r.container.Querier.CreateUser(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	res := &domain.User{
+		ID:    user.ID,
+		Name:  user.Name,
+		Email: user.Email,
+	}
+	return res, nil
 }
 
 func (r RepositoryImpl) Login(ctx context.Context, req LoginRequest) (domain.User, error) {
