@@ -3,19 +3,51 @@ package sqlc_test
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"github.com/lib/pq"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
 	"readly/testdata"
+	"strings"
 	"testing"
 	"time"
 )
 
-func createRandomBook(t *testing.T) db.Book {
-	author := createRandomAuthor(t)
-	publisher := createRandomPublisher(t)
+func createBook(t *testing.T, title string, author string, publisher string, isbn string) db.Book {
+	if title == "" {
+		title = testdata.RandomString(6)
+	}
+	if author == "" {
+		author = testdata.RandomString(6)
+	}
+	if publisher == "" {
+		publisher = testdata.RandomString(6)
+	}
+	if isbn == "" {
+		isbn = testdata.RandomString(13)
+	}
+
+	var err error
+	_, err = querier.CreateAuthor(context.Background(), author)
+	_, err = querier.CreatePublisher(context.Background(), publisher)
+	if err != nil {
+		var pqErr *pq.Error
+		if !errors.As(err, &pqErr) {
+			if pqErr.Code != "23505" {
+				require.Fail(t, "unexpected error: %v", err)
+			}
+		}
+	}
+	a, err := querier.GetAuthorByName(context.Background(), author)
+	require.NoError(t, err)
+	require.Equal(t, author, a.Name)
+	p, err := querier.GetPublisherByName(context.Background(), publisher)
+	require.NoError(t, err)
+	require.Equal(t, publisher, p.Name)
+
 	arg := db.CreateBookParams{
 		Title: sql.NullString{
-			String: testdata.RandomString(6),
+			String: title,
 			Valid:  true,
 		},
 		Description: sql.NullString{
@@ -30,14 +62,14 @@ func createRandomBook(t *testing.T) db.Book {
 			String: "https://example.com",
 			Valid:  true,
 		},
-		AuthorName:    author.Name,
-		PublisherName: publisher.Name,
+		AuthorName:    a.Name,
+		PublisherName: p.Name,
 		PublishedDate: sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,
 		},
 		Isbn: sql.NullString{
-			String: testdata.RandomString(13),
+			String: isbn,
 			Valid:  true,
 		},
 	}
@@ -59,68 +91,239 @@ func createRandomBook(t *testing.T) db.Book {
 	return book
 }
 
-func checkSameBook(t *testing.T, book1 db.Book, book2 db.Book) {
-	require.Equal(t, book1.ID, book2.ID)
-	require.Equal(t, book1.Title, book2.Title)
-	require.Equal(t, book1.Description, book2.Description)
-	require.Equal(t, book1.CoverImageUrl, book2.CoverImageUrl)
-	require.Equal(t, book1.Url, book2.Url)
-	require.Equal(t, book1.AuthorName, book2.AuthorName)
-	require.Equal(t, book1.PublisherName, book2.PublisherName)
-	require.WithinDuration(t, book1.PublishedDate.Time, book2.PublishedDate.Time, time.Second)
-	require.Equal(t, book1.Isbn, book2.Isbn)
-}
-
 func TestCreateBook(t *testing.T) {
-	createRandomBook(t)
+	createBook(t, "", "", "", "")
 }
 
-func TestGetBookById(t *testing.T) {
-	book1 := createRandomBook(t)
-	book2, err := querier.GetBookById(context.Background(), book1.ID)
+func TestGetBookByID(t *testing.T) {
+	bookWithEmptyGenres := createBook(t, "", "", "", "")
+	bookWithGenres := createBook(t, "", "", "", "")
+	genre1 := createRandomGenre(t)
+	genre2 := createRandomGenre(t)
+	genre3 := createRandomGenre(t)
+	createRandomBookGenre(t, bookWithGenres, genre1)
+	createRandomBookGenre(t, bookWithGenres, genre2)
+	createRandomBookGenre(t, bookWithGenres, genre3)
+
+	result, err := querier.GetBooksByID(context.Background(), bookWithEmptyGenres.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, book2)
+	require.NotEmpty(t, result)
 
-	checkSameBook(t, book1, book2)
-}
+	require.Equal(t, bookWithEmptyGenres.ID, result.ID)
+	require.Equal(t, bookWithEmptyGenres.Title, result.Title)
+	require.Empty(t, result.Genres)
+	require.Equal(t, bookWithEmptyGenres.Description, result.Description)
+	require.Equal(t, bookWithEmptyGenres.CoverImageUrl, result.CoverImageUrl)
+	require.Equal(t, bookWithEmptyGenres.Url, result.Url)
+	require.Equal(t, bookWithEmptyGenres.AuthorName, result.AuthorName)
+	require.Equal(t, bookWithEmptyGenres.PublisherName, result.PublisherName)
+	require.Equal(t, bookWithEmptyGenres.PublishedDate.Time, result.PublishedDate.Time)
+	require.Equal(t, bookWithEmptyGenres.Isbn, result.Isbn)
+	require.WithinDuration(t, bookWithEmptyGenres.CreatedAt, result.CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithEmptyGenres.UpdatedAt, result.UpdatedAt, time.Second)
 
-func TestGetBooksByAuthorName(t *testing.T) {
-	author := createRandomAuthor(t)
-	for i := 0; i < 2; i++ {
-		createRandomBook(t)
-	}
-
-	books, err := querier.GetBooksByAuthorName(context.Background(), author.Name)
+	result, err = querier.GetBooksByID(context.Background(), bookWithGenres.ID)
 	require.NoError(t, err)
+	require.NotEmpty(t, result)
 
-	for _, book := range books {
-		require.NotEmpty(t, book)
-		require.Equal(t, author.Name, book.AuthorName)
-	}
-}
-
-func TestGetBooksByIsbn(t *testing.T) {
-	book1 := createRandomBook(t)
-	books, err := querier.GetBooksByIsbn(context.Background(), book1.Isbn)
-	require.NoError(t, err)
-	require.Equal(t, len(books), 1)
-	book2 := books[0]
-
-	checkSameBook(t, book1, book2)
+	require.Equal(t, bookWithGenres.ID, result.ID)
+	require.Equal(t, bookWithGenres.Title, result.Title)
+	require.Equal(
+		t, []string{genre1.Name, genre2.Name, genre3.Name},
+		strings.Split(string(result.Genres), ", "),
+	)
+	require.Equal(t, bookWithGenres.Description, result.Description)
+	require.Equal(t, bookWithGenres.CoverImageUrl, result.CoverImageUrl)
+	require.Equal(t, bookWithGenres.Url, result.Url)
+	require.Equal(t, bookWithGenres.AuthorName, result.AuthorName)
+	require.Equal(t, bookWithGenres.PublisherName, result.PublisherName)
+	require.Equal(t, bookWithGenres.PublishedDate.Time, result.PublishedDate.Time)
+	require.Equal(t, bookWithGenres.Isbn, result.Isbn)
+	require.WithinDuration(t, bookWithGenres.CreatedAt, result.CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithGenres.UpdatedAt, result.UpdatedAt, time.Second)
 }
 
 func TestGetBooksByTitle(t *testing.T) {
-	book1 := createRandomBook(t)
-	books, err := querier.GetBooksByTitle(context.Background(), book1.Title)
-	require.NoError(t, err)
-	require.Equal(t, len(books), 1)
-	book2 := books[0]
+	title := testdata.RandomString(8)
+	bookWithEmptyGenres := createBook(t, title, "", "", "")
+	bookWithGenres := createBook(t, title, "", "", "")
+	genre1 := createRandomGenre(t)
+	genre2 := createRandomGenre(t)
+	genre3 := createRandomGenre(t)
+	createRandomBookGenre(t, bookWithGenres, genre1)
+	createRandomBookGenre(t, bookWithGenres, genre2)
+	createRandomBookGenre(t, bookWithGenres, genre3)
 
-	checkSameBook(t, book1, book2)
+	result, err := querier.GetBooksByTitle(
+		context.Background(),
+		sql.NullString{
+			String: title,
+			Valid:  true,
+		},
+	)
+	require.NoError(t, err)
+	require.NotEmpty(t, result)
+	require.Len(t, result, 2)
+
+	require.Equal(t, bookWithEmptyGenres.ID, result[0].ID)
+	require.Equal(t, bookWithEmptyGenres.Title, result[0].Title)
+	require.Empty(t, result[0].Genres)
+	require.Equal(t, bookWithEmptyGenres.Description, result[0].Description)
+	require.Equal(t, bookWithEmptyGenres.CoverImageUrl, result[0].CoverImageUrl)
+	require.Equal(t, bookWithEmptyGenres.Url, result[0].Url)
+	require.Equal(t, bookWithEmptyGenres.AuthorName, result[0].AuthorName)
+	require.Equal(t, bookWithEmptyGenres.PublisherName, result[0].PublisherName)
+	require.Equal(t, bookWithEmptyGenres.PublishedDate.Time, result[0].PublishedDate.Time)
+	require.Equal(t, bookWithEmptyGenres.Isbn, result[0].Isbn)
+	require.WithinDuration(t, bookWithEmptyGenres.CreatedAt, result[0].CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithEmptyGenres.UpdatedAt, result[0].UpdatedAt, time.Second)
+
+	require.Equal(t, bookWithGenres.ID, result[1].ID)
+	require.Equal(t, bookWithGenres.Title, result[1].Title)
+	require.Equal(
+		t, []string{genre1.Name, genre2.Name, genre3.Name},
+		strings.Split(string(result[1].Genres), ", "),
+	)
+	require.Equal(t, bookWithGenres.Description, result[1].Description)
+	require.Equal(t, bookWithGenres.CoverImageUrl, result[1].CoverImageUrl)
+	require.Equal(t, bookWithGenres.Url, result[1].Url)
+	require.Equal(t, bookWithGenres.AuthorName, result[1].AuthorName)
+	require.Equal(t, bookWithGenres.PublisherName, result[1].PublisherName)
+	require.Equal(t, bookWithGenres.PublishedDate.Time, result[1].PublishedDate.Time)
+	require.Equal(t, bookWithGenres.Isbn, result[1].Isbn)
+	require.WithinDuration(t, bookWithGenres.CreatedAt, result[1].CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithGenres.UpdatedAt, result[1].UpdatedAt, time.Second)
+}
+
+func TestGetBooksByISBN(t *testing.T) {
+	ISBN := testdata.RandomString(13)
+	book := createBook(t, "", "", "", ISBN)
+	genre := createRandomGenre(t)
+	createRandomBookGenre(t, book, genre)
+
+	result, err := querier.GetBooksByISBN(
+		context.Background(),
+		sql.NullString{
+			String: ISBN,
+			Valid:  true,
+		},
+	)
+	require.NoError(t, err)
+	require.NotEmpty(t, result)
+
+	require.Equal(t, book.ID, result[0].ID)
+	require.Equal(t, book.Title, result[0].Title)
+	require.Equal(
+		t, []string{genre.Name},
+		strings.Split(string(result[0].Genres), ", "),
+	)
+	require.Equal(t, book.Description, result[0].Description)
+	require.Equal(t, book.CoverImageUrl, result[0].CoverImageUrl)
+	require.Equal(t, book.Url, result[0].Url)
+	require.Equal(t, book.AuthorName, result[0].AuthorName)
+	require.Equal(t, book.PublisherName, result[0].PublisherName)
+	require.Equal(t, book.PublishedDate.Time, result[0].PublishedDate.Time)
+	require.Equal(t, book.Isbn, result[0].Isbn)
+	require.WithinDuration(t, book.CreatedAt, result[0].CreatedAt, time.Second)
+	require.WithinDuration(t, book.UpdatedAt, result[0].UpdatedAt, time.Second)
+}
+
+func TestGetBooksByAuthor(t *testing.T) {
+	author := testdata.RandomString(6)
+	bookWithEmptyGenres := createBook(t, "", author, "", "")
+	bookWithGenres := createBook(t, "", author, "", "")
+	genre1 := createRandomGenre(t)
+	genre2 := createRandomGenre(t)
+	createRandomBookGenre(t, bookWithGenres, genre1)
+	createRandomBookGenre(t, bookWithGenres, genre2)
+
+	result, err := querier.GetBooksByAuthor(
+		context.Background(),
+		author,
+	)
+	require.NoError(t, err)
+	require.NotEmpty(t, result)
+	require.Len(t, result, 2)
+
+	require.Equal(t, bookWithEmptyGenres.ID, result[0].ID)
+	require.Equal(t, bookWithEmptyGenres.Title, result[0].Title)
+	require.Empty(t, result[0].Genres)
+	require.Equal(t, bookWithEmptyGenres.Description, result[0].Description)
+	require.Equal(t, bookWithEmptyGenres.CoverImageUrl, result[0].CoverImageUrl)
+	require.Equal(t, bookWithEmptyGenres.Url, result[0].Url)
+	require.Equal(t, bookWithEmptyGenres.AuthorName, result[0].AuthorName)
+	require.Equal(t, bookWithEmptyGenres.PublisherName, result[0].PublisherName)
+	require.Equal(t, bookWithEmptyGenres.PublishedDate.Time, result[0].PublishedDate.Time)
+	require.Equal(t, bookWithEmptyGenres.Isbn, result[0].Isbn)
+	require.WithinDuration(t, bookWithEmptyGenres.CreatedAt, result[0].CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithEmptyGenres.UpdatedAt, result[0].UpdatedAt, time.Second)
+
+	require.Equal(t, bookWithGenres.ID, result[1].ID)
+	require.Equal(t, bookWithGenres.Title, result[1].Title)
+	require.Equal(
+		t, []string{genre1.Name, genre2.Name},
+		strings.Split(string(result[1].Genres), ", "),
+	)
+	require.Equal(t, bookWithGenres.Description, result[1].Description)
+	require.Equal(t, bookWithGenres.CoverImageUrl, result[1].CoverImageUrl)
+	require.Equal(t, bookWithGenres.Url, result[1].Url)
+	require.Equal(t, bookWithGenres.AuthorName, result[1].AuthorName)
+	require.Equal(t, bookWithGenres.PublisherName, result[1].PublisherName)
+	require.Equal(t, bookWithGenres.PublishedDate.Time, result[1].PublishedDate.Time)
+	require.Equal(t, bookWithGenres.Isbn, result[1].Isbn)
+	require.WithinDuration(t, bookWithGenres.CreatedAt, result[1].CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithGenres.UpdatedAt, result[1].UpdatedAt, time.Second)
+}
+
+func TestGetBooksByPublisher(t *testing.T) {
+	publisher := testdata.RandomString(6)
+	bookWithEmptyGenres := createBook(t, "", "", publisher, "")
+	bookWithGenres := createBook(t, "", "", publisher, "")
+	genre1 := createRandomGenre(t)
+	genre2 := createRandomGenre(t)
+	createRandomBookGenre(t, bookWithGenres, genre1)
+	createRandomBookGenre(t, bookWithGenres, genre2)
+
+	result, err := querier.GetBooksByPublisher(
+		context.Background(),
+		publisher,
+	)
+	require.NoError(t, err)
+	require.NotEmpty(t, result)
+	require.Len(t, result, 2)
+
+	require.Equal(t, bookWithEmptyGenres.ID, result[0].ID)
+	require.Equal(t, bookWithEmptyGenres.Title, result[0].Title)
+	require.Empty(t, result[0].Genres)
+	require.Equal(t, bookWithEmptyGenres.Description, result[0].Description)
+	require.Equal(t, bookWithEmptyGenres.CoverImageUrl, result[0].CoverImageUrl)
+	require.Equal(t, bookWithEmptyGenres.Url, result[0].Url)
+	require.Equal(t, bookWithEmptyGenres.AuthorName, result[0].AuthorName)
+	require.Equal(t, bookWithEmptyGenres.PublisherName, result[0].PublisherName)
+	require.Equal(t, bookWithEmptyGenres.PublishedDate.Time, result[0].PublishedDate.Time)
+	require.Equal(t, bookWithEmptyGenres.Isbn, result[0].Isbn)
+	require.WithinDuration(t, bookWithEmptyGenres.CreatedAt, result[0].CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithEmptyGenres.UpdatedAt, result[0].UpdatedAt, time.Second)
+
+	require.Equal(t, bookWithGenres.ID, result[1].ID)
+	require.Equal(t, bookWithGenres.Title, result[1].Title)
+	require.Equal(
+		t, []string{genre1.Name, genre2.Name},
+		strings.Split(string(result[1].Genres), ", "),
+	)
+	require.Equal(t, bookWithGenres.Description, result[1].Description)
+	require.Equal(t, bookWithGenres.CoverImageUrl, result[1].CoverImageUrl)
+	require.Equal(t, bookWithGenres.Url, result[1].Url)
+	require.Equal(t, bookWithGenres.AuthorName, result[1].AuthorName)
+	require.Equal(t, bookWithGenres.PublisherName, result[1].PublisherName)
+	require.Equal(t, bookWithGenres.PublishedDate.Time, result[1].PublishedDate.Time)
+	require.Equal(t, bookWithGenres.Isbn, result[1].Isbn)
+	require.WithinDuration(t, bookWithGenres.CreatedAt, result[1].CreatedAt, time.Second)
+	require.WithinDuration(t, bookWithGenres.UpdatedAt, result[1].UpdatedAt, time.Second)
 }
 
 func TestUpdateBook(t *testing.T) {
-	book1 := createRandomBook(t)
+	book1 := createBook(t, "", "", "", "")
 
 	arg := db.UpdateBookParams{
 		ID:            book1.ID,
@@ -150,11 +353,11 @@ func TestUpdateBook(t *testing.T) {
 }
 
 func TestDeleteBook(t *testing.T) {
-	book1 := createRandomBook(t)
+	book1 := createBook(t, "", "", "", "")
 	err := querier.DeleteBook(context.Background(), book1.ID)
 	require.NoError(t, err)
 
-	book2, err := querier.GetBookById(context.Background(), book1.ID)
+	book2, err := querier.GetBooksByID(context.Background(), book1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, book2)

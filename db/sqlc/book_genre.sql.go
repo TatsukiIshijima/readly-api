@@ -26,58 +26,21 @@ func (q *Queries) CreateBookGenre(ctx context.Context, arg CreateBookGenreParams
 	return i, err
 }
 
-const deleteGenreForBook = `-- name: DeleteGenreForBook :exec
+const deleteBookGenre = `-- name: DeleteBookGenre :exec
 DELETE
 FROM book_genres
 WHERE book_id = $1
   AND genre_name = $2
 `
 
-type DeleteGenreForBookParams struct {
+type DeleteBookGenreParams struct {
 	BookID    int64  `json:"book_id"`
 	GenreName string `json:"genre_name"`
 }
 
-func (q *Queries) DeleteGenreForBook(ctx context.Context, arg DeleteGenreForBookParams) error {
-	_, err := q.db.ExecContext(ctx, deleteGenreForBook, arg.BookID, arg.GenreName)
+func (q *Queries) DeleteBookGenre(ctx context.Context, arg DeleteBookGenreParams) error {
+	_, err := q.db.ExecContext(ctx, deleteBookGenre, arg.BookID, arg.GenreName)
 	return err
-}
-
-const getBooksByGenreName = `-- name: GetBooksByGenreName :many
-SELECT book_id
-FROM book_genres
-WHERE genre_name = $1
-ORDER BY book_id LIMIT $2
-OFFSET $3
-`
-
-type GetBooksByGenreNameParams struct {
-	GenreName string `json:"genre_name"`
-	Limit     int32  `json:"limit"`
-	Offset    int32  `json:"offset"`
-}
-
-func (q *Queries) GetBooksByGenreName(ctx context.Context, arg GetBooksByGenreNameParams) ([]int64, error) {
-	rows, err := q.db.QueryContext(ctx, getBooksByGenreName, arg.GenreName, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []int64{}
-	for rows.Next() {
-		var book_id int64
-		if err := rows.Scan(&book_id); err != nil {
-			return nil, err
-		}
-		items = append(items, book_id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }
 
 const getGenresByBookID = `-- name: GetGenresByBookID :many

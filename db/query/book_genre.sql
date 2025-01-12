@@ -7,14 +7,7 @@ SELECT genre_name
 FROM book_genres
 WHERE book_id = $1;
 
--- name: GetBooksByGenreName :many
-SELECT book_id
-FROM book_genres
-WHERE genre_name = $1
-ORDER BY book_id LIMIT $2
-OFFSET $3;
-
--- name: DeleteGenreForBook :exec
+-- name: DeleteBookGenre :exec
 DELETE
 FROM book_genres
 WHERE book_id = $1

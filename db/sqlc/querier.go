@@ -19,8 +19,8 @@ type Querier interface {
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAuthor(ctx context.Context, name string) error
 	DeleteBook(ctx context.Context, id int64) error
+	DeleteBookGenre(ctx context.Context, arg DeleteBookGenreParams) error
 	DeleteGenre(ctx context.Context, name string) error
-	DeleteGenreForBook(ctx context.Context, arg DeleteGenreForBookParams) error
 	DeletePublisher(ctx context.Context, name string) error
 	DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) error
 	DeleteUser(ctx context.Context, id int64) error
@@ -29,19 +29,19 @@ type Querier interface {
 	GetAllPublishers(ctx context.Context, arg GetAllPublishersParams) ([]Publisher, error)
 	GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]User, error)
 	GetAuthorByName(ctx context.Context, name string) (Author, error)
-	GetBookById(ctx context.Context, id int64) (Book, error)
-	GetBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error)
-	GetBooksByGenreName(ctx context.Context, arg GetBooksByGenreNameParams) ([]int64, error)
-	GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error)
-	GetBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error)
+	GetBooksByAuthor(ctx context.Context, authorName string) ([]GetBooksByAuthorRow, error)
+	GetBooksByID(ctx context.Context, id int64) (GetBooksByIDRow, error)
+	GetBooksByISBN(ctx context.Context, isbn sql.NullString) ([]GetBooksByISBNRow, error)
+	GetBooksByPublisher(ctx context.Context, publisherName string) ([]GetBooksByPublisherRow, error)
+	GetBooksByTitle(ctx context.Context, title sql.NullString) ([]GetBooksByTitleRow, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
 	GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error)
 	GetPublisherByName(ctx context.Context, name string) (Publisher, error)
-	GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (ReadingHistory, error)
-	GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]ReadingHistory, error)
-	GetReadingHistoryByUserID(ctx context.Context, arg GetReadingHistoryByUserIDParams) ([]ReadingHistory, error)
+	GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (GetReadingHistoryByUserAndBookRow, error)
+	GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]GetReadingHistoryByUserAndStatusRow, error)
+	GetReadingHistoryByUserID(ctx context.Context, arg GetReadingHistoryByUserIDParams) ([]GetReadingHistoryByUserIDRow, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
-	GetUserById(ctx context.Context, id int64) (User, error)
+	GetUserByID(ctx context.Context, id int64) (User, error)
 	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)
 	UpdateReadingHistory(ctx context.Context, arg UpdateReadingHistoryParams) (ReadingHistory, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
