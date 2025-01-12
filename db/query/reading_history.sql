@@ -30,9 +30,15 @@ ORDER BY rh.created_at LIMIT $2
 OFFSET $3;
 
 -- name: GetReadingHistoryByUserAndBook :one
+WITH genre_aggregation AS (SELECT bg.book_id,
+                                  STRING_AGG(g.name, ', ') AS genres
+                           FROM book_genres bg
+                                    LEFT JOIN genres g ON bg.genre_name = g.name
+                           GROUP BY bg.book_id)
+
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       ga.genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -45,12 +51,9 @@ SELECT b.id,
        rh.end_date
 FROM reading_histories rh
          LEFT JOIN books b ON b.id = rh.book_id
-         LEFT JOIN book_genres bg on b.id = bg.book_id
-         LEFT JOIN genres g on bg.genre_name = g.name
+         LEFT JOIN genre_aggregation ga ON b.id = ga.book_id
 WHERE rh.user_id = $1
-  AND rh.book_id = $2
-GROUP BY b.id
-ORDER BY rh.created_at;
+  AND rh.book_id = $2;
 
 -- name: GetReadingHistoryByUserAndStatus :many
 WITH genre_aggregation AS (SELECT bg.book_id,
