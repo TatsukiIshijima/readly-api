@@ -18,18 +18,36 @@ func createRandomReadingHistory(t *testing.T, user db.User, genresLen int, statu
 		createRandomBookGenre(t, b, g)
 		genres[i] = g
 	}
+	y, m, d := time.Now().Date()
+	startDate := sql.NullTime{
+		Time:  time.Time{},
+		Valid: false,
+	}
+	endDate := sql.NullTime{
+		Time:  time.Time{},
+		Valid: false,
+	}
+	switch status {
+	case db.ReadingStatusUnread:
+	case db.ReadingStatusReading:
+		startDate = sql.NullTime{
+			Time:  time.Date(y, m, d, 0, 0, 0, 0, time.UTC),
+			Valid: true,
+		}
+	case db.ReadingStatusDone:
+		endDate = sql.NullTime{
+			Time:  time.Date(y, m, d, 0, 0, 0, 0, time.UTC),
+			Valid: true,
+		}
+	default:
+		t.Fatalf("invalid status: %v", status)
+	}
 	arg := db.CreateReadingHistoryParams{
-		BookID: b.ID,
-		UserID: user.ID,
-		Status: status,
-		StartDate: sql.NullTime{
-			Time:  time.Time{},
-			Valid: false,
-		},
-		EndDate: sql.NullTime{
-			Time:  time.Time{},
-			Valid: false,
-		},
+		BookID:    b.ID,
+		UserID:    user.ID,
+		Status:    status,
+		StartDate: startDate,
+		EndDate:   endDate,
 	}
 	rh, err := querier.CreateReadingHistory(context.Background(), arg)
 	require.NoError(t, err)
@@ -39,11 +57,24 @@ func createRandomReadingHistory(t *testing.T, user db.User, genresLen int, statu
 	require.Equal(t, user.ID, rh.UserID)
 	require.Equal(t, b.ID, rh.BookID)
 	require.Equal(t, arg.Status, rh.Status)
-	require.Equal(t, arg.StartDate, rh.StartDate)
-	require.Equal(t, arg.EndDate, rh.EndDate)
+	compareNullTimes(t, arg.StartDate, rh.StartDate)
+	compareNullTimes(t, arg.EndDate, rh.EndDate)
 	require.NotZero(t, rh.CreatedAt)
 	require.NotZero(t, rh.UpdatedAt)
 	return b, genres, rh
+}
+
+func compareNullTimes(t *testing.T, t1 sql.NullTime, t2 sql.NullTime) {
+	if t1.Valid != t2.Valid {
+		require.Fail(t, "Valid field is different")
+	}
+	if t1.Valid == false && t2.Valid == false {
+		require.Equal(t, t1.Valid, t2.Valid)
+	} else if t1.Valid == true && t2.Valid == true {
+		lt1 := t1.Time.UTC()
+		lt2 := t2.Time.UTC()
+		require.Equal(t, lt1, lt2)
+	}
 }
 
 func TestCreateReadingHistory(t *testing.T) {
