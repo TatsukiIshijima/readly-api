@@ -3,37 +3,83 @@ package user
 import (
 	"context"
 	sqlc "readly/db/sqlc"
-	"readly/domain"
+	"readly/entity"
 )
 
 type Repository interface {
-	Register(ctx context.Context, req RegisterRequest) (*domain.User, error)
-	Login(ctx context.Context, req LoginRequest) (*domain.User, error)
-	GetByID(ctx context.Context, id int64) (*domain.User, error)
-	GetByEmail(ctx context.Context, email string) (*domain.User, error)
-	Update(ctx context.Context, req UpdateRequest) (*domain.User, error)
-	Delete(ctx context.Context, id int64) error
+	CreateUser(ctx context.Context, req CreateUserRequest) (*entity.User, error)
+	DeleteUser(ctx context.Context, id int64) error
+	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
+	GetUserByID(ctx context.Context, id int64) (*entity.User, error)
+	UpdateUser(ctx context.Context, req UpdateRequest) (*entity.User, error)
 }
 
 type RepositoryImpl struct {
-	container sqlc.Container
+	container *sqlc.Container
 }
 
-func NewRepository(db sqlc.DBTX, q sqlc.Querier) RepositoryImpl {
+func NewUserRepository(container *sqlc.Container) RepositoryImpl {
 	return RepositoryImpl{
-		container: sqlc.NewContainer(db, q),
+		container: container,
 	}
 }
 
-type RegisterRequest struct {
+type CreateUserRequest struct {
 	Name     string
 	Email    string
 	Password string
 }
 
-type LoginRequest struct {
-	Email    string
-	Password string
+func (r RepositoryImpl) CreateUser(ctx context.Context, req CreateUserRequest) (*entity.User, error) {
+	args := sqlc.CreateUserParams{
+		Name:           req.Name,
+		Email:          req.Email,
+		HashedPassword: req.Password,
+	}
+	res, err := r.container.Querier.CreateUser(ctx, args)
+	if err != nil {
+		return nil, err
+	}
+	u := &entity.User{
+		ID:    res.ID,
+		Name:  res.Name,
+		Email: res.Email,
+	}
+	return u, nil
+}
+
+func (r RepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
+	err := r.container.Querier.DeleteUser(ctx, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r RepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+	res, err := r.container.Querier.GetUserByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+	u := &entity.User{
+		ID:    res.ID,
+		Name:  res.Name,
+		Email: res.Email,
+	}
+	return u, nil
+}
+
+func (r RepositoryImpl) GetUserByID(ctx context.Context, id int64) (*entity.User, error) {
+	res, err := r.container.Querier.GetUserByID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	u := &entity.User{
+		ID:    res.ID,
+		Name:  res.Name,
+		Email: res.Email,
+	}
+	return u, nil
 }
 
 type UpdateRequest struct {
@@ -43,61 +89,21 @@ type UpdateRequest struct {
 	Password string
 }
 
-func (r RepositoryImpl) Register(ctx context.Context, req RegisterRequest) (*domain.User, error) {
-	args := sqlc.CreateUserParams{
+func (r RepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) (*entity.User, error) {
+	args := sqlc.UpdateUserParams{
+		ID:             req.ID,
 		Name:           req.Name,
 		Email:          req.Email,
 		HashedPassword: req.Password,
 	}
-	user, err := r.container.Querier.CreateUser(ctx, args)
+	res, err := r.container.Querier.UpdateUser(ctx, args)
 	if err != nil {
 		return nil, err
 	}
-	res := &domain.User{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+	u := &entity.User{
+		ID:    res.ID,
+		Name:  res.Name,
+		Email: res.Email,
 	}
-	return res, nil
-}
-
-func (r RepositoryImpl) Login(ctx context.Context, req LoginRequest) (*domain.User, error) {
-	// TODO: Implement
-	return &domain.User{}, nil
-}
-
-func (r RepositoryImpl) GetByID(ctx context.Context, id int64) (*domain.User, error) {
-	user, err := r.container.Querier.GetUserById(ctx, id)
-	if err != nil {
-		return nil, err
-	}
-	res := &domain.User{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-	}
-	return res, nil
-}
-
-func (r RepositoryImpl) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
-	user, err := r.container.Querier.GetUserByEmail(ctx, email)
-	if err != nil {
-		return nil, err
-	}
-	res := &domain.User{
-		ID:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
-	}
-	return res, nil
-}
-
-func (r RepositoryImpl) Update(ctx context.Context, req UpdateRequest) (*domain.User, error) {
-	// TODO: Implement
-	return &domain.User{}, nil
-}
-
-func (r RepositoryImpl) Delete(ctx context.Context, id int64) error {
-	// TODO: Implement
-	return nil
+	return u, nil
 }
