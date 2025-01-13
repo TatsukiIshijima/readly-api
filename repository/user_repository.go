@@ -6,7 +6,7 @@ import (
 	"readly/entity"
 )
 
-type Repository interface {
+type UserRepository interface {
 	CreateUser(ctx context.Context, req CreateUserRequest) (*entity.User, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetUserByEmail(ctx context.Context, email string) (*entity.User, error)
@@ -14,12 +14,12 @@ type Repository interface {
 	UpdateUser(ctx context.Context, req UpdateRequest) (*entity.User, error)
 }
 
-type RepositoryImpl struct {
+type UserRepositoryImpl struct {
 	container *sqlc.Container
 }
 
-func NewUserRepository(container *sqlc.Container) RepositoryImpl {
-	return RepositoryImpl{
+func NewUserRepository(container *sqlc.Container) UserRepositoryImpl {
+	return UserRepositoryImpl{
 		container: container,
 	}
 }
@@ -30,7 +30,7 @@ type CreateUserRequest struct {
 	Password string
 }
 
-func (r RepositoryImpl) CreateUser(ctx context.Context, req CreateUserRequest) (*entity.User, error) {
+func (r UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserRequest) (*entity.User, error) {
 	args := sqlc.CreateUserParams{
 		Name:           req.Name,
 		Email:          req.Email,
@@ -48,7 +48,7 @@ func (r RepositoryImpl) CreateUser(ctx context.Context, req CreateUserRequest) (
 	return u, nil
 }
 
-func (r RepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
+func (r UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
 	err := r.container.Querier.DeleteUser(ctx, id)
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func (r RepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (r RepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
+func (r UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*entity.User, error) {
 	res, err := r.container.Querier.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -69,7 +69,7 @@ func (r RepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*enti
 	return u, nil
 }
 
-func (r RepositoryImpl) GetUserByID(ctx context.Context, id int64) (*entity.User, error) {
+func (r UserRepositoryImpl) GetUserByID(ctx context.Context, id int64) (*entity.User, error) {
 	res, err := r.container.Querier.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -89,7 +89,7 @@ type UpdateRequest struct {
 	Password string
 }
 
-func (r RepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) (*entity.User, error) {
+func (r UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) (*entity.User, error) {
 	args := sqlc.UpdateUserParams{
 		ID:             req.ID,
 		Name:           req.Name,

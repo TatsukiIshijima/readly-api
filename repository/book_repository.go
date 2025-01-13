@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-type Repository interface {
+type BookRepository interface {
 	CreateAuthor(ctx context.Context, name string) (*string, error)
 	CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error)
 	CreateBookGenre(ctx context.Context, req CreateBookGenreRequest) (*CreateBookGenreResponse, error)
@@ -22,17 +22,17 @@ type Repository interface {
 	GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error)
 }
 
-type RepositoryImpl struct {
+type BookRepositoryImpl struct {
 	querier sqlc.Querier
 }
 
-func NewBookRepository(q sqlc.Querier) Repository {
-	return RepositoryImpl{
+func NewBookRepository(q sqlc.Querier) BookRepository {
+	return BookRepositoryImpl{
 		querier: q,
 	}
 }
 
-func (r RepositoryImpl) CreateAuthor(ctx context.Context, name string) (*string, error) {
+func (r BookRepositoryImpl) CreateAuthor(ctx context.Context, name string) (*string, error) {
 	author, err := r.querier.CreateAuthor(ctx, name)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func newCreateResponse(b sqlc.Book) *CreateBookResponse {
 	}
 }
 
-func (r RepositoryImpl) CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error) {
+func (r BookRepositoryImpl) CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error) {
 	p := req.toParams()
 	b, err := r.querier.CreateBook(ctx, p)
 	if err != nil {
@@ -139,7 +139,7 @@ func newCreateBookGenreResponse(b sqlc.BookGenre) *CreateBookGenreResponse {
 	}
 }
 
-func (r RepositoryImpl) CreateBookGenre(ctx context.Context, req CreateBookGenreRequest) (*CreateBookGenreResponse, error) {
+func (r BookRepositoryImpl) CreateBookGenre(ctx context.Context, req CreateBookGenreRequest) (*CreateBookGenreResponse, error) {
 	p := req.toParams()
 	b, err := r.querier.CreateBookGenre(ctx, p)
 	if err != nil {
@@ -148,7 +148,7 @@ func (r RepositoryImpl) CreateBookGenre(ctx context.Context, req CreateBookGenre
 	return newCreateBookGenreResponse(b), nil
 }
 
-func (r RepositoryImpl) CreateGenre(ctx context.Context, name string) (*string, error) {
+func (r BookRepositoryImpl) CreateGenre(ctx context.Context, name string) (*string, error) {
 	g, err := r.querier.CreateGenre(ctx, name)
 	if err != nil {
 		return nil, err
@@ -156,7 +156,7 @@ func (r RepositoryImpl) CreateGenre(ctx context.Context, name string) (*string, 
 	return &g.Name, nil
 }
 
-func (r RepositoryImpl) CreatePublisher(ctx context.Context, name string) (*string, error) {
+func (r BookRepositoryImpl) CreatePublisher(ctx context.Context, name string) (*string, error) {
 	p, err := r.querier.CreatePublisher(ctx, name)
 	if err != nil {
 		return nil, err
@@ -164,11 +164,11 @@ func (r RepositoryImpl) CreatePublisher(ctx context.Context, name string) (*stri
 	return &p.Name, nil
 }
 
-func (r RepositoryImpl) DeleteAuthor(ctx context.Context, name string) error {
+func (r BookRepositoryImpl) DeleteAuthor(ctx context.Context, name string) error {
 	return r.querier.DeleteAuthor(ctx, name)
 }
 
-func (r RepositoryImpl) DeleteBook(ctx context.Context, id int64) error {
+func (r BookRepositoryImpl) DeleteBook(ctx context.Context, id int64) error {
 	return r.querier.DeleteBook(ctx, id)
 }
 
@@ -177,7 +177,7 @@ type DeleteBookGenreRequest struct {
 	GenreName string
 }
 
-func (r RepositoryImpl) DeleteBookGenre(ctx context.Context, req DeleteBookGenreRequest) error {
+func (r BookRepositoryImpl) DeleteBookGenre(ctx context.Context, req DeleteBookGenreRequest) error {
 	p := sqlc.DeleteBookGenreParams{
 		BookID:    req.BookID,
 		GenreName: req.GenreName,
@@ -185,11 +185,11 @@ func (r RepositoryImpl) DeleteBookGenre(ctx context.Context, req DeleteBookGenre
 	return r.querier.DeleteBookGenre(ctx, p)
 }
 
-func (r RepositoryImpl) DeleteGenre(ctx context.Context, name string) error {
+func (r BookRepositoryImpl) DeleteGenre(ctx context.Context, name string) error {
 	return r.querier.DeleteGenre(ctx, name)
 }
 
-func (r RepositoryImpl) DeletePublisher(ctx context.Context, name string) error {
+func (r BookRepositoryImpl) DeletePublisher(ctx context.Context, name string) error {
 	return r.querier.DeletePublisher(ctx, name)
 }
 
@@ -221,7 +221,7 @@ func newGetBookResponse(b sqlc.GetBooksByIDRow) *GetBookResponse {
 	}
 }
 
-func (r RepositoryImpl) GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error) {
+func (r BookRepositoryImpl) GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error) {
 	b, err := r.querier.GetBooksByID(ctx, id)
 	if err != nil {
 		return nil, err
