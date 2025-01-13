@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
+	"readly/testdata"
 	"testing"
 )
 
@@ -22,13 +23,25 @@ func createRandomBookGenre(t *testing.T, book db.Book, genre db.Genre) {
 }
 
 func TestCreateBookGenre(t *testing.T) {
-	book := createBook(t, "", "", "", "")
+	book := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		testdata.RandomString(13),
+	)
 	genre := createRandomGenre(t)
 	createRandomBookGenre(t, book, genre)
 }
 
 func TestDeleteBookGenre(t *testing.T) {
-	book := createBook(t, "", "", "", "")
+	book := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		testdata.RandomString(13),
+	)
 	genre1 := createRandomGenre(t)
 	genre2 := createRandomGenre(t)
 	genre3 := createRandomGenre(t)

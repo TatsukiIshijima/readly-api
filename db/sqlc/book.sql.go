@@ -29,8 +29,8 @@ type CreateBookParams struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 }
@@ -102,15 +102,15 @@ type GetBooksByAuthorRow struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 }
 
-func (q *Queries) GetBooksByAuthor(ctx context.Context, authorName string) ([]GetBooksByAuthorRow, error) {
+func (q *Queries) GetBooksByAuthor(ctx context.Context, authorName sql.NullString) ([]GetBooksByAuthorRow, error) {
 	rows, err := q.db.QueryContext(ctx, getBooksByAuthor, authorName)
 	if err != nil {
 		return nil, err
@@ -173,8 +173,8 @@ type GetBooksByIDRow struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 	CreatedAt     time.Time      `json:"created_at"`
@@ -229,8 +229,8 @@ type GetBooksByISBNRow struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 	CreatedAt     time.Time      `json:"created_at"`
@@ -301,15 +301,15 @@ type GetBooksByPublisherRow struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
 }
 
-func (q *Queries) GetBooksByPublisher(ctx context.Context, publisherName string) ([]GetBooksByPublisherRow, error) {
+func (q *Queries) GetBooksByPublisher(ctx context.Context, publisherName sql.NullString) ([]GetBooksByPublisherRow, error) {
 	rows, err := q.db.QueryContext(ctx, getBooksByPublisher, publisherName)
 	if err != nil {
 		return nil, err
@@ -373,8 +373,8 @@ type GetBooksByTitleRow struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 	CreatedAt     time.Time      `json:"created_at"`
@@ -437,8 +437,8 @@ type UpdateBookParams struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 }

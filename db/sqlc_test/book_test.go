@@ -14,64 +14,46 @@ import (
 )
 
 func createBook(t *testing.T, title string, author string, publisher string, isbn string) db.Book {
-	if title == "" {
-		title = testdata.RandomString(6)
+	tl := sql.NullString{
+		String: title,
+		Valid:  title != "",
 	}
-	if author == "" {
-		author = testdata.RandomString(6)
+	require.True(t, tl.Valid)
+	desc := sql.NullString{
+		String: testdata.RandomString(12),
+		Valid:  true,
 	}
-	if publisher == "" {
-		publisher = testdata.RandomString(6)
+	imgURL := sql.NullString{
+		String: "https://example.com",
+		Valid:  true,
 	}
-	if isbn == "" {
-		isbn = testdata.RandomString(13)
+	URL := sql.NullString{
+		String: "https://example.com",
+		Valid:  true,
+	}
+	pubDate := sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
+	ISBN := sql.NullString{
+		String: isbn,
+		Valid:  isbn != "",
 	}
 
-	var err error
-	_, err = querier.CreateAuthor(context.Background(), author)
-	_, err = querier.CreatePublisher(context.Background(), publisher)
-	if err != nil {
-		var pqErr *pq.Error
-		if !errors.As(err, &pqErr) {
-			if pqErr.Code != "23505" {
-				require.Fail(t, "unexpected error: %v", err)
-			}
-		}
-	}
-	a, err := querier.GetAuthorByName(context.Background(), author)
+	auth, err := createAuthorIfNeed(t, author)
 	require.NoError(t, err)
-	require.Equal(t, author, a.Name)
-	p, err := querier.GetPublisherByName(context.Background(), publisher)
+	pub, err := createPublisherIfNeed(t, publisher)
 	require.NoError(t, err)
-	require.Equal(t, publisher, p.Name)
 
 	arg := db.CreateBookParams{
-		Title: sql.NullString{
-			String: title,
-			Valid:  true,
-		},
-		Description: sql.NullString{
-			String: testdata.RandomString(12),
-			Valid:  true,
-		},
-		CoverImageUrl: sql.NullString{
-			String: "https://example.com",
-			Valid:  true,
-		},
-		Url: sql.NullString{
-			String: "https://example.com",
-			Valid:  true,
-		},
-		AuthorName:    a.Name,
-		PublisherName: p.Name,
-		PublishedDate: sql.NullTime{
-			Time:  time.Now(),
-			Valid: true,
-		},
-		Isbn: sql.NullString{
-			String: isbn,
-			Valid:  true,
-		},
+		Title:         tl,
+		Description:   desc,
+		CoverImageUrl: imgURL,
+		Url:           URL,
+		AuthorName:    auth,
+		PublisherName: pub,
+		PublishedDate: pubDate,
+		Isbn:          ISBN,
 	}
 
 	book, err := querier.CreateBook(context.Background(), arg)
@@ -91,13 +73,78 @@ func createBook(t *testing.T, title string, author string, publisher string, isb
 	return book
 }
 
+func createAuthorIfNeed(t *testing.T, author string) (sql.NullString, error) {
+	auth := sql.NullString{
+		String: author,
+		Valid:  author != "",
+	}
+	if !auth.Valid {
+		return auth, nil
+	}
+	_, err := querier.CreateAuthor(context.Background(), author)
+	if err != nil {
+		checkDuplicateKeyError(t, err)
+		return auth, nil
+	}
+	ga, err := querier.GetAuthorByName(context.Background(), author)
+	require.NoError(t, err)
+	require.Equal(t, author, ga.Name)
+	return sql.NullString{String: ga.Name, Valid: true}, nil
+}
+
+func createPublisherIfNeed(t *testing.T, publisher string) (sql.NullString, error) {
+	pub := sql.NullString{
+		String: publisher,
+		Valid:  publisher != "",
+	}
+	if !pub.Valid {
+		return pub, nil
+	}
+	_, err := querier.CreatePublisher(context.Background(), publisher)
+	if err != nil {
+		checkDuplicateKeyError(t, err)
+		return pub, nil
+	}
+	dp, err := querier.GetPublisherByName(context.Background(), publisher)
+	require.NoError(t, err)
+	require.Equal(t, publisher, dp.Name)
+	return sql.NullString{String: publisher, Valid: true}, nil
+}
+
+func checkDuplicateKeyError(t *testing.T, err error) {
+	var pqErr *pq.Error
+	if !errors.As(err, &pqErr) {
+		if pqErr.Code != "23505" {
+			require.Fail(t, "unexpected error: %v", err)
+		}
+	}
+}
+
 func TestCreateBook(t *testing.T) {
-	createBook(t, "", "", "", "")
+	createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		testdata.RandomString(13),
+	)
 }
 
 func TestGetBookByID(t *testing.T) {
-	bookWithEmptyGenres := createBook(t, "", "", "", "")
-	bookWithGenres := createBook(t, "", "", "", "")
+	bookWithEmptyGenres := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		testdata.RandomString(13),
+	)
+	bookWithGenres := createBook(
+		t,
+		testdata.RandomString(6),
+		testdata.RandomString(8),
+		testdata.RandomString(10),
+		testdata.RandomString(13),
+	)
 	genre1 := createRandomGenre(t)
 	genre2 := createRandomGenre(t)
 	genre3 := createRandomGenre(t)
@@ -145,8 +192,20 @@ func TestGetBookByID(t *testing.T) {
 
 func TestGetBooksByTitle(t *testing.T) {
 	title := testdata.RandomString(8)
-	bookWithEmptyGenres := createBook(t, title, "", "", "")
-	bookWithGenres := createBook(t, title, "", "", "")
+	bookWithEmptyGenres := createBook(
+		t,
+		title,
+		"",
+		"",
+		testdata.RandomString(13),
+	)
+	bookWithGenres := createBook(
+		t,
+		title,
+		testdata.RandomString(8),
+		testdata.RandomString(10),
+		testdata.RandomString(13),
+	)
 	genre1 := createRandomGenre(t)
 	genre2 := createRandomGenre(t)
 	genre3 := createRandomGenre(t)
@@ -197,7 +256,13 @@ func TestGetBooksByTitle(t *testing.T) {
 
 func TestGetBooksByISBN(t *testing.T) {
 	ISBN := testdata.RandomString(13)
-	book := createBook(t, "", "", "", ISBN)
+	book := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		ISBN,
+	)
 	genre := createRandomGenre(t)
 	createRandomBookGenre(t, book, genre)
 
@@ -229,9 +294,21 @@ func TestGetBooksByISBN(t *testing.T) {
 }
 
 func TestGetBooksByAuthor(t *testing.T) {
-	author := testdata.RandomString(6)
-	bookWithEmptyGenres := createBook(t, "", author, "", "")
-	bookWithGenres := createBook(t, "", author, "", "")
+	author := testdata.RandomString(8)
+	bookWithEmptyGenres := createBook(
+		t,
+		testdata.RandomString(6),
+		author,
+		"",
+		testdata.RandomString(13),
+	)
+	bookWithGenres := createBook(
+		t,
+		testdata.RandomString(6),
+		author,
+		testdata.RandomString(10),
+		testdata.RandomString(13),
+	)
 	genre1 := createRandomGenre(t)
 	genre2 := createRandomGenre(t)
 	createRandomBookGenre(t, bookWithGenres, genre1)
@@ -239,7 +316,10 @@ func TestGetBooksByAuthor(t *testing.T) {
 
 	result, err := querier.GetBooksByAuthor(
 		context.Background(),
-		author,
+		sql.NullString{
+			String: author,
+			Valid:  true,
+		},
 	)
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
@@ -276,9 +356,21 @@ func TestGetBooksByAuthor(t *testing.T) {
 }
 
 func TestGetBooksByPublisher(t *testing.T) {
-	publisher := testdata.RandomString(6)
-	bookWithEmptyGenres := createBook(t, "", "", publisher, "")
-	bookWithGenres := createBook(t, "", "", publisher, "")
+	publisher := testdata.RandomString(10)
+	bookWithEmptyGenres := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		publisher,
+		testdata.RandomString(13),
+	)
+	bookWithGenres := createBook(
+		t,
+		testdata.RandomString(6),
+		testdata.RandomString(8),
+		publisher,
+		testdata.RandomString(13),
+	)
 	genre1 := createRandomGenre(t)
 	genre2 := createRandomGenre(t)
 	createRandomBookGenre(t, bookWithGenres, genre1)
@@ -286,7 +378,10 @@ func TestGetBooksByPublisher(t *testing.T) {
 
 	result, err := querier.GetBooksByPublisher(
 		context.Background(),
-		publisher,
+		sql.NullString{
+			String: publisher,
+			Valid:  true,
+		},
 	)
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
@@ -323,7 +418,13 @@ func TestGetBooksByPublisher(t *testing.T) {
 }
 
 func TestUpdateBook(t *testing.T) {
-	book1 := createBook(t, "", "", "", "")
+	book1 := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		testdata.RandomString(13),
+	)
 
 	arg := db.UpdateBookParams{
 		ID:            book1.ID,
@@ -353,7 +454,13 @@ func TestUpdateBook(t *testing.T) {
 }
 
 func TestDeleteBook(t *testing.T) {
-	book1 := createBook(t, "", "", "", "")
+	book1 := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		testdata.RandomString(13),
+	)
 	err := querier.DeleteBook(context.Background(), book1.ID)
 	require.NoError(t, err)
 

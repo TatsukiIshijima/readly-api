@@ -67,8 +67,8 @@ type Book struct {
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 	CreatedAt     time.Time      `json:"created_at"`

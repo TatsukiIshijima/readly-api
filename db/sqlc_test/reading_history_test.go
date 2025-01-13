@@ -5,13 +5,20 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
+	"readly/testdata"
 	"strings"
 	"testing"
 	"time"
 )
 
 func createRandomReadingHistory(t *testing.T, user db.User, genresLen int, status db.ReadingStatus) (db.Book, []db.Genre, db.ReadingHistory) {
-	b := createBook(t, "", "", "", "")
+	b := createBook(
+		t,
+		testdata.RandomString(6),
+		"",
+		"",
+		testdata.RandomString(13),
+	)
 	genres := make([]db.Genre, genresLen)
 	for i := 0; i < genresLen; i++ {
 		g := createRandomGenre(t)
@@ -113,8 +120,8 @@ func TestGetReadingHistoryByUser(t *testing.T) {
 	require.Equal(t, result1[0].Description, b1.Description)
 	require.Equal(t, result1[0].CoverImageUrl, b1.CoverImageUrl)
 	require.Equal(t, result1[0].Url, b1.Url)
-	require.Equal(t, result1[0].AuthorName, sql.NullString{String: b1.AuthorName, Valid: true})
-	require.Equal(t, result1[0].PublisherName, sql.NullString{String: b1.PublisherName, Valid: true})
+	require.Equal(t, result1[0].AuthorName, b1.AuthorName)
+	require.Equal(t, result1[0].PublisherName, b1.PublisherName)
 	require.Equal(t, result1[0].PublishedDate, b1.PublishedDate)
 	require.Equal(t, result1[0].Isbn, b1.Isbn)
 	require.Equal(t, result1[0].Status, rh1.Status)
@@ -131,8 +138,8 @@ func TestGetReadingHistoryByUser(t *testing.T) {
 	require.Equal(t, result1[1].Description, b2.Description)
 	require.Equal(t, result1[1].CoverImageUrl, b2.CoverImageUrl)
 	require.Equal(t, result1[1].Url, b2.Url)
-	require.Equal(t, result1[1].AuthorName, sql.NullString{String: b2.AuthorName, Valid: true})
-	require.Equal(t, result1[1].PublisherName, sql.NullString{String: b2.PublisherName, Valid: true})
+	require.Equal(t, result1[1].AuthorName, b2.AuthorName)
+	require.Equal(t, result1[1].PublisherName, b2.PublisherName)
 	require.Equal(t, result1[1].PublishedDate, b2.PublishedDate)
 	require.Equal(t, result1[1].Isbn, b2.Isbn)
 	require.Equal(t, result1[1].Status, rh2.Status)
@@ -162,8 +169,8 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	require.Equal(t, result[0].Description, b2.Description)
 	require.Equal(t, result[0].CoverImageUrl, b2.CoverImageUrl)
 	require.Equal(t, result[0].Url, b2.Url)
-	require.Equal(t, result[0].AuthorName, sql.NullString{String: b2.AuthorName, Valid: true})
-	require.Equal(t, result[0].PublisherName, sql.NullString{String: b2.PublisherName, Valid: true})
+	require.Equal(t, result[0].AuthorName, b2.AuthorName)
+	require.Equal(t, result[0].PublisherName, b2.PublisherName)
 	require.Equal(t, result[0].PublishedDate, b2.PublishedDate)
 	require.Equal(t, result[0].Isbn, b2.Isbn)
 	require.Equal(t, result[0].Status, db.ReadingStatusReading)
@@ -180,8 +187,8 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	require.Equal(t, result[1].Description, b3.Description)
 	require.Equal(t, result[1].CoverImageUrl, b3.CoverImageUrl)
 	require.Equal(t, result[1].Url, b3.Url)
-	require.Equal(t, result[1].AuthorName, sql.NullString{String: b3.AuthorName, Valid: true})
-	require.Equal(t, result[1].PublisherName, sql.NullString{String: b3.PublisherName, Valid: true})
+	require.Equal(t, result[1].AuthorName, b3.AuthorName)
+	require.Equal(t, result[1].PublisherName, b3.PublisherName)
 	require.Equal(t, result[1].PublishedDate, b3.PublishedDate)
 	require.Equal(t, result[1].Isbn, b3.Isbn)
 	require.Equal(t, result[1].Status, db.ReadingStatusReading)
