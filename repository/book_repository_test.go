@@ -127,6 +127,37 @@ func TestDeleteBook(t *testing.T) {
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
+func TestDeleteBookGenre(t *testing.T) {
+	b := createRandomBook(t)
+	g := createRandomGenre(t)
+
+	req := CreateBookGenreRequest{
+		BookID:    b.ID,
+		GenreName: *g,
+	}
+	_, err := bookRepo.CreateBookGenre(context.Background(), req)
+	require.NoError(t, err)
+
+	err = bookRepo.DeleteBookGenre(context.Background(), DeleteBookGenreRequest{
+		BookID:    b.ID,
+		GenreName: *g,
+	})
+	require.NoError(t, err)
+
+	gg, err := querier.GetGenresByBookID(context.Background(), b.ID)
+	require.NoError(t, err)
+	require.Empty(t, gg)
+}
+
+func TestDeleteGenre(t *testing.T) {
+	g := createRandomGenre(t)
+	err := bookRepo.DeleteGenre(context.Background(), *g)
+	require.NoError(t, err)
+
+	_, err = querier.GetGenreByName(context.Background(), *g)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+}
+
 //func TestRegister(t *testing.T) {
 //	user, err := repository.createRandomUser()
 //	require.NoError(t, err)
