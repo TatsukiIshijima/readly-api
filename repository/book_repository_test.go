@@ -118,6 +118,15 @@ func TestDeleteAuthor(t *testing.T) {
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
+func TestDeleteBook(t *testing.T) {
+	b := createRandomBook(t)
+	err := bookRepo.DeleteBook(context.Background(), b.ID)
+	require.NoError(t, err)
+
+	_, err = querier.GetBooksByID(context.Background(), b.ID)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+}
+
 //func TestRegister(t *testing.T) {
 //	user, err := repository.createRandomUser()
 //	require.NoError(t, err)
