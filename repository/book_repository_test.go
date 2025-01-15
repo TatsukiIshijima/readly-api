@@ -95,6 +95,20 @@ func TestCreateGenre(t *testing.T) {
 	require.Equal(t, *g, gg.Name)
 }
 
+func createRandomPublisher(t *testing.T) *string {
+	name := testdata.RandomString(8)
+	p, err := bookRepo.CreatePublisher(context.Background(), name)
+	require.NoError(t, err)
+	return p
+}
+
+func TestCreatePublisher(t *testing.T) {
+	p := createRandomPublisher(t)
+	gp, err := querier.GetPublisherByName(context.Background(), *p)
+	require.NoError(t, err)
+	require.Equal(t, *p, gp.Name)
+}
+
 //func TestRegister(t *testing.T) {
 //	user, err := repository.createRandomUser()
 //	require.NoError(t, err)
