@@ -9,18 +9,22 @@ import (
 	"time"
 )
 
-func TestCreateAuthor(t *testing.T) {
+func createRandomAuthor(t *testing.T) *string {
 	name := testdata.RandomString(8)
 	a, err := bookRepo.CreateAuthor(context.Background(), name)
 	require.NoError(t, err)
+	return a
+}
 
+func TestCreateAuthor(t *testing.T) {
+	a := createRandomAuthor(t)
 	ga, err := querier.GetAuthorByName(context.Background(), *a)
 	require.NoError(t, err)
 
 	require.Equal(t, *a, ga.Name)
 }
 
-func TestCreateBook(t *testing.T) {
+func createRandomBook(t *testing.T) *CreateBookResponse {
 	title := testdata.RandomString(8)
 	description := testdata.RandomString(10)
 	coverImageUrl := "https://example.com"
@@ -41,19 +45,54 @@ func TestCreateBook(t *testing.T) {
 
 	b, err := bookRepo.CreateBook(context.Background(), req)
 	require.NoError(t, err)
+	return b
+}
 
+func TestCreateBook(t *testing.T) {
+	b := createRandomBook(t)
 	gb, err := querier.GetBooksByID(context.Background(), b.ID)
 	require.NoError(t, err)
 
 	require.Equal(t, b.ID, gb.ID)
-	require.Equal(t, title, gb.Title.String)
-	require.Equal(t, description, gb.Description.String)
-	require.Equal(t, coverImageUrl, gb.CoverImageUrl.String)
-	require.Equal(t, url, gb.Url.String)
+	require.Equal(t, *b.Title, gb.Title.String)
+	require.Equal(t, *b.Description, gb.Description.String)
+	require.Equal(t, *b.CoverImageURL, gb.CoverImageUrl.String)
+	require.Equal(t, *b.URL, gb.Url.String)
 	require.Equal(t, sql.NullString{}, gb.AuthorName)
 	require.Equal(t, sql.NullString{}, gb.PublisherName)
-	require.Equal(t, publishDate, gb.PublishedDate.Time.UTC())
-	require.Equal(t, isbn, gb.Isbn.String)
+	require.Equal(t, *b.PublishDate, gb.PublishedDate.Time.UTC())
+	require.Equal(t, *b.ISBN, gb.Isbn.String)
+}
+
+func TestCreateBookGenre(t *testing.T) {
+	b := createRandomBook(t)
+	g := createRandomGenre(t)
+
+	req := CreateBookGenreRequest{
+		BookID:    b.ID,
+		GenreName: *g,
+	}
+	res, err := bookRepo.CreateBookGenre(context.Background(), req)
+	require.NoError(t, err)
+	require.NotEmpty(t, res)
+
+	gg, err := querier.GetGenresByBookID(context.Background(), b.ID)
+	require.NoError(t, err)
+	require.Equal(t, *g, gg[0])
+}
+
+func createRandomGenre(t *testing.T) *string {
+	name := testdata.RandomString(8)
+	g, err := bookRepo.CreateGenre(context.Background(), name)
+	require.NoError(t, err)
+	return g
+}
+
+func TestCreateGenre(t *testing.T) {
+	g := createRandomGenre(t)
+	gg, err := querier.GetGenreByName(context.Background(), *g)
+	require.NoError(t, err)
+	require.Equal(t, *g, gg.Name)
 }
 
 //func TestRegister(t *testing.T) {
