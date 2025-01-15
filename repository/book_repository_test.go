@@ -109,6 +109,15 @@ func TestCreatePublisher(t *testing.T) {
 	require.Equal(t, *p, gp.Name)
 }
 
+func TestDeleteAuthor(t *testing.T) {
+	a := createRandomAuthor(t)
+	err := bookRepo.DeleteAuthor(context.Background(), *a)
+	require.NoError(t, err)
+
+	_, err = querier.GetAuthorByName(context.Background(), *a)
+	require.ErrorIs(t, err, sql.ErrNoRows)
+}
+
 //func TestRegister(t *testing.T) {
 //	user, err := repository.createRandomUser()
 //	require.NoError(t, err)
