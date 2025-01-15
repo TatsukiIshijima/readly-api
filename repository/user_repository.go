@@ -14,12 +14,12 @@ type UserRepository interface {
 }
 
 type UserRepositoryImpl struct {
-	container *sqlc.Container
+	querier sqlc.Querier
 }
 
-func NewUserRepository(container *sqlc.Container) UserRepositoryImpl {
+func NewUserRepository(q sqlc.Querier) UserRepositoryImpl {
 	return UserRepositoryImpl{
-		container: container,
+		querier: q,
 	}
 }
 
@@ -41,7 +41,7 @@ func (r UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserReques
 		Email:          req.Email,
 		HashedPassword: req.Password,
 	}
-	res, err := r.container.Querier.CreateUser(ctx, args)
+	res, err := r.querier.CreateUser(ctx, args)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (r UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserReques
 }
 
 func (r UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
-	err := r.container.Querier.DeleteUser(ctx, id)
+	err := r.querier.DeleteUser(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ type GetUserResponse struct {
 }
 
 func (r UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*GetUserResponse, error) {
-	res, err := r.container.Querier.GetUserByEmail(ctx, email)
+	res, err := r.querier.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func (r UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*
 }
 
 func (r UserRepositoryImpl) GetUserByID(ctx context.Context, id int64) (*GetUserResponse, error) {
-	res, err := r.container.Querier.GetUserByID(ctx, id)
+	res, err := r.querier.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func (r UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) (
 		Email:          req.Email,
 		HashedPassword: req.Password,
 	}
-	res, err := r.container.Querier.UpdateUser(ctx, args)
+	res, err := r.querier.UpdateUser(ctx, args)
 	if err != nil {
 		return nil, err
 	}
