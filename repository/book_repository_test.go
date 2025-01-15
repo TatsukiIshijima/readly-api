@@ -1,11 +1,59 @@
 package repository
 
 import (
+	"context"
+	"database/sql"
+	"github.com/stretchr/testify/require"
+	"readly/testdata"
 	"testing"
+	"time"
 )
 
 func TestCreateAuthor(t *testing.T) {
+	name := testdata.RandomString(8)
+	a, err := bookRepo.CreateAuthor(context.Background(), name)
+	require.NoError(t, err)
 
+	ga, err := querier.GetAuthorByName(context.Background(), *a)
+	require.NoError(t, err)
+
+	require.Equal(t, *a, ga.Name)
+}
+
+func TestCreateBook(t *testing.T) {
+	title := testdata.RandomString(8)
+	description := testdata.RandomString(10)
+	coverImageUrl := "https://example.com"
+	url := "https://example.com"
+	publishDate := time.Now().UTC()
+	isbn := testdata.RandomString(13)
+
+	req := CreateBookRequest{
+		Title:         title,
+		Description:   &description,
+		CoverImageURL: &coverImageUrl,
+		URL:           &url,
+		Author:        nil,
+		Publisher:     nil,
+		PublishDate:   &publishDate,
+		ISBN:          &isbn,
+	}
+
+	b, err := bookRepo.CreateBook(context.Background(), req)
+	require.NoError(t, err)
+
+	gb, err := querier.GetBooksByID(context.Background(), b.ID)
+	require.NoError(t, err)
+
+	require.Equal(t, b.ID, gb.ID)
+	require.Equal(t, title, gb.Title.String)
+	require.Equal(t, description, gb.Description.String)
+	require.Equal(t, coverImageUrl, gb.CoverImageUrl.String)
+	require.Equal(t, url, gb.Url.String)
+	require.Equal(t, sql.NullString{}, gb.AuthorName)
+	require.Equal(t, sql.NullString{}, gb.PublisherName)
+	require.Equal(t, publishDate, gb.PublishedDate.Time.UTC())
+	require.Equal(t, isbn, gb.Isbn.String)
 }
 
 //func TestRegister(t *testing.T) {

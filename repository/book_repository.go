@@ -52,15 +52,44 @@ type CreateBookRequest struct {
 }
 
 func (r CreateBookRequest) toParams() sqlc.CreateBookParams {
+	t := sql.NullString{String: r.Title, Valid: true}
+	desc := sql.NullString{String: "", Valid: false}
+	coverImgURL := sql.NullString{String: "", Valid: false}
+	URL := sql.NullString{String: "", Valid: false}
+	a := sql.NullString{String: "", Valid: false}
+	p := sql.NullString{String: "", Valid: false}
+	pd := sql.NullTime{Time: time.Time{}, Valid: false}
+	ISBN := sql.NullString{String: "", Valid: false}
+	if r.Description != nil {
+		desc = sql.NullString{String: *r.Description, Valid: true}
+	}
+	if r.CoverImageURL != nil {
+		coverImgURL = sql.NullString{String: *r.CoverImageURL, Valid: true}
+	}
+	if r.URL != nil {
+		URL = sql.NullString{String: *r.URL, Valid: true}
+	}
+	if r.Author != nil {
+		a = sql.NullString{String: *r.Author, Valid: true}
+	}
+	if r.Publisher != nil {
+		p = sql.NullString{String: *r.Publisher, Valid: true}
+	}
+	if r.PublishDate != nil {
+		pd = sql.NullTime{Time: *r.PublishDate, Valid: true}
+	}
+	if r.ISBN != nil {
+		ISBN = sql.NullString{String: *r.ISBN, Valid: true}
+	}
 	return sqlc.CreateBookParams{
-		Title:         sql.NullString{String: r.Title, Valid: true},
-		Description:   sql.NullString{String: *r.Description, Valid: r.Description != nil},
-		CoverImageUrl: sql.NullString{String: *r.CoverImageURL, Valid: r.CoverImageURL != nil},
-		Url:           sql.NullString{String: *r.URL, Valid: r.URL != nil},
-		AuthorName:    sql.NullString{String: *r.Author, Valid: r.Author != nil},
-		PublisherName: sql.NullString{String: *r.Publisher, Valid: r.Publisher != nil},
-		PublishedDate: sql.NullTime{Time: *r.PublishDate, Valid: r.PublishDate != nil},
-		Isbn:          sql.NullString{String: *r.ISBN, Valid: r.ISBN != nil},
+		Title:         t,
+		Description:   desc,
+		CoverImageUrl: coverImgURL,
+		Url:           URL,
+		AuthorName:    a,
+		PublisherName: p,
+		PublishedDate: pd,
+		Isbn:          ISBN,
 	}
 }
 
