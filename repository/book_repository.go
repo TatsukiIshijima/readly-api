@@ -106,6 +106,14 @@ type CreateBookResponse struct {
 }
 
 // FIXME:移動
+func newInt64(ni sql.NullInt64) *int64 {
+	if !ni.Valid {
+		return nil
+	}
+	return &ni.Int64
+}
+
+// FIXME:移動
 func newString(ns sql.NullString) *string {
 	if !ns.Valid {
 		return nil
@@ -119,6 +127,11 @@ func newTime(nt sql.NullTime) *time.Time {
 		return nil
 	}
 	return &nt.Time
+}
+
+// FIXME:移動
+func newGenres(bytes []byte) []string {
+	return strings.Split(string(bytes), ", ")
 }
 
 func newCreateResponse(b sqlc.Book) *CreateBookResponse {
