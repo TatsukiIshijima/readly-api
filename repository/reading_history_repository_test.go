@@ -132,5 +132,25 @@ func TestGetByUserAndStatus(t *testing.T) {
 }
 
 func TestUpdate(t *testing.T) {
+	u := createRandomUser(t)
+	b := createRandomBook(t)
+	rh := createReadingHistory(t, u.ID, b.ID)
 
+	now := time.Now().UTC()
+	updateReq := UpdateReadingHistoryRequest{
+		UserID:    u.ID,
+		BookID:    b.ID,
+		Status:    Reading,
+		StartDate: &now,
+		EndDate:   nil,
+	}
+	urh, err := readingHistoryRepo.Update(context.Background(), updateReq)
+	require.NoError(t, err)
+
+	require.Equal(t, rh.BookID, urh.BookID)
+	require.Equal(t, Reading, urh.Status)
+	require.Equal(t, now.Year(), urh.StartDate.Year())
+	require.Equal(t, now.Month(), urh.StartDate.Month())
+	require.Equal(t, now.Day(), urh.StartDate.Day())
+	require.Nil(t, urh.EndDate)
 }
