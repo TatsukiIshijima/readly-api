@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"github.com/stretchr/testify/require"
 	sqlc "readly/db/sqlc"
 	"testing"
@@ -36,7 +37,20 @@ func TestCreate(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
+	uid, bid, _ := createReadingHistory(t)
+	req := DeleteReadingHistoryRequest{
+		UserID: uid,
+		BookID: bid,
+	}
+	err := readingHistoryRepo.Delete(context.Background(), req)
+	require.NoError(t, err)
 
+	param := sqlc.GetReadingHistoryByUserAndBookParams{
+		UserID: uid,
+		BookID: bid,
+	}
+	_, err = querier.GetReadingHistoryByUserAndBook(context.Background(), param)
+	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
 func TestGetByUser(t *testing.T) {
