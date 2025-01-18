@@ -97,8 +97,8 @@ func newCreateReadingHistoryResponse(r sqlc.ReadingHistory) *CreateReadingHistor
 	return &CreateReadingHistoryResponse{
 		BookID:    r.BookID,
 		Status:    newReadingStatus(r.Status),
-		StartDate: &r.StartDate.Time,
-		EndDate:   &r.EndDate.Time,
+		StartDate: nilTime(r.StartDate),
+		EndDate:   nilTime(r.EndDate),
 	}
 }
 

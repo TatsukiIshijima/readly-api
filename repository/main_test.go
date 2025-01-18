@@ -14,6 +14,7 @@ import (
 var querier sqlc.Querier
 var bookRepo BookRepository
 var userRepo UserRepository
+var readingHistoryRepo ReadingHistoryRepository
 
 func init() {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -29,5 +30,6 @@ func TestMain(m *testing.M) {
 	querier = q
 	bookRepo = NewBookRepository(q)
 	userRepo = NewUserRepository(q)
+	readingHistoryRepo = NewReadingHistoryRepository(q)
 	os.Exit(m.Run())
 }
