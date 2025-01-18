@@ -108,14 +108,14 @@ type CreateBookResponse struct {
 func newCreateResponse(b sqlc.Book) *CreateBookResponse {
 	return &CreateBookResponse{
 		ID:            b.ID,
-		Title:         newString(b.Title),
-		Description:   newString(b.Description),
-		CoverImageURL: newString(b.CoverImageUrl),
-		URL:           newString(b.Url),
-		Author:        newString(b.AuthorName),
-		Publisher:     newString(b.PublisherName),
-		PublishDate:   newTime(b.PublishedDate),
-		ISBN:          newString(b.Isbn),
+		Title:         nilString(b.Title),
+		Description:   nilString(b.Description),
+		CoverImageURL: nilString(b.CoverImageUrl),
+		URL:           nilString(b.Url),
+		Author:        nilString(b.AuthorName),
+		Publisher:     nilString(b.PublisherName),
+		PublishDate:   nilTime(b.PublishedDate),
+		ISBN:          nilString(b.Isbn),
 	}
 }
 
@@ -222,15 +222,15 @@ type GetBookResponse struct {
 func newGetBookResponse(b sqlc.GetBooksByIDRow) *GetBookResponse {
 	return &GetBookResponse{
 		ID:            b.ID,
-		Title:         newString(b.Title),
+		Title:         nilString(b.Title),
 		Genres:        strings.Split(string(b.Genres), ", "),
-		Description:   newString(b.Description),
-		CoverImageURL: newString(b.CoverImageUrl),
-		URL:           newString(b.Url),
-		AuthorName:    newString(b.AuthorName),
-		PublisherName: newString(b.PublisherName),
-		PublishDate:   newTime(b.PublishedDate),
-		ISBN:          newString(b.Isbn),
+		Description:   nilString(b.Description),
+		CoverImageURL: nilString(b.CoverImageUrl),
+		URL:           nilString(b.Url),
+		AuthorName:    nilString(b.AuthorName),
+		PublisherName: nilString(b.PublisherName),
+		PublishDate:   nilTime(b.PublishedDate),
+		ISBN:          nilString(b.Isbn),
 	}
 }
 

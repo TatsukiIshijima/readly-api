@@ -157,19 +157,19 @@ type GetReadingHistoryByUserResponse struct {
 }
 
 func newGetReadingHistoryByUserResponse(r sqlc.GetReadingHistoryByUserRow) GetReadingHistoryByUserResponse {
-	id := newInt64(r.ID)
-	t := newString(r.Title)
+	id := nilInt64(r.ID)
+	t := nilString(r.Title)
 	g := newGenres(r.Genres)
-	desc := newString(r.Description)
-	coverImgURL := newString(r.CoverImageUrl)
-	URL := newString(r.Url)
-	a := newString(r.AuthorName)
-	p := newString(r.PublisherName)
-	pd := newTime(r.PublishedDate)
-	ISBN := newString(r.Isbn)
+	desc := nilString(r.Description)
+	coverImgURL := nilString(r.CoverImageUrl)
+	URL := nilString(r.Url)
+	a := nilString(r.AuthorName)
+	p := nilString(r.PublisherName)
+	pd := nilTime(r.PublishedDate)
+	ISBN := nilString(r.Isbn)
 	s := newReadingStatus(r.Status)
-	sd := newTime(r.StartDate)
-	ed := newTime(r.EndDate)
+	sd := nilTime(r.StartDate)
+	ed := nilTime(r.EndDate)
 	return GetReadingHistoryByUserResponse{
 		BookID:        *id,
 		Title:         *t,
@@ -229,19 +229,19 @@ type GetReadingHistoryByUserAndBookResponse struct {
 }
 
 func newGetReadingHistoryByUserAndBookResponse(r sqlc.GetReadingHistoryByUserAndBookRow) *GetReadingHistoryByUserAndBookResponse {
-	id := newInt64(r.ID)
-	t := newString(r.Title)
+	id := nilInt64(r.ID)
+	t := nilString(r.Title)
 	g := newGenres(r.Genres)
-	desc := newString(r.Description)
-	coverImgURL := newString(r.CoverImageUrl)
-	URL := newString(r.Url)
-	a := newString(r.AuthorName)
-	p := newString(r.PublisherName)
-	pd := newTime(r.PublishedDate)
-	ISBN := newString(r.Isbn)
+	desc := nilString(r.Description)
+	coverImgURL := nilString(r.CoverImageUrl)
+	URL := nilString(r.Url)
+	a := nilString(r.AuthorName)
+	p := nilString(r.PublisherName)
+	pd := nilTime(r.PublishedDate)
+	ISBN := nilString(r.Isbn)
 	s := newReadingStatus(r.Status)
-	sd := newTime(r.StartDate)
-	ed := newTime(r.EndDate)
+	sd := nilTime(r.StartDate)
+	ed := nilTime(r.EndDate)
 	return &GetReadingHistoryByUserAndBookResponse{
 		BookID:        *id,
 		Title:         *t,
@@ -300,19 +300,19 @@ type GetReadingHistoryByUserAndStatusResponse struct {
 }
 
 func newGetReadingHistoryByUserAndStatusResponse(r sqlc.GetReadingHistoryByUserAndStatusRow) GetReadingHistoryByUserAndStatusResponse {
-	id := newInt64(r.ID)
-	t := newString(r.Title)
+	id := nilInt64(r.ID)
+	t := nilString(r.Title)
 	g := newGenres(r.Genres)
-	desc := newString(r.Description)
-	coverImgURL := newString(r.CoverImageUrl)
-	URL := newString(r.Url)
-	a := newString(r.AuthorName)
-	p := newString(r.PublisherName)
-	pd := newTime(r.PublishedDate)
-	ISBN := newString(r.Isbn)
+	desc := nilString(r.Description)
+	coverImgURL := nilString(r.CoverImageUrl)
+	URL := nilString(r.Url)
+	a := nilString(r.AuthorName)
+	p := nilString(r.PublisherName)
+	pd := nilTime(r.PublishedDate)
+	ISBN := nilString(r.Isbn)
 	s := newReadingStatus(r.Status)
-	sd := newTime(r.StartDate)
-	ed := newTime(r.EndDate)
+	sd := nilTime(r.StartDate)
+	ed := nilTime(r.EndDate)
 	return GetReadingHistoryByUserAndStatusResponse{
 		BookID:        *id,
 		Title:         *t,
@@ -379,8 +379,8 @@ type UpdateReadingHistoryResponse struct {
 func newUpdateReadingHistoryResponse(r sqlc.ReadingHistory) *UpdateReadingHistoryResponse {
 	bid := r.BookID
 	s := newReadingStatus(r.Status)
-	sd := newTime(r.StartDate)
-	ed := newTime(r.EndDate)
+	sd := nilTime(r.StartDate)
+	ed := nilTime(r.EndDate)
 	return &UpdateReadingHistoryResponse{
 		BookID:    bid,
 		Status:    s,
