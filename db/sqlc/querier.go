@@ -33,7 +33,7 @@ type Querier interface {
 	GetBooksByID(ctx context.Context, id int64) (GetBooksByIDRow, error)
 	GetBooksByISBN(ctx context.Context, isbn sql.NullString) ([]GetBooksByISBNRow, error)
 	GetBooksByPublisher(ctx context.Context, publisherName sql.NullString) ([]GetBooksByPublisherRow, error)
-	GetBooksByTitle(ctx context.Context, title sql.NullString) ([]GetBooksByTitleRow, error)
+	GetBooksByTitle(ctx context.Context, title string) ([]GetBooksByTitleRow, error)
 	GetGenreByName(ctx context.Context, name string) (Genre, error)
 	GetGenresByBookID(ctx context.Context, bookID int64) ([]string, error)
 	GetPublisherByName(ctx context.Context, name string) (Publisher, error)

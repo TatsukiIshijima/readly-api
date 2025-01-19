@@ -7,50 +7,50 @@ CREATE TYPE "reading_status" AS ENUM (
 CREATE TABLE "users"
 (
     "id"              bigserial PRIMARY KEY,
-    "name"            varchar        NOT NULL,
-    "email"           varchar UNIQUE NOT NULL,
-    "hashed_password" varchar        NOT NULL,
-    "created_at"      timestamptz    NOT NULL DEFAULT (now()),
-    "updated_at"      timestamptz    NOT NULL DEFAULT (now())
+    "name"            varchar(30)         NOT NULL,
+    "email"           varchar(320) UNIQUE NOT NULL,
+    "hashed_password" varchar             NOT NULL,
+    "created_at"      timestamptz         NOT NULL DEFAULT (now()),
+    "updated_at"      timestamptz         NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "books"
 (
     "id"              bigserial PRIMARY KEY,
-    "title"           varchar,
-    "description"     varchar,
-    "cover_image_url" varchar,
-    "url"             varchar,
-    "author_name"     varchar,
-    "publisher_name"  varchar,
+    "title"           varchar(255) NOT NULL,
+    "description"     varchar(500),
+    "cover_image_url" varchar(2048),
+    "url"             varchar(2048),
+    "author_name"     varchar(255),
+    "publisher_name"  varchar(255),
     "published_date"  timestamptz,
     "isbn"            char(13),
-    "created_at"      timestamptz NOT NULL DEFAULT (now()),
-    "updated_at"      timestamptz NOT NULL DEFAULT (now())
+    "created_at"      timestamptz  NOT NULL DEFAULT (now()),
+    "updated_at"      timestamptz  NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "authors"
 (
-    "name"       varchar PRIMARY KEY,
+    "name"       varchar(255) PRIMARY KEY,
     "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "publishers"
 (
-    "name"       varchar PRIMARY KEY,
+    "name"       varchar(255) PRIMARY KEY,
     "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "genres"
 (
-    "name"       varchar PRIMARY KEY,
+    "name"       varchar(255) PRIMARY KEY,
     "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "book_genres"
 (
-    "book_id"    bigserial NOT NULL,
-    "genre_name" varchar   NOT NULL,
+    "book_id"    bigserial    NOT NULL,
+    "genre_name" varchar(255) NOT NULL,
     PRIMARY KEY ("book_id", "genre_name")
 );
 

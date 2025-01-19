@@ -25,7 +25,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, title, description, cover_
 `
 
 type CreateBookParams struct {
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
@@ -97,7 +97,7 @@ ORDER BY b.created_at
 
 type GetBooksByAuthorRow struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Genres        []byte         `json:"genres"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
@@ -168,7 +168,7 @@ GROUP BY b.id
 
 type GetBooksByIDRow struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Genres        []byte         `json:"genres"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
@@ -224,7 +224,7 @@ ORDER BY b.created_at
 
 type GetBooksByISBNRow struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Genres        []byte         `json:"genres"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
@@ -296,7 +296,7 @@ ORDER BY b.created_at
 
 type GetBooksByPublisherRow struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Genres        []byte         `json:"genres"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
@@ -368,7 +368,7 @@ ORDER BY b.created_at
 
 type GetBooksByTitleRow struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Genres        []byte         `json:"genres"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
@@ -381,7 +381,7 @@ type GetBooksByTitleRow struct {
 	UpdatedAt     time.Time      `json:"updated_at"`
 }
 
-func (q *Queries) GetBooksByTitle(ctx context.Context, title sql.NullString) ([]GetBooksByTitleRow, error) {
+func (q *Queries) GetBooksByTitle(ctx context.Context, title string) ([]GetBooksByTitleRow, error) {
 	rows, err := q.db.QueryContext(ctx, getBooksByTitle, title)
 	if err != nil {
 		return nil, err
@@ -433,7 +433,7 @@ WHERE id = $1 RETURNING id, title, description, cover_image_url, url, author_nam
 
 type UpdateBookParams struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`

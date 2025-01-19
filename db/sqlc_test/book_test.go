@@ -14,11 +14,6 @@ import (
 )
 
 func createBook(t *testing.T, title string, author string, publisher string, isbn string) db.Book {
-	tl := sql.NullString{
-		String: title,
-		Valid:  title != "",
-	}
-	require.True(t, tl.Valid)
 	desc := sql.NullString{
 		String: testdata.RandomString(12),
 		Valid:  true,
@@ -46,7 +41,7 @@ func createBook(t *testing.T, title string, author string, publisher string, isb
 	require.NoError(t, err)
 
 	arg := db.CreateBookParams{
-		Title:         tl,
+		Title:         title,
 		Description:   desc,
 		CoverImageUrl: imgURL,
 		Url:           URL,
@@ -213,13 +208,7 @@ func TestGetBooksByTitle(t *testing.T) {
 	createRandomBookGenre(t, bookWithGenres, genre2)
 	createRandomBookGenre(t, bookWithGenres, genre3)
 
-	result, err := querier.GetBooksByTitle(
-		context.Background(),
-		sql.NullString{
-			String: title,
-			Valid:  true,
-		},
-	)
+	result, err := querier.GetBooksByTitle(context.Background(), title)
 	require.NoError(t, err)
 	require.NotEmpty(t, result)
 	require.Len(t, result, 2)

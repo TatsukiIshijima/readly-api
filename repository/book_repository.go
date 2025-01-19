@@ -52,7 +52,6 @@ type CreateBookRequest struct {
 }
 
 func (r CreateBookRequest) toParams() sqlc.CreateBookParams {
-	t := sql.NullString{String: r.Title, Valid: true}
 	desc := sql.NullString{String: "", Valid: false}
 	coverImgURL := sql.NullString{String: "", Valid: false}
 	URL := sql.NullString{String: "", Valid: false}
@@ -82,7 +81,7 @@ func (r CreateBookRequest) toParams() sqlc.CreateBookParams {
 		ISBN = sql.NullString{String: *r.ISBN, Valid: true}
 	}
 	return sqlc.CreateBookParams{
-		Title:         t,
+		Title:         r.Title,
 		Description:   desc,
 		CoverImageUrl: coverImgURL,
 		Url:           URL,
@@ -95,7 +94,7 @@ func (r CreateBookRequest) toParams() sqlc.CreateBookParams {
 
 type CreateBookResponse struct {
 	ID            int64
-	Title         *string
+	Title         string
 	Description   *string
 	CoverImageURL *string
 	URL           *string
@@ -108,7 +107,7 @@ type CreateBookResponse struct {
 func newCreateResponse(b sqlc.Book) *CreateBookResponse {
 	return &CreateBookResponse{
 		ID:            b.ID,
-		Title:         nilString(b.Title),
+		Title:         b.Title,
 		Description:   nilString(b.Description),
 		CoverImageURL: nilString(b.CoverImageUrl),
 		URL:           nilString(b.Url),
@@ -208,7 +207,7 @@ func (r BookRepositoryImpl) DeletePublisher(ctx context.Context, name string) er
 
 type GetBookResponse struct {
 	ID            int64
-	Title         *string
+	Title         string
 	Genres        []string
 	Description   *string
 	CoverImageURL *string
@@ -222,7 +221,7 @@ type GetBookResponse struct {
 func newGetBookResponse(b sqlc.GetBooksByIDRow) *GetBookResponse {
 	return &GetBookResponse{
 		ID:            b.ID,
-		Title:         nilString(b.Title),
+		Title:         b.Title,
 		Genres:        strings.Split(string(b.Genres), ", "),
 		Description:   nilString(b.Description),
 		CoverImageURL: nilString(b.CoverImageUrl),

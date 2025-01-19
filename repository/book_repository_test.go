@@ -54,7 +54,7 @@ func TestCreateBook(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, b.ID, gb.ID)
-	require.Equal(t, *b.Title, gb.Title.String)
+	require.Equal(t, b.Title, gb.Title)
 	require.Equal(t, *b.Description, gb.Description.String)
 	require.Equal(t, *b.CoverImageURL, gb.CoverImageUrl.String)
 	require.Equal(t, *b.URL, gb.Url.String)

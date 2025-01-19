@@ -63,7 +63,7 @@ type Author struct {
 // Stores book data.
 type Book struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
