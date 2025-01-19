@@ -34,7 +34,11 @@ const (
 	Done
 )
 
-func (status ReadingStatus) value() sqlc.ReadingStatus {
+type Convertible interface {
+	int | sqlc.ReadingStatus
+}
+
+func (status ReadingStatus) toSqlc() sqlc.ReadingStatus {
 	switch status {
 	case Unread:
 		return sqlc.ReadingStatusUnread
@@ -47,7 +51,20 @@ func (status ReadingStatus) value() sqlc.ReadingStatus {
 	}
 }
 
-func newReadingStatus(rs sqlc.ReadingStatus) ReadingStatus {
+func (status ReadingStatus) ToInt() int {
+	switch status {
+	case Unread:
+		return 0
+	case Reading:
+		return 1
+	case Done:
+		return 2
+	default:
+		panic("invalid reading status")
+	}
+}
+
+func newFromSqlc(rs sqlc.ReadingStatus) ReadingStatus {
 	switch rs {
 	case sqlc.ReadingStatusUnread:
 		return Unread
@@ -58,6 +75,31 @@ func newReadingStatus(rs sqlc.ReadingStatus) ReadingStatus {
 	default:
 		panic("invalid reading status")
 	}
+}
+
+func newFromInt(i int) ReadingStatus {
+	switch i {
+	case 0:
+		return Unread
+	case 1:
+		return Reading
+	case 2:
+		return Done
+	default:
+		panic("invalid reading status")
+	}
+}
+
+func NewReadingStatus[T Convertible](src T) ReadingStatus {
+	switch v := any(src).(type) {
+	case int:
+		return newFromInt(v)
+	case sqlc.ReadingStatus:
+		return newFromSqlc(v)
+	default:
+		panic("invalid reading status")
+	}
+
 }
 
 type CreateReadingHistoryRequest struct {
@@ -80,7 +122,7 @@ func (r CreateReadingHistoryRequest) toParams() sqlc.CreateReadingHistoryParams 
 	return sqlc.CreateReadingHistoryParams{
 		UserID:    r.UserID,
 		BookID:    r.BookID,
-		Status:    r.Status.value(),
+		Status:    r.Status.toSqlc(),
 		StartDate: sd,
 		EndDate:   ed,
 	}
@@ -96,7 +138,7 @@ type CreateReadingHistoryResponse struct {
 func newCreateReadingHistoryResponse(r sqlc.ReadingHistory) *CreateReadingHistoryResponse {
 	return &CreateReadingHistoryResponse{
 		BookID:    r.BookID,
-		Status:    newReadingStatus(r.Status),
+		Status:    NewReadingStatus(r.Status),
 		StartDate: nilTime(r.StartDate),
 		EndDate:   nilTime(r.EndDate),
 	}
@@ -167,7 +209,7 @@ func newGetReadingHistoryByUserResponse(r sqlc.GetReadingHistoryByUserRow) GetRe
 	p := nilString(r.PublisherName)
 	pd := nilTime(r.PublishedDate)
 	ISBN := nilString(r.Isbn)
-	s := newReadingStatus(r.Status)
+	s := NewReadingStatus[sqlc.ReadingStatus](r.Status)
 	sd := nilTime(r.StartDate)
 	ed := nilTime(r.EndDate)
 	return GetReadingHistoryByUserResponse{
@@ -239,7 +281,7 @@ func newGetReadingHistoryByUserAndBookResponse(r sqlc.GetReadingHistoryByUserAnd
 	p := nilString(r.PublisherName)
 	pd := nilTime(r.PublishedDate)
 	ISBN := nilString(r.Isbn)
-	s := newReadingStatus(r.Status)
+	s := NewReadingStatus[sqlc.ReadingStatus](r.Status)
 	sd := nilTime(r.StartDate)
 	ed := nilTime(r.EndDate)
 	return &GetReadingHistoryByUserAndBookResponse{
@@ -277,7 +319,7 @@ type GetReadingHistoryByUserAndStatusRequest struct {
 func (r GetReadingHistoryByUserAndStatusRequest) toParams() sqlc.GetReadingHistoryByUserAndStatusParams {
 	return sqlc.GetReadingHistoryByUserAndStatusParams{
 		UserID: r.UserID,
-		Status: r.Status.value(),
+		Status: r.Status.toSqlc(),
 		Limit:  r.Limit,
 		Offset: r.Offset,
 	}
@@ -310,7 +352,7 @@ func newGetReadingHistoryByUserAndStatusResponse(r sqlc.GetReadingHistoryByUserA
 	p := nilString(r.PublisherName)
 	pd := nilTime(r.PublishedDate)
 	ISBN := nilString(r.Isbn)
-	s := newReadingStatus(r.Status)
+	s := NewReadingStatus[sqlc.ReadingStatus](r.Status)
 	sd := nilTime(r.StartDate)
 	ed := nilTime(r.EndDate)
 	return GetReadingHistoryByUserAndStatusResponse{
@@ -363,7 +405,7 @@ func (r UpdateReadingHistoryRequest) toParams() sqlc.UpdateReadingHistoryParams 
 	return sqlc.UpdateReadingHistoryParams{
 		UserID:    r.UserID,
 		BookID:    r.BookID,
-		Status:    r.Status.value(),
+		Status:    r.Status.toSqlc(),
 		StartDate: sd,
 		EndDate:   ed,
 	}
@@ -378,7 +420,7 @@ type UpdateReadingHistoryResponse struct {
 
 func newUpdateReadingHistoryResponse(r sqlc.ReadingHistory) *UpdateReadingHistoryResponse {
 	bid := r.BookID
-	s := newReadingStatus(r.Status)
+	s := NewReadingStatus[sqlc.ReadingStatus](r.Status)
 	sd := nilTime(r.StartDate)
 	ed := nilTime(r.EndDate)
 	return &UpdateReadingHistoryResponse{
