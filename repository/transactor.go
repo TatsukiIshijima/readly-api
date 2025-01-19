@@ -14,6 +14,10 @@ type TransactorImpl struct {
 	db sqlc.DBTX
 }
 
+func New(db sqlc.DBTX) Transactor {
+	return TransactorImpl{db: db}
+}
+
 func (t TransactorImpl) Exec(ctx context.Context, fn func() error) error {
 	switch t.db.(type) {
 	case *sql.DB:

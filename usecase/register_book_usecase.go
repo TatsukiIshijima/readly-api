@@ -17,6 +17,15 @@ type RegisterBookUseCase struct {
 	userRepo           repository.UserRepository
 }
 
+func NewRegisterBookUseCase(transactor repository.Transactor, bookRepo repository.BookRepository, readingHistoryRepo repository.ReadingHistoryRepository, userRepo repository.UserRepository) RegisterBookUseCase {
+	return RegisterBookUseCase{
+		transactor:         transactor,
+		bookRepo:           bookRepo,
+		readingHistoryRepo: readingHistoryRepo,
+		userRepo:           userRepo,
+	}
+}
+
 type RegisterBookRequest struct {
 	UserID        int64
 	Title         string
