@@ -66,7 +66,7 @@ func TestDeleteBook(t *testing.T) {
 				UserID: user.ID,
 				BookID: 0,
 			},
-			err: repository.ErrNoRowsDeleted,
+			err: newError("no rows were deleted", BadRequest),
 		},
 	}
 

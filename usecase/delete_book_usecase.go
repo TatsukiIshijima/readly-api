@@ -47,10 +47,7 @@ func (u DeleteBookUseCase) DeleteBook(ctx context.Context, req DeleteBookRequest
 		}
 		return nil
 	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return handle(err)
 }
 
 func (u DeleteBookUseCase) deleteBookGenres(ctx context.Context, bookID int64) error {

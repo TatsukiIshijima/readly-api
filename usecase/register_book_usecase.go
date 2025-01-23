@@ -111,7 +111,7 @@ func (u RegisterBookUseCase) RegisterBook(ctx context.Context, req RegisterBookR
 		}
 		return nil
 	})
-	return res, err
+	return res, handle(err)
 }
 
 func (u RegisterBookUseCase) createAuthorIfNeed(ctx context.Context, author *string) error {
