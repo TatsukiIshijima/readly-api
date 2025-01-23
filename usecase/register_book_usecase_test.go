@@ -139,7 +139,7 @@ func TestRegisterBook(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			res, err := registerBookUseCase.RegisterBook(context.Background(), tc.req)
 			require.NoError(t, err)
-			// IDは自動採番なので比較対象から外す
+			require.NotEmpty(t, res.ID)
 			require.Equal(t, tc.exp.Title, res.Title)
 			require.Equal(t, tc.exp.Genres, res.Genres)
 			require.Equal(t, tc.exp.Description, res.Description)
@@ -165,3 +165,5 @@ func isSameDate(t1, t2 *time.Time) bool {
 	}
 	return t1.Year() == t2.Year() && t1.Month() == t2.Month() && t1.Day() == t2.Day()
 }
+
+// TODO: Goroutineを使ったテストケースを追加する
