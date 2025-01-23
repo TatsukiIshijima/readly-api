@@ -235,8 +235,9 @@ func TestDeleteReadingHistory(t *testing.T) {
 		UserID: user.ID,
 		BookID: readingHistory1.BookID,
 	}
-	err := querier.DeleteReadingHistory(context.Background(), args1)
+	rowsAffected, err := querier.DeleteReadingHistory(context.Background(), args1)
 	require.NoError(t, err)
+	require.Equal(t, int64(1), rowsAffected)
 
 	args2 := db.GetReadingHistoryByUserAndBookParams{
 		UserID: user.ID,

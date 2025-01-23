@@ -7,7 +7,7 @@ SELECT genre_name
 FROM book_genres
 WHERE book_id = $1;
 
--- name: DeleteBookGenre :exec
+-- name: DeleteBookGenre :execrows
 DELETE
 FROM book_genres
 WHERE book_id = $1

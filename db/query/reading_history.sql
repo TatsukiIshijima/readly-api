@@ -92,7 +92,7 @@ SET status     = $3,
 WHERE user_id = $1
   AND book_id = $2 RETURNING *;
 
--- name: DeleteReadingHistory :exec
+-- name: DeleteReadingHistory :execrows
 DELETE
 FROM reading_histories
 WHERE user_id = $1

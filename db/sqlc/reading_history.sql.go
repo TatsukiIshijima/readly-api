@@ -44,7 +44,7 @@ func (q *Queries) CreateReadingHistory(ctx context.Context, arg CreateReadingHis
 	return i, err
 }
 
-const deleteReadingHistory = `-- name: DeleteReadingHistory :exec
+const deleteReadingHistory = `-- name: DeleteReadingHistory :execrows
 DELETE
 FROM reading_histories
 WHERE user_id = $1
@@ -56,9 +56,12 @@ type DeleteReadingHistoryParams struct {
 	BookID int64 `json:"book_id"`
 }
 
-func (q *Queries) DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) error {
-	_, err := q.db.ExecContext(ctx, deleteReadingHistory, arg.UserID, arg.BookID)
-	return err
+func (q *Queries) DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteReadingHistory, arg.UserID, arg.BookID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getReadingHistoryByUser = `-- name: GetReadingHistoryByUser :many

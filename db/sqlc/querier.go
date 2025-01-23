@@ -18,11 +18,11 @@ type Querier interface {
 	CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) (ReadingHistory, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAuthor(ctx context.Context, name string) error
-	DeleteBook(ctx context.Context, id int64) error
-	DeleteBookGenre(ctx context.Context, arg DeleteBookGenreParams) error
+	DeleteBook(ctx context.Context, id int64) (int64, error)
+	DeleteBookGenre(ctx context.Context, arg DeleteBookGenreParams) (int64, error)
 	DeleteGenre(ctx context.Context, name string) error
 	DeletePublisher(ctx context.Context, name string) error
-	DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) error
+	DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) (int64, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetAllAuthors(ctx context.Context, arg GetAllAuthorsParams) ([]Author, error)
 	GetAllGenres(ctx context.Context, arg GetAllGenresParams) ([]Genre, error)

@@ -122,7 +122,7 @@ SET title           = $2,
     updated_at      = now()
 WHERE id = $1 RETURNING *;
 
--- name: DeleteBook :exec
+-- name: DeleteBook :execrows
 DELETE
 FROM books
 WHERE id = $1;

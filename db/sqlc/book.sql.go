@@ -63,15 +63,18 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 	return i, err
 }
 
-const deleteBook = `-- name: DeleteBook :exec
+const deleteBook = `-- name: DeleteBook :execrows
 DELETE
 FROM books
 WHERE id = $1
 `
 
-func (q *Queries) DeleteBook(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteBook, id)
-	return err
+func (q *Queries) DeleteBook(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteBook, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getBooksByAuthor = `-- name: GetBooksByAuthor :many

@@ -57,8 +57,9 @@ func TestDeleteBookGenre(t *testing.T) {
 		BookID:    book.ID,
 		GenreName: genre1.Name,
 	}
-	err = querier.DeleteBookGenre(context.Background(), deleteArgs)
+	rowsAffected, err := querier.DeleteBookGenre(context.Background(), deleteArgs)
 	require.NoError(t, err)
+	require.Equal(t, int64(1), rowsAffected)
 
 	genres, err = querier.GetGenresByBookID(context.Background(), book.ID)
 	require.NoError(t, err)

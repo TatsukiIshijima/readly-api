@@ -450,8 +450,9 @@ func TestDeleteBook(t *testing.T) {
 		"",
 		testdata.RandomString(13),
 	)
-	err := querier.DeleteBook(context.Background(), book1.ID)
+	rowsAffected, err := querier.DeleteBook(context.Background(), book1.ID)
 	require.NoError(t, err)
+	require.Equal(t, int64(1), rowsAffected)
 
 	book2, err := querier.GetBooksByID(context.Background(), book1.ID)
 	require.Error(t, err)

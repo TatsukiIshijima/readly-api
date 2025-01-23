@@ -26,7 +26,7 @@ func (q *Queries) CreateBookGenre(ctx context.Context, arg CreateBookGenreParams
 	return i, err
 }
 
-const deleteBookGenre = `-- name: DeleteBookGenre :exec
+const deleteBookGenre = `-- name: DeleteBookGenre :execrows
 DELETE
 FROM book_genres
 WHERE book_id = $1
@@ -38,9 +38,12 @@ type DeleteBookGenreParams struct {
 	GenreName string `json:"genre_name"`
 }
 
-func (q *Queries) DeleteBookGenre(ctx context.Context, arg DeleteBookGenreParams) error {
-	_, err := q.db.ExecContext(ctx, deleteBookGenre, arg.BookID, arg.GenreName)
-	return err
+func (q *Queries) DeleteBookGenre(ctx context.Context, arg DeleteBookGenreParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteBookGenre, arg.BookID, arg.GenreName)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const getGenresByBookID = `-- name: GetGenresByBookID :many
