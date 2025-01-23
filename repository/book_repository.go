@@ -20,6 +20,7 @@ type BookRepository interface {
 	DeleteGenre(ctx context.Context, name string) error
 	DeletePublisher(ctx context.Context, name string) error
 	GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error)
+	GetGenresByBookID(ctx context.Context, id int64) ([]string, error)
 }
 
 type BookRepositoryImpl struct {
@@ -181,7 +182,14 @@ func (r BookRepositoryImpl) DeleteAuthor(ctx context.Context, name string) error
 }
 
 func (r BookRepositoryImpl) DeleteBook(ctx context.Context, id int64) error {
-	return r.querier.DeleteBook(ctx, id)
+	rowsAffected, err := r.querier.DeleteBook(ctx, id)
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrNoRowsDeleted
+	}
+	return nil
 }
 
 type DeleteBookGenreRequest struct {
@@ -194,7 +202,14 @@ func (r BookRepositoryImpl) DeleteBookGenre(ctx context.Context, req DeleteBookG
 		BookID:    req.BookID,
 		GenreName: req.GenreName,
 	}
-	return r.querier.DeleteBookGenre(ctx, p)
+	rowsAffected, err := r.querier.DeleteBookGenre(ctx, p)
+	if err != nil {
+		return err
+	}
+	if rowsAffected == 0 {
+		return ErrNoRowsDeleted
+	}
+	return nil
 }
 
 func (r BookRepositoryImpl) DeleteGenre(ctx context.Context, name string) error {
@@ -239,4 +254,12 @@ func (r BookRepositoryImpl) GetBookByID(ctx context.Context, id int64) (*GetBook
 		return nil, err
 	}
 	return newGetBookResponse(b), nil
+}
+
+func (r BookRepositoryImpl) GetGenresByBookID(ctx context.Context, id int64) ([]string, error) {
+	g, err := r.querier.GetGenresByBookID(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return g, err
 }

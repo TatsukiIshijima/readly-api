@@ -29,7 +29,19 @@ type DeleteBookRequest struct {
 
 func (u DeleteBookUseCase) DeleteBook(ctx context.Context, req DeleteBookRequest) error {
 	err := u.transactor.Exec(ctx, func() error {
-		err := u.bookRepo.DeleteBook(ctx, req.BookID)
+		deleteHistoryArgs := repository.DeleteReadingHistoryRequest{
+			UserID: req.UserID,
+			BookID: req.BookID,
+		}
+		err := u.readingHistoryRepo.Delete(ctx, deleteHistoryArgs)
+		if err != nil {
+			return err
+		}
+		err = u.deleteBookGenres(ctx, req.BookID)
+		if err != nil {
+			return err
+		}
+		err = u.bookRepo.DeleteBook(ctx, req.BookID)
 		if err != nil {
 			return err
 		}
@@ -37,6 +49,24 @@ func (u DeleteBookUseCase) DeleteBook(ctx context.Context, req DeleteBookRequest
 	})
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (u DeleteBookUseCase) deleteBookGenres(ctx context.Context, bookID int64) error {
+	genres, err := u.bookRepo.GetGenresByBookID(ctx, bookID)
+	if err != nil {
+		return err
+	}
+	for _, g := range genres {
+		args := repository.DeleteBookGenreRequest{
+			BookID:    bookID,
+			GenreName: g,
+		}
+		err := u.bookRepo.DeleteBookGenre(ctx, args)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
