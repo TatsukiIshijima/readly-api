@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
 	"readly/testdata"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -170,10 +171,9 @@ func TestGetBookByID(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result.ID)
 	require.Equal(t, bookWithGenres.Title, result.Title)
-	require.Equal(
-		t, []string{genre1.Name, genre2.Name, genre3.Name},
-		strings.Split(string(result.Genres), ", "),
-	)
+	genres := []string{genre1.Name, genre2.Name, genre3.Name}
+	sort.Strings(genres)
+	require.Equal(t, genres, strings.Split(string(result.Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result.Description)
 	require.Equal(t, bookWithGenres.CoverImageUrl, result.CoverImageUrl)
 	require.Equal(t, bookWithGenres.Url, result.Url)
@@ -228,10 +228,9 @@ func TestGetBooksByTitle(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result[1].ID)
 	require.Equal(t, bookWithGenres.Title, result[1].Title)
-	require.Equal(
-		t, []string{genre1.Name, genre2.Name, genre3.Name},
-		strings.Split(string(result[1].Genres), ", "),
-	)
+	genres := []string{genre1.Name, genre2.Name, genre3.Name}
+	sort.Strings(genres)
+	require.Equal(t, genres, strings.Split(string(result[1].Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result[1].Description)
 	require.Equal(t, bookWithGenres.CoverImageUrl, result[1].CoverImageUrl)
 	require.Equal(t, bookWithGenres.Url, result[1].Url)
@@ -329,10 +328,9 @@ func TestGetBooksByAuthor(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result[1].ID)
 	require.Equal(t, bookWithGenres.Title, result[1].Title)
-	require.Equal(
-		t, []string{genre1.Name, genre2.Name},
-		strings.Split(string(result[1].Genres), ", "),
-	)
+	genres := []string{genre1.Name, genre2.Name}
+	sort.Strings(genres)
+	require.Equal(t, genres, strings.Split(string(result[1].Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result[1].Description)
 	require.Equal(t, bookWithGenres.CoverImageUrl, result[1].CoverImageUrl)
 	require.Equal(t, bookWithGenres.Url, result[1].Url)
@@ -391,10 +389,9 @@ func TestGetBooksByPublisher(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result[1].ID)
 	require.Equal(t, bookWithGenres.Title, result[1].Title)
-	require.Equal(
-		t, []string{genre1.Name, genre2.Name},
-		strings.Split(string(result[1].Genres), ", "),
-	)
+	genres := []string{genre1.Name, genre2.Name}
+	sort.Strings(genres)
+	require.Equal(t, genres, strings.Split(string(result[1].Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result[1].Description)
 	require.Equal(t, bookWithGenres.CoverImageUrl, result[1].CoverImageUrl)
 	require.Equal(t, bookWithGenres.Url, result[1].Url)

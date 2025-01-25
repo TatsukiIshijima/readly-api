@@ -80,7 +80,7 @@ func (q *Queries) DeleteBook(ctx context.Context, id int64) (int64, error) {
 const getBooksByAuthor = `-- name: GetBooksByAuthor :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -152,7 +152,7 @@ func (q *Queries) GetBooksByAuthor(ctx context.Context, authorName sql.NullStrin
 const getBooksByID = `-- name: GetBooksByID :one
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -207,7 +207,7 @@ func (q *Queries) GetBooksByID(ctx context.Context, id int64) (GetBooksByIDRow, 
 const getBooksByISBN = `-- name: GetBooksByISBN :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -279,7 +279,7 @@ func (q *Queries) GetBooksByISBN(ctx context.Context, isbn sql.NullString) ([]Ge
 const getBooksByPublisher = `-- name: GetBooksByPublisher :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -351,7 +351,7 @@ func (q *Queries) GetBooksByPublisher(ctx context.Context, publisherName sql.Nul
 const getBooksByTitle = `-- name: GetBooksByTitle :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,

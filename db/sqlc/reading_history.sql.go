@@ -66,7 +66,7 @@ func (q *Queries) DeleteReadingHistory(ctx context.Context, arg DeleteReadingHis
 
 const getReadingHistoryByUser = `-- name: GetReadingHistoryByUser :many
 WITH genre_aggregation AS (SELECT bg.book_id,
-                                  STRING_AGG(g.name, ', ') AS genres
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
                            FROM book_genres bg
                                     LEFT JOIN genres g ON bg.genre_name = g.name
                            GROUP BY bg.book_id)
@@ -153,7 +153,7 @@ func (q *Queries) GetReadingHistoryByUser(ctx context.Context, arg GetReadingHis
 
 const getReadingHistoryByUserAndBook = `-- name: GetReadingHistoryByUserAndBook :one
 WITH genre_aggregation AS (SELECT bg.book_id,
-                                  STRING_AGG(g.name, ', ') AS genres
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
                            FROM book_genres bg
                                     LEFT JOIN genres g ON bg.genre_name = g.name
                            GROUP BY bg.book_id)
@@ -222,7 +222,7 @@ func (q *Queries) GetReadingHistoryByUserAndBook(ctx context.Context, arg GetRea
 
 const getReadingHistoryByUserAndStatus = `-- name: GetReadingHistoryByUserAndStatus :many
 WITH genre_aggregation AS (SELECT bg.book_id,
-                                  STRING_AGG(g.name, ', ') AS genres
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
                            FROM book_genres bg
                                     LEFT JOIN genres g ON bg.genre_name = g.name
                            GROUP BY bg.book_id)

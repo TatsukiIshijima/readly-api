@@ -4,7 +4,7 @@ VALUES ($1, $2, $3, $4, $5) RETURNING *;
 
 -- name: GetReadingHistoryByUser :many
 WITH genre_aggregation AS (SELECT bg.book_id,
-                                  STRING_AGG(g.name, ', ') AS genres
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
                            FROM book_genres bg
                                     LEFT JOIN genres g ON bg.genre_name = g.name
                            GROUP BY bg.book_id)
@@ -31,7 +31,7 @@ OFFSET $3;
 
 -- name: GetReadingHistoryByUserAndBook :one
 WITH genre_aggregation AS (SELECT bg.book_id,
-                                  STRING_AGG(g.name, ', ') AS genres
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
                            FROM book_genres bg
                                     LEFT JOIN genres g ON bg.genre_name = g.name
                            GROUP BY bg.book_id)
@@ -57,7 +57,7 @@ WHERE rh.user_id = $1
 
 -- name: GetReadingHistoryByUserAndStatus :many
 WITH genre_aggregation AS (SELECT bg.book_id,
-                                  STRING_AGG(g.name, ', ') AS genres
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
                            FROM book_genres bg
                                     LEFT JOIN genres g ON bg.genre_name = g.name
                            GROUP BY bg.book_id)

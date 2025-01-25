@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"readly/db/sqlc"
 	"readly/testdata"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -183,6 +184,7 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	for i := 0; i < len(g3); i++ {
 		gNames[i] = g3[i].Name
 	}
+	sort.Strings(gNames)
 	require.Equal(t, gNames, strings.Split(string(result[1].Genres), ", "))
 	require.Equal(t, result[1].Description, b3.Description)
 	require.Equal(t, result[1].CoverImageUrl, b3.CoverImageUrl)

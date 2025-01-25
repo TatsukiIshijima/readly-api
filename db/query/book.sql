@@ -1,7 +1,7 @@
 -- name: GetBooksByID :one
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -20,7 +20,7 @@ GROUP BY b.id;
 -- name: GetBooksByTitle :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -40,7 +40,7 @@ ORDER BY b.created_at;
 -- name: GetBooksByISBN :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -60,7 +60,7 @@ ORDER BY b.created_at;
 -- name: GetBooksByAuthor :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
@@ -80,7 +80,7 @@ ORDER BY b.created_at;
 -- name: GetBooksByPublisher :many
 SELECT b.id,
        b.title,
-       STRING_AGG(g.name, ', ') AS genres,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
        b.description,
        b.cover_image_url,
        b.url,
