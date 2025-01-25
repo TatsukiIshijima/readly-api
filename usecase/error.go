@@ -34,14 +34,10 @@ func (err *Error) Error() string {
 }
 
 func handle(err error) error {
+	if err == nil {
+		return nil
+	}
 	var code ErrorCode
-
-	if errors.Is(err, repository.ErrNoRowsDeleted) {
-		code = BadRequest
-	}
-	if errors.Is(err, sql.ErrNoRows) {
-		code = NotFound
-	}
 
 	var pqErr *pq.Error
 	if errors.As(err, &pqErr) {
@@ -53,10 +49,15 @@ func handle(err error) error {
 		default:
 			code = Internal
 		}
+		return newError(pqErr.Message, code)
 	}
-	if code == "" {
-		return nil
-	} else {
-		return newError(err.Error(), code)
+
+	if errors.Is(err, repository.ErrNoRowsDeleted) {
+		return newError(err.Error(), BadRequest)
 	}
+	if errors.Is(err, sql.ErrNoRows) {
+		return newError(err.Error(), NotFound)
+	}
+
+	return newError(err.Error(), Internal)
 }
