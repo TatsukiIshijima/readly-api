@@ -11,6 +11,15 @@ func (q *FakeQuerier) GetBooksByID(_ context.Context, id int64) (GetBooksByIDRow
 	if id != 1 {
 		return GetBooksByIDRow{}, sql.ErrNoRows
 	}
+	publishDate, err := testdata.TimeFrom("1970-01-01 00:00:00")
+	if err != nil {
+		return GetBooksByIDRow{}, err
+	}
+	createdDate, err := testdata.TimeFrom("2025-01-01 00:00:00")
+	if err != nil {
+		return GetBooksByIDRow{}, err
+	}
+
 	return GetBooksByIDRow{
 		ID:    1,
 		Title: "Title",
@@ -35,15 +44,15 @@ func (q *FakeQuerier) GetBooksByID(_ context.Context, id int64) (GetBooksByIDRow
 			Valid:  true,
 		},
 		PublishedDate: sql.NullTime{
-			Time:  testdata.TimeFrom("1970-01-01 00:00:00"),
+			Time:  *publishDate,
 			Valid: true,
 		},
 		Isbn: sql.NullString{
 			String: "1234567890123",
 			Valid:  true,
 		},
-		CreatedAt: testdata.TimeFrom("2025-01-01 00:00:00"),
-		UpdatedAt: testdata.TimeFrom("2025-01-01 00:00:00"),
+		CreatedAt: *createdDate,
+		UpdatedAt: *createdDate,
 	}, nil
 }
 

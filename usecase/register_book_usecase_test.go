@@ -27,7 +27,9 @@ func TestRegisterBook(t *testing.T) {
 	url := testdata.RandomString(255)
 	author := testdata.RandomString(10)
 	publisher := testdata.RandomString(10)
-	publishDate := testdata.TimeFrom("1970-01-01 00:00:00").UTC()
+	publishDate, err := testdata.TimeFrom("1970-01-01 00:00:00")
+	require.NoError(t, err)
+	pb := publishDate.UTC()
 	ISBN := testdata.RandomString(13)
 	startDate := time.Now().UTC()
 	endDate := time.Now().Add(time.Duration(60*60*24) * time.Second).UTC()
@@ -62,7 +64,7 @@ func TestRegisterBook(t *testing.T) {
 				URL:           &url,
 				AuthorName:    &author,
 				PublisherName: &publisher,
-				PublishDate:   &publishDate,
+				PublishDate:   &pb,
 				ISBN:          &ISBN,
 				Status:        2,
 				StartDate:     &startDate,
@@ -76,7 +78,7 @@ func TestRegisterBook(t *testing.T) {
 				URL:           &url,
 				AuthorName:    &author,
 				PublisherName: &publisher,
-				PublishDate:   &publishDate,
+				PublishDate:   &pb,
 				ISBN:          &ISBN,
 				Status:        2,
 				StartDate:     &startDate,

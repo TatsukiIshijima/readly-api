@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	sqlc "readly/db/sqlc"
 )
 
@@ -30,7 +31,7 @@ func (t TransactorImpl) Exec(ctx context.Context, fn func() error) error {
 func (t TransactorImpl) execTx(ctx context.Context, fn func() error) error {
 	db, ok := t.db.(*sql.DB)
 	if !ok {
-		panic("not implemented")
+		return fmt.Errorf("invalid database connection type: expected *sql.DB")
 	}
 
 	tx, err := db.BeginTx(ctx, nil)
