@@ -109,10 +109,12 @@ func createPublisherIfNeed(t *testing.T, publisher string) (sql.NullString, erro
 
 func checkDuplicateKeyError(t *testing.T, err error) {
 	var pqErr *pq.Error
-	if !errors.As(err, &pqErr) {
+	if errors.As(err, &pqErr) {
 		if pqErr.Code != "23505" {
 			require.Fail(t, "unexpected error: %v", err)
 		}
+	} else {
+		require.Fail(t, "unexpected error: %v", err)
 	}
 }
 
