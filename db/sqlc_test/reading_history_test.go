@@ -135,6 +135,7 @@ func TestGetReadingHistoryByUser(t *testing.T) {
 	for i := 0; i < len(g2); i++ {
 		g2Names[i] = g2[i].Name
 	}
+	sort.Strings(g2Names)
 	require.Equal(t, g2Names, strings.Split(string(result1[1].Genres), ", "))
 	require.Equal(t, result1[1].Description, b2.Description)
 	require.Equal(t, result1[1].CoverImageUrl, b2.CoverImageUrl)
