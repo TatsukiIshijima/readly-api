@@ -13,7 +13,8 @@ type Book struct {
 	PublisherName *string    `json:"publisher_name"`
 	PublishDate   *time.Time `json:"publish_date"`
 	ISBN          *string    `json:"isbn"`
-	Status        int        `json:"status"`
-	StartDate     *time.Time `json:"start_date"`
-	EndDate       *time.Time `json:"end_date"`
+	// TODO: 本のステータスをenumで管理する&DB側の定義で管理する
+	Status    int        `json:"status"`
+	StartDate *time.Time `json:"start_date"`
+	EndDate   *time.Time `json:"end_date"`
 }
