@@ -6,17 +6,14 @@ import (
 	"readly/testdata"
 )
 
-func (q *FakeQuerier) GetBookById(_ context.Context, id int64) (Book, error) {
+func (q *FakeQuerier) GetBooksByID(_ context.Context, id int64) (GetBooksByIDRow, error) {
 	// FIXME:インメモリ管理
 	if id != 1 {
-		return Book{}, sql.ErrNoRows
+		return GetBooksByIDRow{}, sql.ErrNoRows
 	}
-	return Book{
-		ID: 1,
-		Title: sql.NullString{
-			String: "Title",
-			Valid:  true,
-		},
+	return GetBooksByIDRow{
+		ID:    1,
+		Title: "Title",
 		Description: sql.NullString{
 			String: "Description",
 			Valid:  true,
@@ -29,8 +26,14 @@ func (q *FakeQuerier) GetBookById(_ context.Context, id int64) (Book, error) {
 			String: "https://example.com",
 			Valid:  true,
 		},
-		AuthorName:    "Author",
-		PublisherName: "Publisher",
+		AuthorName: sql.NullString{
+			String: "Author",
+			Valid:  true,
+		},
+		PublisherName: sql.NullString{
+			String: "Publisher",
+			Valid:  true,
+		},
 		PublishedDate: sql.NullTime{
 			Time:  testdata.TimeFrom("1970-01-01 00:00:00"),
 			Valid: true,
