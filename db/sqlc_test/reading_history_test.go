@@ -115,7 +115,7 @@ func TestGetReadingHistoryByUser(t *testing.T) {
 	require.Len(t, result2, 0)
 
 	require.Equal(t, result1[0].ID, sql.NullInt64{Int64: b1.ID, Valid: true})
-	require.Equal(t, result1[0].Title, b1.Title)
+	require.Equal(t, result1[0].Title.String, b1.Title)
 	require.Empty(t, result1[0].Genres)
 	require.Equal(t, result1[0].Description, b1.Description)
 	require.Equal(t, result1[0].CoverImageUrl, b1.CoverImageUrl)
@@ -129,7 +129,7 @@ func TestGetReadingHistoryByUser(t *testing.T) {
 	require.Equal(t, result1[0].EndDate, rh1.EndDate)
 
 	require.Equal(t, result1[1].ID, sql.NullInt64{Int64: b2.ID, Valid: true})
-	require.Equal(t, result1[1].Title, b2.Title)
+	require.Equal(t, result1[1].Title.String, b2.Title)
 	g2Names := make([]string, len(g2))
 	for i := 0; i < len(g2); i++ {
 		g2Names[i] = g2[i].Name
@@ -164,7 +164,7 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	require.NotEmpty(t, result)
 	require.Len(t, result, 2)
 	require.Equal(t, result[0].ID, sql.NullInt64{Int64: b2.ID, Valid: true})
-	require.Equal(t, result[0].Title, b2.Title)
+	require.Equal(t, result[0].Title.String, b2.Title)
 	require.Empty(t, result[0].Genres)
 	require.Equal(t, result[0].Description, b2.Description)
 	require.Equal(t, result[0].CoverImageUrl, b2.CoverImageUrl)
@@ -178,7 +178,7 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	require.Equal(t, result[0].EndDate, rh2.EndDate)
 
 	require.Equal(t, result[1].ID, sql.NullInt64{Int64: b3.ID, Valid: true})
-	require.Equal(t, result[1].Title, b3.Title)
+	require.Equal(t, result[1].Title.String, b3.Title)
 	gNames := make([]string, len(g3))
 	for i := 0; i < len(g3); i++ {
 		gNames[i] = g3[i].Name
