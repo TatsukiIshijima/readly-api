@@ -42,7 +42,7 @@ func (t TransactorImpl) execTx(ctx context.Context, fn func() error) error {
 	err = fn()
 	if err != nil {
 		if rbErr := tx.Rollback(); rbErr != nil {
-			return err
+			return rbErr
 		}
 		return err
 	}
