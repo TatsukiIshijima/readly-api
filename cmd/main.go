@@ -1,14 +1,14 @@
 package main
 
 import (
+	_ "github.com/lib/pq"
 	"log"
 	"path/filepath"
-	"readly/api"
 	sqlc "readly/db/sqlc"
 	"readly/env"
 	"readly/repository"
-
-	_ "github.com/lib/pq"
+	"readly/service"
+	"readly/usecase"
 )
 
 func main() {
@@ -18,8 +18,14 @@ func main() {
 	}
 	a := sqlc.Adapter{}
 	db, q := a.Connect(config.DBDriver, config.DBSource)
-	bookRepo := repository.NewBookRepository(db, q)
-	server := api.NewServer(bookRepo)
+	t := repository.New(db)
+	bookRepo := repository.NewBookRepository(q)
+	userRepo := repository.NewUserRepository(q)
+	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
+	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
+	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
+	bookService := service.NewBookService(registerBookUseCase, deleteBookUseCase)
+	server := service.NewServer(bookService)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

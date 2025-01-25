@@ -2,25 +2,85 @@
 INSERT INTO reading_histories (user_id, book_id, status, start_date, end_date)
 VALUES ($1, $2, $3, $4, $5) RETURNING *;
 
--- name: GetReadingHistoryByUserID :many
-SELECT *
-FROM reading_histories
-WHERE user_id = $1
-ORDER BY user_id LIMIT $2
+-- name: GetReadingHistoryByUser :many
+WITH genre_aggregation AS (SELECT bg.book_id,
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
+                           FROM book_genres bg
+                                    LEFT JOIN genres g ON bg.genre_name = g.name
+                           GROUP BY bg.book_id)
+
+SELECT b.id,
+       b.title,
+       ga.genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       rh.status,
+       rh.start_date,
+       rh.end_date
+FROM reading_histories rh
+         LEFT JOIN books b ON b.id = rh.book_id
+         LEFT JOIN genre_aggregation ga ON b.id = ga.book_id
+WHERE rh.user_id = $1
+ORDER BY rh.created_at LIMIT $2
 OFFSET $3;
 
 -- name: GetReadingHistoryByUserAndBook :one
-SELECT *
-FROM reading_histories
-WHERE user_id = $1
-  AND book_id = $2;
+WITH genre_aggregation AS (SELECT bg.book_id,
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
+                           FROM book_genres bg
+                                    LEFT JOIN genres g ON bg.genre_name = g.name
+                           GROUP BY bg.book_id)
+
+SELECT b.id,
+       b.title,
+       ga.genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       rh.status,
+       rh.start_date,
+       rh.end_date
+FROM reading_histories rh
+         LEFT JOIN books b ON b.id = rh.book_id
+         LEFT JOIN genre_aggregation ga ON b.id = ga.book_id
+WHERE rh.user_id = $1
+  AND rh.book_id = $2;
 
 -- name: GetReadingHistoryByUserAndStatus :many
-SELECT *
-FROM reading_histories
-WHERE user_id = $1
-  AND status = $2
-ORDER BY status LIMIT $3
+WITH genre_aggregation AS (SELECT bg.book_id,
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
+                           FROM book_genres bg
+                                    LEFT JOIN genres g ON bg.genre_name = g.name
+                           GROUP BY bg.book_id)
+
+SELECT b.id,
+       b.title,
+       ga.genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       rh.status,
+       rh.start_date,
+       rh.end_date
+FROM reading_histories rh
+         LEFT JOIN books b ON b.id = rh.book_id
+         LEFT JOIN genre_aggregation ga ON b.id = ga.book_id
+WHERE rh.user_id = $1
+  AND rh.status = $2
+ORDER BY rh.created_at LIMIT $3
 OFFSET $4;
 
 -- name: UpdateReadingHistory :one
@@ -32,7 +92,7 @@ SET status     = $3,
 WHERE user_id = $1
   AND book_id = $2 RETURNING *;
 
--- name: DeleteReadingHistory :exec
+-- name: DeleteReadingHistory :execrows
 DELETE
 FROM reading_histories
 WHERE user_id = $1

@@ -28,11 +28,11 @@ func RandomEmail() string {
 	return fmt.Sprintf("%s@example.com", RandomString(6))
 }
 
-func TimeFrom(dateStr string) time.Time {
+func TimeFrom(dateStr string) (*time.Time, error) {
 	layout := "2006-01-02 15:04:05"
 	t, err := time.Parse(layout, dateStr)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
-	return t
+	return &t, nil
 }

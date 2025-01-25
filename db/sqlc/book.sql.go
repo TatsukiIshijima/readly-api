@@ -8,27 +8,29 @@ package db
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const createBook = `-- name: CreateBook :one
-INSERT INTO books (title,
-                   description,
-                   cover_image_url,
-                   url,
-                   author_name,
-                   publisher_name,
-                   published_date,
-                   isbn)
+INSERT
+INTO books (title,
+            description,
+            cover_image_url,
+            url,
+            author_name,
+            publisher_name,
+            published_date,
+            isbn)
 VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
 `
 
 type CreateBookParams struct {
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 }
@@ -61,60 +63,69 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 	return i, err
 }
 
-const deleteBook = `-- name: DeleteBook :exec
+const deleteBook = `-- name: DeleteBook :execrows
 DELETE
 FROM books
 WHERE id = $1
 `
 
-func (q *Queries) DeleteBook(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteBook, id)
-	return err
+func (q *Queries) DeleteBook(ctx context.Context, id int64) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteBook, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const getBookById = `-- name: GetBookById :one
-SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
-FROM books
-WHERE id = $1
+const getBooksByAuthor = `-- name: GetBooksByAuthor :many
+SELECT b.id,
+       b.title,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       b.created_at,
+       b.updated_at
+FROM books b
+         LEFT JOIN book_genres bg ON b.id = bg.book_id
+         LEFT JOIN genres g ON bg.genre_name = g.name
+WHERE b.author_name LIKE $1
+GROUP BY b.id
+ORDER BY b.created_at
 `
 
-func (q *Queries) GetBookById(ctx context.Context, id int64) (Book, error) {
-	row := q.db.QueryRowContext(ctx, getBookById, id)
-	var i Book
-	err := row.Scan(
-		&i.ID,
-		&i.Title,
-		&i.Description,
-		&i.CoverImageUrl,
-		&i.Url,
-		&i.AuthorName,
-		&i.PublisherName,
-		&i.PublishedDate,
-		&i.Isbn,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+type GetBooksByAuthorRow struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
 }
 
-const getBooksByAuthorName = `-- name: GetBooksByAuthorName :many
-SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
-FROM books
-WHERE author_name LIKE $1
-`
-
-func (q *Queries) GetBooksByAuthorName(ctx context.Context, authorName string) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, getBooksByAuthorName, authorName)
+func (q *Queries) GetBooksByAuthor(ctx context.Context, authorName sql.NullString) ([]GetBooksByAuthorRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksByAuthor, authorName)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Book{}
+	items := []GetBooksByAuthorRow{}
 	for rows.Next() {
-		var i Book
+		var i GetBooksByAuthorRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Genres,
 			&i.Description,
 			&i.CoverImageUrl,
 			&i.Url,
@@ -138,24 +149,182 @@ func (q *Queries) GetBooksByAuthorName(ctx context.Context, authorName string) (
 	return items, nil
 }
 
-const getBooksByIsbn = `-- name: GetBooksByIsbn :many
-SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
-FROM books
-WHERE isbn = $1
+const getBooksByID = `-- name: GetBooksByID :one
+SELECT b.id,
+       b.title,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       b.created_at,
+       b.updated_at
+FROM books b
+         LEFT JOIN book_genres bg ON b.id = bg.book_id
+         LEFT JOIN genres g ON bg.genre_name = g.name
+WHERE b.id = $1
+GROUP BY b.id
 `
 
-func (q *Queries) GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Book, error) {
-	rows, err := q.db.QueryContext(ctx, getBooksByIsbn, isbn)
+type GetBooksByIDRow struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+func (q *Queries) GetBooksByID(ctx context.Context, id int64) (GetBooksByIDRow, error) {
+	row := q.db.QueryRowContext(ctx, getBooksByID, id)
+	var i GetBooksByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Genres,
+		&i.Description,
+		&i.CoverImageUrl,
+		&i.Url,
+		&i.AuthorName,
+		&i.PublisherName,
+		&i.PublishedDate,
+		&i.Isbn,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getBooksByISBN = `-- name: GetBooksByISBN :many
+SELECT b.id,
+       b.title,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       b.created_at,
+       b.updated_at
+FROM books b
+         LEFT JOIN book_genres bg ON b.id = bg.book_id
+         LEFT JOIN genres g ON bg.genre_name = g.name
+WHERE b.isbn = $1
+GROUP BY b.id
+ORDER BY b.created_at
+`
+
+type GetBooksByISBNRow struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+func (q *Queries) GetBooksByISBN(ctx context.Context, isbn sql.NullString) ([]GetBooksByISBNRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksByISBN, isbn)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Book{}
+	items := []GetBooksByISBNRow{}
 	for rows.Next() {
-		var i Book
+		var i GetBooksByISBNRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Genres,
+			&i.Description,
+			&i.CoverImageUrl,
+			&i.Url,
+			&i.AuthorName,
+			&i.PublisherName,
+			&i.PublishedDate,
+			&i.Isbn,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getBooksByPublisher = `-- name: GetBooksByPublisher :many
+SELECT b.id,
+       b.title,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       b.created_at,
+       b.updated_at
+FROM books b
+         LEFT JOIN book_genres bg ON b.id = bg.book_id
+         LEFT JOIN genres g ON bg.genre_name = g.name
+WHERE b.publisher_name LIKE $1
+GROUP BY b.id
+ORDER BY b.created_at
+`
+
+type GetBooksByPublisherRow struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+func (q *Queries) GetBooksByPublisher(ctx context.Context, publisherName sql.NullString) ([]GetBooksByPublisherRow, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksByPublisher, publisherName)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetBooksByPublisherRow{}
+	for rows.Next() {
+		var i GetBooksByPublisherRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Title,
+			&i.Genres,
 			&i.Description,
 			&i.CoverImageUrl,
 			&i.Url,
@@ -180,23 +349,54 @@ func (q *Queries) GetBooksByIsbn(ctx context.Context, isbn sql.NullString) ([]Bo
 }
 
 const getBooksByTitle = `-- name: GetBooksByTitle :many
-SELECT id, title, description, cover_image_url, url, author_name, publisher_name, published_date, isbn, created_at, updated_at
-FROM books
-WHERE title LIKE $1
+SELECT b.id,
+       b.title,
+       STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       b.created_at,
+       b.updated_at
+FROM books b
+         LEFT JOIN book_genres bg ON b.id = bg.book_id
+         LEFT JOIN genres g ON bg.genre_name = g.name
+WHERE b.title LIKE $1
+GROUP BY b.id
+ORDER BY b.created_at
 `
 
-func (q *Queries) GetBooksByTitle(ctx context.Context, title sql.NullString) ([]Book, error) {
+type GetBooksByTitleRow struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+func (q *Queries) GetBooksByTitle(ctx context.Context, title string) ([]GetBooksByTitleRow, error) {
 	rows, err := q.db.QueryContext(ctx, getBooksByTitle, title)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Book{}
+	items := []GetBooksByTitleRow{}
 	for rows.Next() {
-		var i Book
+		var i GetBooksByTitleRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Genres,
 			&i.Description,
 			&i.CoverImageUrl,
 			&i.Url,
@@ -236,12 +436,12 @@ WHERE id = $1 RETURNING id, title, description, cover_image_url, url, author_nam
 
 type UpdateBookParams struct {
 	ID            int64          `json:"id"`
-	Title         sql.NullString `json:"title"`
+	Title         string         `json:"title"`
 	Description   sql.NullString `json:"description"`
 	CoverImageUrl sql.NullString `json:"cover_image_url"`
 	Url           sql.NullString `json:"url"`
-	AuthorName    string         `json:"author_name"`
-	PublisherName string         `json:"publisher_name"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
 	PublishedDate sql.NullTime   `json:"published_date"`
 	Isbn          sql.NullString `json:"isbn"`
 }

@@ -44,7 +44,7 @@ func (q *Queries) CreateReadingHistory(ctx context.Context, arg CreateReadingHis
 	return i, err
 }
 
-const deleteReadingHistory = `-- name: DeleteReadingHistory :exec
+const deleteReadingHistory = `-- name: DeleteReadingHistory :execrows
 DELETE
 FROM reading_histories
 WHERE user_id = $1
@@ -56,76 +56,87 @@ type DeleteReadingHistoryParams struct {
 	BookID int64 `json:"book_id"`
 }
 
-func (q *Queries) DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) error {
-	_, err := q.db.ExecContext(ctx, deleteReadingHistory, arg.UserID, arg.BookID)
-	return err
+func (q *Queries) DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteReadingHistory, arg.UserID, arg.BookID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const getReadingHistoryByUserAndBook = `-- name: GetReadingHistoryByUserAndBook :one
-SELECT user_id, book_id, status, start_date, end_date, created_at, updated_at
-FROM reading_histories
-WHERE user_id = $1
-  AND book_id = $2
+const getReadingHistoryByUser = `-- name: GetReadingHistoryByUser :many
+WITH genre_aggregation AS (SELECT bg.book_id,
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
+                           FROM book_genres bg
+                                    LEFT JOIN genres g ON bg.genre_name = g.name
+                           GROUP BY bg.book_id)
+
+SELECT b.id,
+       b.title,
+       ga.genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       rh.status,
+       rh.start_date,
+       rh.end_date
+FROM reading_histories rh
+         LEFT JOIN books b ON b.id = rh.book_id
+         LEFT JOIN genre_aggregation ga ON b.id = ga.book_id
+WHERE rh.user_id = $1
+ORDER BY rh.created_at LIMIT $2
+OFFSET $3
 `
 
-type GetReadingHistoryByUserAndBookParams struct {
+type GetReadingHistoryByUserParams struct {
 	UserID int64 `json:"user_id"`
-	BookID int64 `json:"book_id"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (ReadingHistory, error) {
-	row := q.db.QueryRowContext(ctx, getReadingHistoryByUserAndBook, arg.UserID, arg.BookID)
-	var i ReadingHistory
-	err := row.Scan(
-		&i.UserID,
-		&i.BookID,
-		&i.Status,
-		&i.StartDate,
-		&i.EndDate,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+type GetReadingHistoryByUserRow struct {
+	ID            sql.NullInt64  `json:"id"`
+	Title         sql.NullString `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	Status        ReadingStatus  `json:"status"`
+	StartDate     sql.NullTime   `json:"start_date"`
+	EndDate       sql.NullTime   `json:"end_date"`
 }
 
-const getReadingHistoryByUserAndStatus = `-- name: GetReadingHistoryByUserAndStatus :many
-SELECT user_id, book_id, status, start_date, end_date, created_at, updated_at
-FROM reading_histories
-WHERE user_id = $1
-  AND status = $2
-ORDER BY status LIMIT $3
-OFFSET $4
-`
-
-type GetReadingHistoryByUserAndStatusParams struct {
-	UserID int64         `json:"user_id"`
-	Status ReadingStatus `json:"status"`
-	Limit  int32         `json:"limit"`
-	Offset int32         `json:"offset"`
-}
-
-func (q *Queries) GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]ReadingHistory, error) {
-	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUserAndStatus,
-		arg.UserID,
-		arg.Status,
-		arg.Limit,
-		arg.Offset,
-	)
+func (q *Queries) GetReadingHistoryByUser(ctx context.Context, arg GetReadingHistoryByUserParams) ([]GetReadingHistoryByUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUser, arg.UserID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ReadingHistory{}
+	items := []GetReadingHistoryByUserRow{}
 	for rows.Next() {
-		var i ReadingHistory
+		var i GetReadingHistoryByUserRow
 		if err := rows.Scan(
-			&i.UserID,
-			&i.BookID,
+			&i.ID,
+			&i.Title,
+			&i.Genres,
+			&i.Description,
+			&i.CoverImageUrl,
+			&i.Url,
+			&i.AuthorName,
+			&i.PublisherName,
+			&i.PublishedDate,
+			&i.Isbn,
 			&i.Status,
 			&i.StartDate,
 			&i.EndDate,
-			&i.CreatedAt,
-			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -140,37 +151,155 @@ func (q *Queries) GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetR
 	return items, nil
 }
 
-const getReadingHistoryByUserID = `-- name: GetReadingHistoryByUserID :many
-SELECT user_id, book_id, status, start_date, end_date, created_at, updated_at
-FROM reading_histories
-WHERE user_id = $1
-ORDER BY user_id LIMIT $2
-OFFSET $3
+const getReadingHistoryByUserAndBook = `-- name: GetReadingHistoryByUserAndBook :one
+WITH genre_aggregation AS (SELECT bg.book_id,
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
+                           FROM book_genres bg
+                                    LEFT JOIN genres g ON bg.genre_name = g.name
+                           GROUP BY bg.book_id)
+
+SELECT b.id,
+       b.title,
+       ga.genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       rh.status,
+       rh.start_date,
+       rh.end_date
+FROM reading_histories rh
+         LEFT JOIN books b ON b.id = rh.book_id
+         LEFT JOIN genre_aggregation ga ON b.id = ga.book_id
+WHERE rh.user_id = $1
+  AND rh.book_id = $2
 `
 
-type GetReadingHistoryByUserIDParams struct {
+type GetReadingHistoryByUserAndBookParams struct {
 	UserID int64 `json:"user_id"`
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	BookID int64 `json:"book_id"`
 }
 
-func (q *Queries) GetReadingHistoryByUserID(ctx context.Context, arg GetReadingHistoryByUserIDParams) ([]ReadingHistory, error) {
-	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUserID, arg.UserID, arg.Limit, arg.Offset)
+type GetReadingHistoryByUserAndBookRow struct {
+	ID            sql.NullInt64  `json:"id"`
+	Title         sql.NullString `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	Status        ReadingStatus  `json:"status"`
+	StartDate     sql.NullTime   `json:"start_date"`
+	EndDate       sql.NullTime   `json:"end_date"`
+}
+
+func (q *Queries) GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (GetReadingHistoryByUserAndBookRow, error) {
+	row := q.db.QueryRowContext(ctx, getReadingHistoryByUserAndBook, arg.UserID, arg.BookID)
+	var i GetReadingHistoryByUserAndBookRow
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Genres,
+		&i.Description,
+		&i.CoverImageUrl,
+		&i.Url,
+		&i.AuthorName,
+		&i.PublisherName,
+		&i.PublishedDate,
+		&i.Isbn,
+		&i.Status,
+		&i.StartDate,
+		&i.EndDate,
+	)
+	return i, err
+}
+
+const getReadingHistoryByUserAndStatus = `-- name: GetReadingHistoryByUserAndStatus :many
+WITH genre_aggregation AS (SELECT bg.book_id,
+                                  STRING_AGG(g.name, ', ' ORDER BY g.name) AS genres
+                           FROM book_genres bg
+                                    LEFT JOIN genres g ON bg.genre_name = g.name
+                           GROUP BY bg.book_id)
+
+SELECT b.id,
+       b.title,
+       ga.genres,
+       b.description,
+       b.cover_image_url,
+       b.url,
+       b.author_name,
+       b.publisher_name,
+       b.published_date,
+       b.isbn,
+       rh.status,
+       rh.start_date,
+       rh.end_date
+FROM reading_histories rh
+         LEFT JOIN books b ON b.id = rh.book_id
+         LEFT JOIN genre_aggregation ga ON b.id = ga.book_id
+WHERE rh.user_id = $1
+  AND rh.status = $2
+ORDER BY rh.created_at LIMIT $3
+OFFSET $4
+`
+
+type GetReadingHistoryByUserAndStatusParams struct {
+	UserID int64         `json:"user_id"`
+	Status ReadingStatus `json:"status"`
+	Limit  int32         `json:"limit"`
+	Offset int32         `json:"offset"`
+}
+
+type GetReadingHistoryByUserAndStatusRow struct {
+	ID            sql.NullInt64  `json:"id"`
+	Title         sql.NullString `json:"title"`
+	Genres        []byte         `json:"genres"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	Status        ReadingStatus  `json:"status"`
+	StartDate     sql.NullTime   `json:"start_date"`
+	EndDate       sql.NullTime   `json:"end_date"`
+}
+
+func (q *Queries) GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]GetReadingHistoryByUserAndStatusRow, error) {
+	rows, err := q.db.QueryContext(ctx, getReadingHistoryByUserAndStatus,
+		arg.UserID,
+		arg.Status,
+		arg.Limit,
+		arg.Offset,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []ReadingHistory{}
+	items := []GetReadingHistoryByUserAndStatusRow{}
 	for rows.Next() {
-		var i ReadingHistory
+		var i GetReadingHistoryByUserAndStatusRow
 		if err := rows.Scan(
-			&i.UserID,
-			&i.BookID,
+			&i.ID,
+			&i.Title,
+			&i.Genres,
+			&i.Description,
+			&i.CoverImageUrl,
+			&i.Url,
+			&i.AuthorName,
+			&i.PublisherName,
+			&i.PublishedDate,
+			&i.Isbn,
 			&i.Status,
 			&i.StartDate,
 			&i.EndDate,
-			&i.CreatedAt,
-			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}

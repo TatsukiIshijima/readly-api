@@ -4,7 +4,7 @@ FROM users
 ORDER BY id LIMIT $1
 OFFSET $2;
 
--- name: GetUserById :one
+-- name: GetUserByID :one
 SELECT *
 FROM users
 WHERE id = $1;
