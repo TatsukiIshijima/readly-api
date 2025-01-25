@@ -113,6 +113,7 @@ func TestGetByUserAndStatus(t *testing.T) {
 		EndDate:   nil,
 	}
 	_, err := readingHistoryRepo.Update(context.Background(), updateReq)
+	require.NoError(t, err)
 
 	getReq := GetReadingHistoryByUserAndStatusRequest{
 		UserID: u.ID,
