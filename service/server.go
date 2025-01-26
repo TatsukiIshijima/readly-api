@@ -16,8 +16,8 @@ func NewServer(bookService BookService, userService UserService) *Server {
 
 	router.POST("/books", server.bookService.Register)
 	router.DELETE("/books", server.bookService.Delete)
-	router.POST("/users/signup", server.userService.SignUp)
-	router.POST("/users/signin", server.userService.SignIn)
+	router.POST("/signup", server.userService.SignUp)
+	router.POST("/signin", server.userService.SignIn)
 
 	server.router = router
 	return server
