@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"readly/entity"
 	"readly/usecase"
 	"time"
 )
@@ -25,19 +26,19 @@ func NewBookService(registerUseCase usecase.RegisterBookUseCase, deleteUseCase u
 }
 
 type RegisterBookRequest struct {
-	UserID        int64      `json:"user_id" binding:"required"`
-	Title         string     `json:"title" binding:"required,min=1"`
-	Genres        []string   `json:"genres" binding:"omitempty,max=5"`
-	Description   *string    `json:"description" binding:"omitempty,max=500"`
-	CoverImageURL *string    `json:"cover_image_url" binding:"omitempty,url,max=2048"`
-	URL           *string    `json:"url" binding:"omitempty,url,max=2048"`
-	AuthorName    *string    `json:"author_name" binding:"omitempty,max=255"`
-	PublisherName *string    `json:"publisher_name" binding:"omitempty,max=255"`
-	PublishDate   *time.Time `json:"publish_date" binding:"omitempty"`
-	ISBN          *string    `json:"isbn" binding:"omitempty,isbn"`
-	Status        int        `json:"status" binding:"required"`
-	StartDate     *time.Time `json:"start_date" binding:"omitempty"`
-	EndDate       *time.Time `json:"end_date" binding:"omitempty"`
+	UserID        int64                `json:"user_id" binding:"required"`
+	Title         string               `json:"title" binding:"required,min=1"`
+	Genres        []string             `json:"genres" binding:"omitempty,max=5"`
+	Description   *string              `json:"description" binding:"omitempty,max=500"`
+	CoverImageURL *string              `json:"cover_image_url" binding:"omitempty,url,max=2048"`
+	URL           *string              `json:"url" binding:"omitempty,url,max=2048"`
+	AuthorName    *string              `json:"author_name" binding:"omitempty,max=255"`
+	PublisherName *string              `json:"publisher_name" binding:"omitempty,max=255"`
+	PublishDate   *time.Time           `json:"publish_date" binding:"omitempty"`
+	ISBN          *string              `json:"isbn" binding:"omitempty,isbn"`
+	Status        entity.ReadingStatus `json:"status" binding:"required"`
+	StartDate     *time.Time           `json:"start_date" binding:"omitempty"`
+	EndDate       *time.Time           `json:"end_date" binding:"omitempty"`
 }
 
 func (s BookServiceImpl) Register(ctx *gin.Context) {

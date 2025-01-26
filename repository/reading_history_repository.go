@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	sqlc "readly/db/sqlc"
+	"readly/entity"
 	"time"
 )
 
@@ -32,10 +33,11 @@ const (
 	Unread ReadingStatus = iota
 	Reading
 	Done
+	Unknown
 )
 
 type Convertible interface {
-	int | sqlc.ReadingStatus
+	entity.ReadingStatus | sqlc.ReadingStatus
 }
 
 func (status ReadingStatus) toSqlc() sqlc.ReadingStatus {
@@ -47,20 +49,20 @@ func (status ReadingStatus) toSqlc() sqlc.ReadingStatus {
 	case Done:
 		return sqlc.ReadingStatusDone
 	default:
-		panic("invalid reading status")
+		return sqlc.ReadingStatusUnknown
 	}
 }
 
-func (status ReadingStatus) ToInt() int {
+func (status ReadingStatus) ToEntity() entity.ReadingStatus {
 	switch status {
 	case Unread:
-		return 0
+		return entity.Unread
 	case Reading:
-		return 1
+		return entity.Reading
 	case Done:
-		return 2
+		return entity.Done
 	default:
-		panic("invalid reading status")
+		return entity.Unknown
 	}
 }
 
@@ -73,31 +75,31 @@ func newFromSqlc(rs sqlc.ReadingStatus) ReadingStatus {
 	case sqlc.ReadingStatusDone:
 		return Done
 	default:
-		panic("invalid reading status")
+		return Unknown
 	}
 }
 
-func newFromInt(i int) ReadingStatus {
-	switch i {
-	case 0:
+func newFromEntity(e entity.ReadingStatus) ReadingStatus {
+	switch e {
+	case entity.Unread:
 		return Unread
-	case 1:
+	case entity.Reading:
 		return Reading
-	case 2:
+	case entity.Done:
 		return Done
 	default:
-		panic("invalid reading status")
+		return Unknown
 	}
 }
 
 func NewReadingStatus[T Convertible](src T) ReadingStatus {
 	switch v := any(src).(type) {
-	case int:
-		return newFromInt(v)
+	case entity.ReadingStatus:
+		return newFromEntity(v)
 	case sqlc.ReadingStatus:
 		return newFromSqlc(v)
 	default:
-		panic("invalid reading status")
+		return Unknown
 	}
 
 }
