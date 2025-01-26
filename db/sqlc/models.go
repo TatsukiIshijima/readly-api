@@ -17,6 +17,7 @@ const (
 	ReadingStatusUnread  ReadingStatus = "unread"
 	ReadingStatusReading ReadingStatus = "reading"
 	ReadingStatusDone    ReadingStatus = "done"
+	ReadingStatusUnknown ReadingStatus = "unknown"
 )
 
 func (e *ReadingStatus) Scan(src interface{}) error {

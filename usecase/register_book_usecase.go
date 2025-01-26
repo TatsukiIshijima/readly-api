@@ -37,7 +37,7 @@ type RegisterBookRequest struct {
 	PublisherName *string
 	PublishDate   *time.Time
 	ISBN          *string
-	Status        int
+	Status        entity.ReadingStatus
 	StartDate     *time.Time
 	EndDate       *time.Time
 }
@@ -86,7 +86,7 @@ func (u RegisterBookUseCase) RegisterBook(ctx context.Context, req RegisterBookR
 		createHistoryArgs := repository.CreateReadingHistoryRequest{
 			UserID:    req.UserID,
 			BookID:    b.ID,
-			Status:    repository.NewReadingStatus[int](req.Status),
+			Status:    repository.NewReadingStatus[entity.ReadingStatus](req.Status),
 			StartDate: req.StartDate,
 			EndDate:   req.EndDate,
 		}
@@ -105,7 +105,7 @@ func (u RegisterBookUseCase) RegisterBook(ctx context.Context, req RegisterBookR
 			PublisherName: b.Publisher,
 			PublishDate:   b.PublishDate,
 			ISBN:          b.ISBN,
-			Status:        rh.Status.ToInt(),
+			Status:        rh.Status.ToEntity(),
 			StartDate:     rh.StartDate,
 			EndDate:       rh.EndDate,
 		}
