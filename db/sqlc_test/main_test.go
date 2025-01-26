@@ -32,10 +32,15 @@ func TestMain(m *testing.M) {
 }
 
 func createRandomUser(t *testing.T) sqlc.User {
+	password := testdata.RandomString(16)
+	hashedPassword, err := testdata.HashPassword(password)
+	require.NoError(t, err)
+	require.NotEmpty(t, hashedPassword)
+
 	arg := sqlc.CreateUserParams{
 		Name:           testdata.RandomString(12),
 		Email:          testdata.RandomEmail(),
-		HashedPassword: testdata.RandomString(16),
+		HashedPassword: hashedPassword,
 	}
 	user, err := querier.CreateUser(context.Background(), arg)
 	require.NoError(t, err)

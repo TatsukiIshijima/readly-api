@@ -8,14 +8,18 @@ import (
 )
 
 func createRandomUser(t *testing.T) *CreateUserResponse {
+	password := testdata.RandomString(16)
+	hashedPassword, err := testdata.HashPassword(password)
+	require.NoError(t, err)
+	require.NotEmpty(t, hashedPassword)
+
 	name := testdata.RandomString(10)
 	email := testdata.RandomEmail()
-	password := testdata.RandomString(16)
 
 	req := CreateUserRequest{
 		Name:     name,
 		Email:    email,
-		Password: password,
+		Password: hashedPassword,
 	}
 	u, err := userRepo.CreateUser(context.Background(), req)
 	require.NoError(t, err)

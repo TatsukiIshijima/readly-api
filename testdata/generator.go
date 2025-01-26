@@ -2,6 +2,7 @@ package testdata
 
 import (
 	"fmt"
+	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"strings"
 	"time"
@@ -35,4 +36,12 @@ func TimeFrom(dateStr string) (*time.Time, error) {
 		return nil, err
 	}
 	return &t, nil
+}
+
+func HashPassword(password string) (string, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashedPassword), nil
 }
