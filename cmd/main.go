@@ -24,8 +24,11 @@ func main() {
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
 	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
+	signUpUseCase := usecase.NewSignUpUseCase(userRepo)
+	signInUseCase := usecase.NewSignInUseCase(userRepo)
 	bookService := service.NewBookService(registerBookUseCase, deleteBookUseCase)
-	server := service.NewServer(bookService)
+	userService := service.NewUserService(signUpUseCase, signInUseCase)
+	server := service.NewServer(bookService, userService)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

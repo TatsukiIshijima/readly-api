@@ -3,6 +3,7 @@ package sqlc_test
 import (
 	"context"
 	"database/sql"
+	"golang.org/x/crypto/bcrypt"
 	"readly/db/sqlc"
 	"readly/testdata"
 	"testing"
@@ -20,11 +21,20 @@ func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
 	require.WithinDuration(t, user1.UpdatedAt, user2.UpdatedAt, time.Second)
 }
 
+func checkPassword(password string, hashedPassword string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+}
+
 func TestCreateUser(t *testing.T) {
+	password := testdata.RandomString(16)
+	hashedPassword, err := testdata.HashPassword(password)
+	require.NoError(t, err)
+	require.NotEmpty(t, hashedPassword)
+
 	arg := db.CreateUserParams{
 		Name:           testdata.RandomString(12),
 		Email:          testdata.RandomEmail(),
-		HashedPassword: testdata.RandomString(16),
+		HashedPassword: hashedPassword,
 	}
 	user, err := querier.CreateUser(context.Background(), arg)
 	require.NoError(t, err)
@@ -33,7 +43,7 @@ func TestCreateUser(t *testing.T) {
 	require.NotZero(t, user.ID)
 	require.Equal(t, arg.Name, user.Name)
 	require.Equal(t, arg.Email, user.Email)
-	require.Equal(t, arg.HashedPassword, user.HashedPassword)
+	require.NoError(t, checkPassword(password, user.HashedPassword))
 	require.NotZero(t, user.CreatedAt)
 	require.NotZero(t, user.UpdatedAt)
 }

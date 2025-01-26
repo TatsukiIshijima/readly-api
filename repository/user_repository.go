@@ -62,9 +62,10 @@ func (r UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
 }
 
 type GetUserResponse struct {
-	ID    int64
-	Name  string
-	Email string
+	ID       int64
+	Name     string
+	Password string
+	Email    string
 }
 
 func (r UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*GetUserResponse, error) {
@@ -73,9 +74,10 @@ func (r UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*
 		return nil, err
 	}
 	u := &GetUserResponse{
-		ID:    res.ID,
-		Name:  res.Name,
-		Email: res.Email,
+		ID:       res.ID,
+		Name:     res.Name,
+		Password: res.HashedPassword,
+		Email:    res.Email,
 	}
 	return u, nil
 }
@@ -86,9 +88,10 @@ func (r UserRepositoryImpl) GetUserByID(ctx context.Context, id int64) (*GetUser
 		return nil, err
 	}
 	u := &GetUserResponse{
-		ID:    res.ID,
-		Name:  res.Name,
-		Email: res.Email,
+		ID:       res.ID,
+		Name:     res.Name,
+		Password: res.HashedPassword,
+		Email:    res.Email,
 	}
 	return u, nil
 }

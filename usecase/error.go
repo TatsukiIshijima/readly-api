@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 	"readly/repository"
 )
 
@@ -15,11 +16,12 @@ type Error struct {
 type ErrorCode string
 
 const (
-	BadRequest ErrorCode = "BAD_REQUEST"
-	NotFound   ErrorCode = "NOT_FOUND"
-	Forbidden  ErrorCode = "FORBIDDEN"
-	Conflict   ErrorCode = "CONFLICT"
-	Internal   ErrorCode = "INTERNAL"
+	UnAuthorized ErrorCode = "UNAUTHORIZED"
+	BadRequest   ErrorCode = "BAD_REQUEST"
+	NotFound     ErrorCode = "NOT_FOUND"
+	Forbidden    ErrorCode = "FORBIDDEN"
+	Conflict     ErrorCode = "CONFLICT"
+	Internal     ErrorCode = "INTERNAL"
 )
 
 func newError(message string, code ErrorCode) *Error {
@@ -37,8 +39,12 @@ func handle(err error) error {
 	if err == nil {
 		return nil
 	}
-	var code ErrorCode
 
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return newError(err.Error(), UnAuthorized)
+	}
+
+	var code ErrorCode
 	var pqErr *pq.Error
 	if errors.As(err, &pqErr) {
 		switch pqErr.Code {

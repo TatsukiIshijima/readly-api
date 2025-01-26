@@ -15,6 +15,8 @@ import (
 var userRepo repository.UserRepository
 var registerBookUseCase RegisterBookUseCase
 var deleteBookUseCase DeleteBookUseCase
+var signInUseCase SignInUseCase
+var signUpUseCase SignUpUseCase
 
 func init() {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -33,5 +35,7 @@ func TestMain(m *testing.M) {
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
 	registerBookUseCase = NewRegisterBookUseCase(transactor, bookRepo, readingHistoryRepo, userRepo)
 	deleteBookUseCase = NewDeleteBookUseCase(transactor, bookRepo, readingHistoryRepo, userRepo)
+	signInUseCase = NewSignInUseCase(userRepo)
+	signUpUseCase = NewSignUpUseCase(userRepo)
 	os.Exit(m.Run())
 }
