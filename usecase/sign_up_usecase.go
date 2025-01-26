@@ -27,7 +27,7 @@ type SignUpRequest struct {
 func (u SignUpUseCase) SignUp(ctx context.Context, req SignUpRequest) (*entity.User, error) {
 	hashedPassword, err := generateHashedPassword(req.Password)
 	if err != nil {
-		return nil, err
+		return nil, handle(err)
 	}
 	user, err := u.userRepo.CreateUser(ctx, repository.CreateUserRequest{
 		Name:     req.Name,
@@ -35,7 +35,7 @@ func (u SignUpUseCase) SignUp(ctx context.Context, req SignUpRequest) (*entity.U
 		Password: hashedPassword,
 	})
 	if err != nil {
-		return nil, err
+		return nil, handle(err)
 	}
 	return &entity.User{
 		ID:    user.ID,
