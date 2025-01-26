@@ -3,56 +3,59 @@ package usecase
 import (
 	"context"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/crypto/bcrypt"
 	"readly/entity"
 	"readly/testdata"
 	"testing"
 )
 
-func TestSignUp(t *testing.T) {
+func TestSignIn(t *testing.T) {
 	name := testdata.RandomString(10)
 	email := testdata.RandomEmail()
+	password := testdata.RandomString(16)
+
+	// Sign up
+	signUpReq := SignUpRequest{
+		Name:     name,
+		Email:    email,
+		Password: password,
+	}
+	user, err := signUpUseCase.SignUp(context.Background(), signUpReq)
+	require.NoError(t, err)
 
 	testCases := []struct {
 		name string
-		req  SignUpRequest
+		req  SignInRequest
 		exp  *entity.User
 		err  error
 	}{
 		{
-			name: "Sign up success",
-			req: SignUpRequest{
-				Name:     name,
+			name: "Sign in success",
+			req: SignInRequest{
 				Email:    email,
-				Password: testdata.RandomString(16),
+				Password: password,
 			},
-			exp: &entity.User{
-				// 出力されるIDは自動採番のためIDは比較対象としないとし、適当な値を入れている
-				ID:    0,
-				Name:  name,
-				Email: email,
-			},
+			exp: user,
 			err: nil,
 		},
 		{
-			name: "Sign up failure by same email",
-			req: SignUpRequest{
-				Name:     name,
+			name: "Sign in failure by wrong password",
+			req: SignInRequest{
 				Email:    email,
 				Password: testdata.RandomString(16),
 			},
 			exp: nil,
-			err: newError("duplicate key value violates unique constraint \"users_email_key\"", Conflict),
+			err: newError(bcrypt.ErrMismatchedHashAndPassword.Error(), UnAuthorized),
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			res, err := signUpUseCase.SignUp(context.Background(), tc.req)
+			res, err := signInUseCase.SignIn(context.Background(), tc.req)
 			if tc.err == nil {
 				require.NoError(t, err)
 				require.NotNil(t, res)
-				require.Equal(t, tc.exp.Name, res.Name)
-				require.Equal(t, tc.exp.Email, res.Email)
+				require.Equal(t, tc.exp, res)
 			} else {
 				require.Nil(t, res)
 				var tcErr *Error
