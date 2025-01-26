@@ -1,7 +1,8 @@
 CREATE TYPE "reading_status" AS ENUM (
   'unread',
   'reading',
-  'done'
+  'done',
+  'unknown'
 );
 
 CREATE TABLE "users"
