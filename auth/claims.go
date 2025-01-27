@@ -21,3 +21,11 @@ func NewClaims(userID int64, duration time.Duration) Claims {
 		},
 	}
 }
+
+func (c Claims) IsExpired() error {
+	if time.Now().After(c.ExpiresAt.Time) {
+		// FIXME: エラー定義
+		return jwt.ErrTokenExpired
+	}
+	return nil
+}

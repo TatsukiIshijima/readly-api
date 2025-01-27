@@ -33,5 +33,9 @@ func (p *PasetoMaker) Verify(token string) (*Claims, error) {
 	if err != nil {
 		return nil, err
 	}
+	err = claims.IsExpired()
+	if err != nil {
+		return nil, err
+	}
 	return claims, nil
 }
