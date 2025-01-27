@@ -8,6 +8,7 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/lib/pq v1.10.9
 	github.com/o1egl/paseto v1.0.0
+	github.com/o1egl/paseto/v2 v2.1.1
 	github.com/spf13/viper v1.19.0
 	golang.org/x/crypto v0.31.0
 )
