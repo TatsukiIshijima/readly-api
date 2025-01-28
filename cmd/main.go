@@ -28,7 +28,10 @@ func main() {
 	signInUseCase := usecase.NewSignInUseCase(userRepo)
 	bookService := service.NewBookService(registerBookUseCase, deleteBookUseCase)
 	userService := service.NewUserService(signUpUseCase, signInUseCase)
-	server := service.NewServer(bookService, userService)
+	server, err := service.NewServer(config, bookService, userService)
+	if err != nil {
+		log.Fatal("cannot create server:", err)
+	}
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

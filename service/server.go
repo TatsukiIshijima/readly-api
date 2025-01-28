@@ -2,16 +2,29 @@ package service
 
 import (
 	"github.com/gin-gonic/gin"
+	"readly/auth"
+	"readly/env"
 )
 
 type Server struct {
+	config      env.Config
 	bookService BookService
 	userService UserService
+	maker       auth.Maker
 	router      *gin.Engine
 }
 
-func NewServer(bookService BookService, userService UserService) *Server {
-	server := &Server{bookService: bookService, userService: userService}
+func NewServer(config env.Config, bookService BookService, userService UserService) (*Server, error) {
+	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		return nil, err
+	}
+	server := &Server{
+		config:      config,
+		bookService: bookService,
+		userService: userService,
+		maker:       maker,
+	}
 	router := gin.Default()
 
 	router.POST("/books", server.bookService.Register)
@@ -20,7 +33,7 @@ func NewServer(bookService BookService, userService UserService) *Server {
 	router.POST("/signin", server.userService.SignIn)
 
 	server.router = router
-	return server
+	return server, nil
 }
 
 func (server *Server) Start(address string) error {
