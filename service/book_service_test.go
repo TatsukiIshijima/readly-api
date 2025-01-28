@@ -11,6 +11,8 @@ import (
 )
 
 func TestRegister(t *testing.T) {
+	server, err := NewTestServer()
+	require.NoError(t, err)
 	router := server.router
 
 	testCases := []struct {
@@ -52,6 +54,8 @@ func TestRegister(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
+	server, err := NewTestServer()
+	require.NoError(t, err)
 	router := server.router
 
 	testCases := []struct {

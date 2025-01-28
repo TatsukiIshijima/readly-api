@@ -4,16 +4,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"os"
 	sqlc "readly/db/sqlc"
+	"readly/env"
 	"readly/repository"
+	"readly/testdata"
 	"readly/usecase"
 	"testing"
+	"time"
 )
-
-var server *Server
 
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
+	os.Exit(m.Run())
+}
 
+func NewTestServer() (*Server, error) {
 	fa := sqlc.FakeAdapter{}
 	db, q := fa.Connect("", "")
 	t := repository.New(db)
@@ -26,7 +30,10 @@ func TestMain(m *testing.M) {
 	signInUseCase := usecase.NewSignInUseCase(userRepo)
 	bookService := NewBookService(registerBookUseCase, deleteBookUseCase)
 	userService := NewUserService(signUpUseCase, signInUseCase)
-	server = NewServer(bookService, userService)
 
-	os.Exit(m.Run())
+	config := env.Config{
+		TokenSymmetricKey:   testdata.RandomString(32),
+		AccessTokenDuration: time.Minute,
+	}
+	return NewServer(config, bookService, userService)
 }

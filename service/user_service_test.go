@@ -12,6 +12,8 @@ import (
 )
 
 func TestSignUp(t *testing.T) {
+	server, err := NewTestServer()
+	require.NoError(t, err)
 	router := server.router
 
 	testCases := []struct {
@@ -83,6 +85,8 @@ func TestSignUp(t *testing.T) {
 }
 
 func TestSignIn(t *testing.T) {
+	server, err := NewTestServer()
+	require.NoError(t, err)
 	router := server.router
 
 	testCases := []struct {
