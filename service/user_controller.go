@@ -6,18 +6,18 @@ import (
 	"readly/usecase"
 )
 
-type UserService interface {
+type UserController interface {
 	SignUp(ctx *gin.Context)
 	SignIn(ctx *gin.Context)
 }
 
-type UserServiceImpl struct {
+type UserControllerImpl struct {
 	signUpUseCase usecase.SignUpUseCase
 	signInUseCase usecase.SignInUseCase
 }
 
-func NewUserService(signUpUseCase usecase.SignUpUseCase, signInUseCase usecase.SignInUseCase) UserServiceImpl {
-	return UserServiceImpl{
+func NewUserController(signUpUseCase usecase.SignUpUseCase, signInUseCase usecase.SignInUseCase) UserControllerImpl {
+	return UserControllerImpl{
 		signUpUseCase: signUpUseCase,
 		signInUseCase: signInUseCase,
 	}
@@ -29,7 +29,7 @@ type SignUpRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
-func (s UserServiceImpl) SignUp(ctx *gin.Context) {
+func (s UserControllerImpl) SignUp(ctx *gin.Context) {
 	var req SignUpRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -56,7 +56,7 @@ type SignInRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
-func (s UserServiceImpl) SignIn(ctx *gin.Context) {
+func (s UserControllerImpl) SignIn(ctx *gin.Context) {
 	var req SignInRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))

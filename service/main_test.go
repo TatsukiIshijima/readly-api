@@ -24,8 +24,8 @@ func TestMain(m *testing.M) {
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	signUpUseCase := usecase.NewSignUpUseCase(userRepo)
 	signInUseCase := usecase.NewSignInUseCase(userRepo)
-	bookService := NewBookService(registerBookUseCase, deleteBookUseCase)
-	userService := NewUserService(signUpUseCase, signInUseCase)
+	bookService := NewBookController(registerBookUseCase, deleteBookUseCase)
+	userService := NewUserController(signUpUseCase, signInUseCase)
 	server = NewServer(bookService, userService)
 
 	os.Exit(m.Run())
