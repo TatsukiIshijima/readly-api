@@ -4,10 +4,11 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"path/filepath"
+	"readly/controller"
 	sqlc "readly/db/sqlc"
 	"readly/env"
 	"readly/repository"
-	"readly/service"
+	"readly/router"
 	"readly/usecase"
 )
 
@@ -16,21 +17,26 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
+
 	a := sqlc.Adapter{}
 	db, q := a.Connect(config.DBDriver, config.DBSource)
 	t := repository.New(db)
+
 	bookRepo := repository.NewBookRepository(q)
 	userRepo := repository.NewUserRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
+
 	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	signUpUseCase := usecase.NewSignUpUseCase(userRepo)
 	signInUseCase := usecase.NewSignInUseCase(userRepo)
-	bookService := service.NewBookService(registerBookUseCase, deleteBookUseCase)
-	userService := service.NewUserService(signUpUseCase, signInUseCase)
-	server := service.NewServer(bookService, userService)
 
-	err = server.Start(config.ServerAddress)
+	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
+	userController := controller.NewUserController(signUpUseCase, signInUseCase)
+
+	r := router.Setup(bookController, userController)
+	err = r.Run(config.ServerAddress)
+
 	if err != nil {
 		log.Fatal("cannot start server:", err)
 	}
