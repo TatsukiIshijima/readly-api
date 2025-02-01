@@ -3,6 +3,8 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"readly/env"
+	"readly/service/auth"
 	"readly/usecase"
 )
 
@@ -12,12 +14,16 @@ type UserController interface {
 }
 
 type UserControllerImpl struct {
+	config        env.Config
+	maker         auth.TokenMaker
 	signUpUseCase usecase.SignUpUseCase
 	signInUseCase usecase.SignInUseCase
 }
 
-func NewUserController(signUpUseCase usecase.SignUpUseCase, signInUseCase usecase.SignInUseCase) UserControllerImpl {
+func NewUserController(config env.Config, maker auth.TokenMaker, signUpUseCase usecase.SignUpUseCase, signInUseCase usecase.SignInUseCase) UserControllerImpl {
 	return UserControllerImpl{
+		config:        config,
+		maker:         maker,
 		signUpUseCase: signUpUseCase,
 		signInUseCase: signInUseCase,
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func TestSignUp(t *testing.T) {
-	_, uc := setupControllers()
+	_, uc := setupControllers(t)
 
 	testCases := []struct {
 		name string
@@ -81,7 +81,7 @@ func TestSignUp(t *testing.T) {
 }
 
 func TestSignIn(t *testing.T) {
-	_, uc := setupControllers()
+	_, uc := setupControllers(t)
 
 	testCases := []struct {
 		name string
