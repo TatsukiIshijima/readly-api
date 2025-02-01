@@ -1,4 +1,4 @@
-package service
+package controller
 
 import (
 	"bytes"
@@ -7,12 +7,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"readly/entity"
+	"readly/service"
 	"readly/testdata"
 	"testing"
 )
 
 func TestSignUp(t *testing.T) {
-	router := server.router
+	router := service.server.router
 
 	testCases := []struct {
 		name string
@@ -83,7 +84,7 @@ func TestSignUp(t *testing.T) {
 }
 
 func TestSignIn(t *testing.T) {
-	router := server.router
+	router := service.server.router
 
 	testCases := []struct {
 		name string
