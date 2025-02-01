@@ -9,6 +9,7 @@ import (
 	"readly/env"
 	"readly/repository"
 	"readly/router"
+	"readly/service/auth"
 	"readly/usecase"
 )
 
@@ -31,8 +32,13 @@ func main() {
 	signUpUseCase := usecase.NewSignUpUseCase(userRepo)
 	signInUseCase := usecase.NewSignInUseCase(userRepo)
 
+	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
+	if err != nil {
+		log.Fatal("cannot start server:", err)
+	}
+
 	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
-	userController := controller.NewUserController(signUpUseCase, signInUseCase)
+	userController := controller.NewUserController(config, maker, signUpUseCase, signInUseCase)
 
 	r := router.Setup(bookController, userController)
 	err = r.Run(config.ServerAddress)

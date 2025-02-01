@@ -9,7 +9,7 @@ import (
 )
 
 func TestRegister(t *testing.T) {
-	bc, _ := setupControllers()
+	bc, _ := setupControllers(t)
 
 	testCases := []struct {
 		name string
@@ -50,7 +50,7 @@ func TestRegister(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	bc, _ := setupControllers()
+	bc, _ := setupControllers(t)
 
 	testCases := []struct {
 		name string
