@@ -1,4 +1,4 @@
-package service
+package controller
 
 import (
 	"github.com/gin-gonic/gin"
@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-type BookService interface {
+type BookController interface {
 	Register(ctx *gin.Context)
 	Delete(ctx *gin.Context)
 }
 
-type BookServiceImpl struct {
+type BookControllerImpl struct {
 	registerUseCase usecase.RegisterBookUseCase
 	deleteUseCase   usecase.DeleteBookUseCase
 }
 
-func NewBookService(registerUseCase usecase.RegisterBookUseCase, deleteUseCase usecase.DeleteBookUseCase) BookServiceImpl {
-	return BookServiceImpl{
+func NewBookController(registerUseCase usecase.RegisterBookUseCase, deleteUseCase usecase.DeleteBookUseCase) BookControllerImpl {
+	return BookControllerImpl{
 		registerUseCase: registerUseCase,
 		deleteUseCase:   deleteUseCase,
 	}
@@ -41,7 +41,7 @@ type RegisterBookRequest struct {
 	EndDate       *time.Time           `json:"end_date" binding:"omitempty"`
 }
 
-func (s BookServiceImpl) Register(ctx *gin.Context) {
+func (s BookControllerImpl) Register(ctx *gin.Context) {
 	var req RegisterBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -78,7 +78,7 @@ type DeleteBookRequest struct {
 	BookID int64 `json:"book_id" binding:"required"`
 }
 
-func (s BookServiceImpl) Delete(ctx *gin.Context) {
+func (s BookControllerImpl) Delete(ctx *gin.Context) {
 	var req DeleteBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
