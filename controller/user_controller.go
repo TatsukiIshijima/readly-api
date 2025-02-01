@@ -62,6 +62,13 @@ type SignInRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
+type SignInResponse struct {
+	AccessToken string `json:"access_token"`
+	ID          int64  `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+}
+
 func (s UserControllerImpl) SignIn(ctx *gin.Context) {
 	var req SignInRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -74,10 +81,21 @@ func (s UserControllerImpl) SignIn(ctx *gin.Context) {
 		Password: req.Password,
 	}
 
-	res, err := s.signInUseCase.SignIn(ctx, args)
+	user, err := s.signInUseCase.SignIn(ctx, args)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
+	}
+	accessToken, err := s.maker.Generate(user.ID, s.config.AccessTokenDuration)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	res := SignInResponse{
+		AccessToken: accessToken,
+		ID:          user.ID,
+		Name:        user.Name,
+		Email:       user.Email,
 	}
 
 	ctx.JSON(http.StatusOK, res)
