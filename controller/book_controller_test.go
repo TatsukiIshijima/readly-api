@@ -1,18 +1,15 @@
 package controller
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"net/http"
-	"net/http/httptest"
 	"readly/entity"
-	"readly/service"
 	"testing"
 )
 
 func TestRegister(t *testing.T) {
-	router := service.server.router
+	bc, _ := setupControllers()
 
 	testCases := []struct {
 		name string
@@ -30,13 +27,13 @@ func TestRegister(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			recorder := httptest.NewRecorder()
-			url := "/books"
+			url := "/readly/books"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)
-			req := httptest.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
-			router.ServeHTTP(recorder, req)
+
+			ctx, recorder := setupTestContext("POST", url, body)
+			bc.Register(ctx)
 
 			if recorder.Code != tc.code {
 				t.Fail()
@@ -53,7 +50,7 @@ func TestRegister(t *testing.T) {
 }
 
 func TestDelete(t *testing.T) {
-	router := service.server.router
+	bc, _ := setupControllers()
 
 	testCases := []struct {
 		name string
@@ -69,13 +66,13 @@ func TestDelete(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			recorder := httptest.NewRecorder()
-			url := "/books"
+			url := "/readly/books"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)
-			req := httptest.NewRequest(http.MethodDelete, url, bytes.NewBuffer(body))
-			router.ServeHTTP(recorder, req)
+
+			ctx, recorder := setupTestContext("DELETE", url, body)
+			bc.Delete(ctx)
 
 			if recorder.Code != tc.code {
 				t.Fail()

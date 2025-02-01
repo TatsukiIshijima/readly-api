@@ -1,19 +1,16 @@
 package controller
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"net/http"
-	"net/http/httptest"
 	"readly/entity"
-	"readly/service"
 	"readly/testdata"
 	"testing"
 )
 
 func TestSignUp(t *testing.T) {
-	router := service.server.router
+	_, uc := setupControllers()
 
 	testCases := []struct {
 		name string
@@ -61,13 +58,13 @@ func TestSignUp(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			recorder := httptest.NewRecorder()
-			url := "/signup"
+			url := "/readly/signup"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)
-			req := httptest.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
-			router.ServeHTTP(recorder, req)
+
+			ctx, recorder := setupTestContext("POST", url, body)
+			uc.SignUp(ctx)
 
 			if recorder.Code != tc.code {
 				t.Fail()
@@ -84,7 +81,7 @@ func TestSignUp(t *testing.T) {
 }
 
 func TestSignIn(t *testing.T) {
-	router := service.server.router
+	_, uc := setupControllers()
 
 	testCases := []struct {
 		name string
@@ -120,13 +117,13 @@ func TestSignIn(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			recorder := httptest.NewRecorder()
-			url := "/signin"
+			url := "/readly/signin"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)
-			req := httptest.NewRequest(http.MethodPost, url, bytes.NewBuffer(body))
-			router.ServeHTTP(recorder, req)
+
+			ctx, recorder := setupTestContext("POST", url, body)
+			uc.SignIn(ctx)
 
 			if recorder.Code != tc.code {
 				t.Fail()
