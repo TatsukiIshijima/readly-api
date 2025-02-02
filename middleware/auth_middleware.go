@@ -12,7 +12,7 @@ import (
 const (
 	authorizationHeaderKey  = "authorization"
 	authorizationTypeBearer = "bearer"
-	authorizationClaimKey   = "authorization_claim"
+	AuthorizationClaimKey   = "authorization_claim"
 )
 
 func Authorize(maker auth.TokenMaker) gin.HandlerFunc {
@@ -43,7 +43,7 @@ func Authorize(maker auth.TokenMaker) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set(authorizationClaimKey, claims)
+		ctx.Set(AuthorizationClaimKey, claims)
 		ctx.Next()
 	}
 }

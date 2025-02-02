@@ -58,7 +58,7 @@ func TestSignUp(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := "/readly/signup"
+			url := "/signup"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)
@@ -117,7 +117,7 @@ func TestSignIn(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := "/readly/signin"
+			url := "/signin"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)

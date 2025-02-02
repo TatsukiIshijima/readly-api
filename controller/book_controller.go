@@ -4,6 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"readly/entity"
+	"readly/middleware"
+	"readly/service/auth"
 	"readly/usecase"
 	"time"
 )
@@ -26,7 +28,6 @@ func NewBookController(registerUseCase usecase.RegisterBookUseCase, deleteUseCas
 }
 
 type RegisterBookRequest struct {
-	UserID        int64                `json:"user_id" binding:"required"`
 	Title         string               `json:"title" binding:"required,min=1"`
 	Genres        []string             `json:"genres" binding:"omitempty,max=5"`
 	Description   *string              `json:"description" binding:"omitempty,max=500"`
@@ -48,8 +49,10 @@ func (s BookControllerImpl) Register(ctx *gin.Context) {
 		return
 	}
 
+	claims := ctx.MustGet(middleware.AuthorizationClaimKey).(*auth.Claims)
+
 	args := usecase.RegisterBookRequest{
-		UserID:        req.UserID,
+		UserID:        claims.UserID,
 		Title:         req.Title,
 		Genres:        req.Genres,
 		Description:   req.Description,
@@ -74,7 +77,6 @@ func (s BookControllerImpl) Register(ctx *gin.Context) {
 }
 
 type DeleteBookRequest struct {
-	UserID int64 `json:"user_id" binding:"required"`
 	BookID int64 `json:"book_id" binding:"required"`
 }
 
@@ -85,8 +87,10 @@ func (s BookControllerImpl) Delete(ctx *gin.Context) {
 		return
 	}
 
+	claims := ctx.MustGet(middleware.AuthorizationClaimKey).(*auth.Claims)
+
 	args := usecase.DeleteBookRequest{
-		UserID: req.UserID,
+		UserID: claims.UserID,
 		BookID: req.BookID,
 	}
 	err := s.deleteUseCase.DeleteBook(ctx, args)
