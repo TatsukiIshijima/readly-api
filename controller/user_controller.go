@@ -50,7 +50,8 @@ func (s UserControllerImpl) SignUp(ctx *gin.Context) {
 
 	res, err := s.signUpUseCase.SignUp(ctx, args)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		code, e := toHttpStatusCode(err)
+		ctx.JSON(code, errorResponse(e))
 		return
 	}
 

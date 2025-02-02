@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/require"
 	"net/http"
+	"net/http/httptest"
 	"readly/entity"
 	"readly/testdata"
 	"testing"
@@ -12,47 +13,97 @@ import (
 func TestSignUp(t *testing.T) {
 	_, uc := setupControllers(t)
 
+	duplicateEmail := testdata.RandomEmail()
+
 	testCases := []struct {
-		name string
-		req  SignUpRequest
-		code int
-		res  entity.User
+		name  string
+		setup func(t *testing.T)
+		req   SignUpRequest
+		check func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder)
 	}{
 		{
-			name: "invalid request by missing required fields",
-			req:  SignUpRequest{},
-			code: http.StatusBadRequest,
-			res:  entity.User{},
+			name:  "invalid request by missing required fields",
+			setup: func(t *testing.T) {},
+			req:   SignUpRequest{},
+			check: func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, rec.Code)
+			},
 		},
 		{
-			name: "invalid request by empty name",
+			name:  "invalid request by empty name",
+			setup: func(t *testing.T) {},
 			req: SignUpRequest{
 				Name:     "",
 				Email:    testdata.RandomEmail(),
 				Password: testdata.RandomString(16),
 			},
-			code: http.StatusBadRequest,
-			res:  entity.User{},
+			check: func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, rec.Code)
+			},
 		},
 		{
-			name: "invalid request by invalid email",
+			name:  "invalid request by invalid email",
+			setup: func(t *testing.T) {},
 			req: SignUpRequest{
 				Name:     testdata.RandomString(10),
 				Email:    "invalid",
 				Password: testdata.RandomString(16),
 			},
-			code: http.StatusBadRequest,
-			res:  entity.User{},
+			check: func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, rec.Code)
+			},
 		},
 		{
-			name: "invalid request by short password",
+			name:  "invalid request by short password",
+			setup: func(t *testing.T) {},
 			req: SignUpRequest{
 				Name:     testdata.RandomString(10),
 				Email:    testdata.RandomEmail(),
 				Password: "short",
 			},
-			code: http.StatusBadRequest,
-			res:  entity.User{},
+			check: func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, rec.Code)
+			},
+		},
+		{
+			name: "invalid request by duplicate email",
+			setup: func(t *testing.T) {
+				req := SignUpRequest{
+					Name:     testdata.RandomString(10),
+					Email:    duplicateEmail,
+					Password: testdata.RandomString(16),
+				}
+				body, err := json.Marshal(req)
+				require.NoError(t, err)
+				ctx, rec := setupTestContext(http.MethodPost, "/signup", body)
+				uc.SignUp(ctx)
+				require.Equal(t, http.StatusOK, rec.Code)
+			},
+			req: SignUpRequest{
+				Name:     testdata.RandomString(10),
+				Email:    duplicateEmail,
+				Password: testdata.RandomString(16),
+			},
+			check: func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusConflict, rec.Code)
+			},
+		},
+		{
+			name:  "success: valid request",
+			setup: func(t *testing.T) {},
+			req: SignUpRequest{
+				Name:     testdata.RandomString(10),
+				Email:    testdata.RandomEmail(),
+				Password: testdata.RandomString(16),
+			},
+			check: func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder) {
+				var res entity.User
+				err := json.Unmarshal(rec.Body.Bytes(), &res)
+				require.NoError(t, err)
+				require.Equal(t, http.StatusOK, rec.Code)
+				require.Equal(t, req.Name, res.Name)
+				require.Equal(t, req.Email, res.Email)
+			},
 		},
 	}
 
@@ -63,19 +114,10 @@ func TestSignUp(t *testing.T) {
 			println("request: " + string(body))
 			require.NoError(t, err)
 
-			ctx, recorder := setupTestContext("POST", url, body)
+			ctx, recorder := setupTestContext(http.MethodPost, url, body)
+			tc.setup(t)
 			uc.SignUp(ctx)
-
-			if recorder.Code != tc.code {
-				t.Fail()
-			} else {
-				switch recorder.Code {
-				case http.StatusOK:
-					var res entity.User
-					err := json.Unmarshal(recorder.Body.Bytes(), &res)
-					require.NoError(t, err)
-				}
-			}
+			tc.check(t, tc.req, recorder)
 		})
 	}
 }
