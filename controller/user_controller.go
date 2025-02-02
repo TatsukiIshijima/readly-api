@@ -84,7 +84,8 @@ func (s UserControllerImpl) SignIn(ctx *gin.Context) {
 
 	user, err := s.signInUseCase.SignIn(ctx, args)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		code, e := toHttpStatusCode(err)
+		ctx.JSON(code, errorResponse(e))
 		return
 	}
 	accessToken, err := s.maker.Generate(user.ID, s.config.AccessTokenDuration)
