@@ -7,6 +7,7 @@ import (
 	"readly/controller"
 	sqlc "readly/db/sqlc"
 	"readly/env"
+	"readly/middleware"
 	"readly/repository"
 	"readly/router"
 	"readly/service/auth"
@@ -40,7 +41,7 @@ func main() {
 	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
 	userController := controller.NewUserController(config, maker, signUpUseCase, signInUseCase)
 
-	r := router.Setup(bookController, userController)
+	r := router.Setup(middleware.Authorize(maker), bookController, userController)
 	err = r.Run(config.ServerAddress)
 
 	if err != nil {

@@ -5,19 +5,26 @@ import (
 	"readly/controller"
 )
 
-func Setup(bc controller.BookController, uc controller.UserController) *gin.Engine {
+func Setup(
+	authMiddleware gin.HandlerFunc,
+	bc controller.BookController,
+	uc controller.UserController,
+) *gin.Engine {
 	router := gin.Default()
 
-	readly := router.Group("/readly")
+	root := router.Group("/")
 	{
-		readly.POST("signup", uc.SignUp)
-		readly.POST("signin", uc.SignIn)
-		books := readly.Group("/books")
+		v1 := root.Group("v1")
 		{
-			books.POST("", bc.Register)
-			books.DELETE("", bc.Delete)
+			v1.POST("/signup", uc.SignUp)
+			v1.POST("/signin", uc.SignIn)
+
+			books := v1.Group("/books").Use(authMiddleware)
+			{
+				books.POST("", bc.Register)
+				books.DELETE("", bc.Delete)
+			}
 		}
 	}
-
 	return router
 }

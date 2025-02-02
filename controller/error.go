@@ -20,6 +20,8 @@ func toHttpStatusCode(err error) (int, error) {
 	switch e.Code {
 	case usecase.BadRequest:
 		sc = http.StatusBadRequest
+	case usecase.UnAuthorized:
+		sc = http.StatusUnauthorized
 	case usecase.Forbidden:
 		sc = http.StatusForbidden
 	case usecase.NotFound:

@@ -27,7 +27,7 @@ func TestRegister(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := "/readly/books"
+			url := "/books"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)
@@ -66,7 +66,7 @@ func TestDelete(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			url := "/readly/books"
+			url := "/books"
 			body, err := json.Marshal(tc.req)
 			println("request: " + string(body))
 			require.NoError(t, err)
