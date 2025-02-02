@@ -70,7 +70,7 @@ func (q *FakeQuerier) UpdateUser(_ context.Context, arg UpdateUserParams) (User,
 			return userTable.Columns[i], nil
 		}
 	}
-	return user, nil
+	return User{}, sql.ErrNoRows
 }
 
 func scanUser(id int64) (User, error) {
