@@ -22,9 +22,16 @@ func NewPasetoMaker(symmetricKey string) (*PasetoMaker, error) {
 	}, nil
 }
 
-func (p *PasetoMaker) Generate(userID int64, duration time.Duration) (string, error) {
+func (p *PasetoMaker) Generate(userID int64, duration time.Duration) (*Payload, error) {
 	claims := NewClaims(userID, duration)
-	return p.paseto.Encrypt(p.symmetricKey, claims, nil)
+	token, err := p.paseto.Encrypt(p.symmetricKey, claims, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &Payload{
+		Token:     token,
+		ExpiredAt: claims.ExpiresAt.Time,
+	}, nil
 }
 
 func (p *PasetoMaker) Verify(token string) (*Claims, error) {

@@ -27,3 +27,8 @@ func (c Claims) IsExpired() error {
 	}
 	return nil
 }
+
+type Payload struct {
+	Token     string
+	ExpiredAt time.Time
+}
