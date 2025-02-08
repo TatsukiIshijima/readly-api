@@ -3,7 +3,6 @@ launchpostgres:
 
 createdb:
 	docker exec -it postgres17.2 createdb --username=root --owner=root readly
-	docker exec -it postgres17.2 psql -U root -d readly -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
 
 dropdb:
 	docker exec -it postgres17.2 dropdb readly
