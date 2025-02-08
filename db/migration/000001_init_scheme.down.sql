@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS genres;
 
 DROP TABLE IF EXISTS reading_histories;
 
+DROP TABLE if EXISTS sessions;
+
 DROP TABLE IF EXISTS users;
 
 DROP TABLE IF EXISTS books;
