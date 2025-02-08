@@ -2,49 +2,39 @@ package repository
 
 import (
 	"context"
-	"github.com/google/uuid"
 	sqlc "readly/db/sqlc"
 	"time"
 )
 
 type SessionRepository interface {
-	CreateSession(ctx context.Context, req CreateSessionRequest) (*CreateSessionResponse, error)
+	CreateSession(ctx context.Context, req CreateSessionRequest) error
 }
 
 type SessionRepositoryImpl struct {
 	querier sqlc.Querier
 }
 
-func NewSessionRepository(q sqlc.Querier) SessionRepositoryImpl {
-	return SessionRepositoryImpl{
+func NewSessionRepository(q sqlc.Querier) SessionRepository {
+	return &SessionRepositoryImpl{
 		querier: q,
 	}
 }
 
 type CreateSessionRequest struct {
-	ID           uuid.UUID
 	UserID       int64
 	RefreshToken string
 	ExpiresAt    time.Time
 }
 
-type CreateSessionResponse struct {
-	RefreshToken string
-	ExpiresAt    time.Time
-}
-
-func (r *SessionRepositoryImpl) CreateSession(ctx context.Context, req CreateSessionRequest) (*CreateSessionResponse, error) {
+func (r *SessionRepositoryImpl) CreateSession(ctx context.Context, req CreateSessionRequest) error {
 	args := sqlc.CreateSessionParams{
 		UserID:       req.UserID,
 		RefreshToken: req.RefreshToken,
 		ExpiresAt:    req.ExpiresAt,
 	}
-	res, err := r.querier.CreateSession(ctx, args)
+	_, err := r.querier.CreateSession(ctx, args)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &CreateSessionResponse{
-		RefreshToken: res.RefreshToken,
-		ExpiresAt:    res.ExpiresAt,
-	}, nil
+	return nil
 }
