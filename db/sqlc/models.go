@@ -110,12 +110,12 @@ type ReadingHistory struct {
 // Stores session data.
 type Session struct {
 	ID           uuid.UUID      `json:"id"`
-	UserID       sql.NullInt64  `json:"user_id"`
-	RefreshToken sql.NullString `json:"refresh_token"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
 	ExpiresAt    time.Time      `json:"expires_at"`
 	CreatedAt    time.Time      `json:"created_at"`
-	IpAddress    string         `json:"ip_address"`
-	UserAgent    string         `json:"user_agent"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
 	Revoked      bool           `json:"revoked"`
 	RevokedAt    sql.NullTime   `json:"revoked_at"`
 }

@@ -14,7 +14,8 @@ import (
 )
 
 const createSession = `-- name: CreateSession :one
-INSERT INTO sessions (user_id,
+INSERT INTO sessions (id,
+                      user_id,
                       refresh_token,
                       expires_at,
                       ip_address,
@@ -23,19 +24,22 @@ VALUES ($1,
         $2,
         $3,
         $4,
-        $5) RETURNING id, user_id, refresh_token, expires_at, created_at, ip_address, user_agent, revoked, revoked_at
+        $5,
+        $6) RETURNING id, user_id, refresh_token, expires_at, created_at, ip_address, user_agent, revoked, revoked_at
 `
 
 type CreateSessionParams struct {
-	UserID       sql.NullInt64  `json:"user_id"`
-	RefreshToken sql.NullString `json:"refresh_token"`
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
 	ExpiresAt    time.Time      `json:"expires_at"`
-	IpAddress    string         `json:"ip_address"`
-	UserAgent    string         `json:"user_agent"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
 }
 
 func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
 	row := q.db.QueryRowContext(ctx, createSession,
+		arg.ID,
 		arg.UserID,
 		arg.RefreshToken,
 		arg.ExpiresAt,
@@ -93,10 +97,10 @@ WHERE id = $1 RETURNING id, user_id, refresh_token, expires_at, created_at, ip_a
 
 type UpdateSessionParams struct {
 	ID           uuid.UUID      `json:"id"`
-	RefreshToken sql.NullString `json:"refresh_token"`
+	RefreshToken string         `json:"refresh_token"`
 	ExpiresAt    time.Time      `json:"expires_at"`
-	IpAddress    string         `json:"ip_address"`
-	UserAgent    string         `json:"user_agent"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
 	Revoked      bool           `json:"revoked"`
 	RevokedAt    sql.NullTime   `json:"revoked_at"`
 }

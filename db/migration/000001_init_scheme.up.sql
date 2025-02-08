@@ -17,14 +17,14 @@ CREATE TABLE "users"
 
 CREATE TABLE "sessions"
 (
-    "id"            uuid PRIMARY KEY       DEFAULT (uuid_generate_v4()),
-    "user_id"       bigserial,
-    "refresh_token" varchar(512),
-    "expires_at"    timestamptz    NOT NULL,
-    "created_at"    timestamptz    NOT NULL DEFAULT (now()),
-    "ip_address"    varchar(45)   NOT NULL,
-    "user_agent"    varchar(2048) NOT NULL,
-    "revoked"       boolean       NOT NULL DEFAULT (false),
+    "id"            uuid PRIMARY KEY,
+    "user_id"       bigserial    NOT NULL,
+    "refresh_token" varchar(512) NOT NULL,
+    "expires_at"    timestamptz  NOT NULL,
+    "created_at"    timestamptz  NOT NULL DEFAULT (now()),
+    "ip_address"    varchar(45),
+    "user_agent"    varchar(2048),
+    "revoked"       boolean      NOT NULL DEFAULT (false),
     "revoked_at"    timestamptz
 );
 
