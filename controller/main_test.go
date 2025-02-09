@@ -34,14 +34,15 @@ func setupControllers(t *testing.T) (BookController, UserController) {
 	bookRepo := repository.NewBookRepository(q)
 	userRepo := repository.NewUserRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
-
-	registerBookUseCase := usecase.NewRegisterBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepo)
-	deleteBookUseCase := usecase.NewDeleteBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepo)
-	signUpUseCase := usecase.NewSignUpUseCase(userRepo)
-	signInUseCase := usecase.NewSignInUseCase(userRepo)
+	sessionRepo := repository.NewSessionRepository(q)
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	require.NoError(t, err)
+
+	registerBookUseCase := usecase.NewRegisterBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepo)
+	deleteBookUseCase := usecase.NewDeleteBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepo)
+	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transaction, sessionRepo, userRepo)
+	signInUseCase := usecase.NewSignInUseCase(config, maker, sessionRepo, userRepo)
 
 	bookController := NewBookController(registerBookUseCase, deleteBookUseCase)
 	userController := NewUserController(config, maker, signUpUseCase, signInUseCase)

@@ -35,6 +35,14 @@ type SignUpRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
+type SignUpResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	UserID       int64  `json:"user_id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
+}
+
 func (s UserControllerImpl) SignUp(ctx *gin.Context) {
 	var req SignUpRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -48,11 +56,19 @@ func (s UserControllerImpl) SignUp(ctx *gin.Context) {
 		Password: req.Password,
 	}
 
-	res, err := s.signUpUseCase.SignUp(ctx, args)
+	result, err := s.signUpUseCase.SignUp(ctx, args)
 	if err != nil {
 		code, e := toHttpStatusCode(err)
 		ctx.JSON(code, errorResponse(e))
 		return
+	}
+
+	res := SignUpResponse{
+		AccessToken:  result.AccessToken,
+		RefreshToken: result.RefreshToken,
+		UserID:       result.UserID,
+		Name:         result.Name,
+		Email:        result.Email,
 	}
 
 	ctx.JSON(http.StatusOK, res)

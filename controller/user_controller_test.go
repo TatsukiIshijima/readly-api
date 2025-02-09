@@ -5,7 +5,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
-	"readly/entity"
 	"readly/testdata"
 	"testing"
 )
@@ -97,11 +96,11 @@ func TestSignUp(t *testing.T) {
 				Password: testdata.RandomString(16),
 			},
 			check: func(t *testing.T, req SignUpRequest, rec *httptest.ResponseRecorder) {
-				var res entity.User
+				var res *SignUpResponse
 				err := json.Unmarshal(rec.Body.Bytes(), &res)
 				require.NoError(t, err)
 				require.Equal(t, http.StatusOK, rec.Code)
-				require.NotEmpty(t, res.ID)
+				require.NotEmpty(t, res.UserID)
 				require.Equal(t, req.Name, res.Name)
 				require.Equal(t, req.Email, res.Email)
 			},
@@ -237,7 +236,9 @@ func TestSignIn(t *testing.T) {
 				require.NoError(t, err)
 				require.Equal(t, http.StatusOK, rec.Code)
 				require.NotEmpty(t, res.AccessToken)
-				require.NotEmpty(t, res.ID)
+				require.NotEmpty(t, res.RefreshToken)
+				require.NotEmpty(t, res.UserID)
+				require.NotEmpty(t, res.Name)
 				require.Equal(t, req.Email, res.Email)
 			},
 		},

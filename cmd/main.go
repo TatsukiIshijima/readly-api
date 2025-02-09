@@ -27,16 +27,17 @@ func main() {
 	bookRepo := repository.NewBookRepository(q)
 	userRepo := repository.NewUserRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
-
-	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
-	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
-	signUpUseCase := usecase.NewSignUpUseCase(userRepo)
-	signInUseCase := usecase.NewSignInUseCase(userRepo)
+	sessionRepo := repository.NewSessionRepository(q)
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
 		log.Fatal("cannot start server:", err)
 	}
+
+	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
+	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
+	signUpUseCase := usecase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepo)
+	signInUseCase := usecase.NewSignInUseCase(config, maker, sessionRepo, userRepo)
 
 	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
 	userController := controller.NewUserController(config, maker, signUpUseCase, signInUseCase)
