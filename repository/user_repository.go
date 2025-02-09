@@ -17,8 +17,8 @@ type UserRepositoryImpl struct {
 	querier sqlc.Querier
 }
 
-func NewUserRepository(q sqlc.Querier) UserRepositoryImpl {
-	return UserRepositoryImpl{
+func NewUserRepository(q sqlc.Querier) UserRepository {
+	return &UserRepositoryImpl{
 		querier: q,
 	}
 }
@@ -35,7 +35,7 @@ type CreateUserResponse struct {
 	Email string
 }
 
-func (r UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserRequest) (*CreateUserResponse, error) {
+func (r *UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserRequest) (*CreateUserResponse, error) {
 	args := sqlc.CreateUserParams{
 		Name:           req.Name,
 		Email:          req.Email,
@@ -53,7 +53,7 @@ func (r UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserReques
 	return u, nil
 }
 
-func (r UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
+func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
 	err := r.querier.DeleteUser(ctx, id)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ type GetUserResponse struct {
 	Email    string
 }
 
-func (r UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*GetUserResponse, error) {
+func (r *UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*GetUserResponse, error) {
 	res, err := r.querier.GetUserByEmail(ctx, email)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func (r UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*
 	return u, nil
 }
 
-func (r UserRepositoryImpl) GetUserByID(ctx context.Context, id int64) (*GetUserResponse, error) {
+func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id int64) (*GetUserResponse, error) {
 	res, err := r.querier.GetUserByID(ctx, id)
 	if err != nil {
 		return nil, err
@@ -109,7 +109,7 @@ type UpdateResponse struct {
 	Email string
 }
 
-func (r UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) (*UpdateResponse, error) {
+func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) (*UpdateResponse, error) {
 	args := sqlc.UpdateUserParams{
 		ID:             req.ID,
 		Name:           req.Name,
