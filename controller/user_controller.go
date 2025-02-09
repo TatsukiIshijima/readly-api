@@ -64,10 +64,11 @@ type SignInRequest struct {
 }
 
 type SignInResponse struct {
-	AccessToken string `json:"access_token"`
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	Email       string `json:"email"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+	UserID       int64  `json:"user_id"`
+	Name         string `json:"name"`
+	Email        string `json:"email"`
 }
 
 func (s UserControllerImpl) SignIn(ctx *gin.Context) {
@@ -82,22 +83,19 @@ func (s UserControllerImpl) SignIn(ctx *gin.Context) {
 		Password: req.Password,
 	}
 
-	user, err := s.signInUseCase.SignIn(ctx, args)
+	result, err := s.signInUseCase.SignIn(ctx, args)
 	if err != nil {
 		code, e := toHttpStatusCode(err)
 		ctx.JSON(code, errorResponse(e))
 		return
 	}
-	accessToken, err := s.maker.Generate(user.ID, s.config.AccessTokenDuration)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
+
 	res := SignInResponse{
-		AccessToken: accessToken,
-		ID:          user.ID,
-		Name:        user.Name,
-		Email:       user.Email,
+		AccessToken:  result.AccessToken,
+		RefreshToken: result.RefreshToken,
+		UserID:       result.UserID,
+		Name:         result.Name,
+		Email:        result.Email,
 	}
 
 	ctx.JSON(http.StatusOK, res)
