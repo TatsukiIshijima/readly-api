@@ -11,15 +11,19 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func NewClaims(userID int64, duration time.Duration) Claims {
+func NewClaims(userID int64, duration time.Duration) (Claims, error) {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return Claims{}, err
+	}
 	return Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ID:        uuid.New().String(),
+			ID:        id.String(),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
-	}
+	}, nil
 }
 
 func (c Claims) IsExpired() error {
@@ -28,4 +32,10 @@ func (c Claims) IsExpired() error {
 		return jwt.ErrTokenExpired
 	}
 	return nil
+}
+
+type Payload struct {
+	ID        uuid.UUID
+	Token     string
+	ExpiredAt time.Time
 }

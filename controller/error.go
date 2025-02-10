@@ -8,7 +8,11 @@ import (
 )
 
 func errorResponse(err error) gin.H {
-	return gin.H{"error": err.Error()}
+	var e *usecase.Error
+	if !errors.As(err, &e) {
+		return gin.H{"code": -1, "message": err.Error()}
+	}
+	return gin.H{"code": e.ErrorCode, "message": e.Message}
 }
 
 func toHttpStatusCode(err error) (int, error) {
@@ -17,7 +21,7 @@ func toHttpStatusCode(err error) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 	var sc int
-	switch e.Code {
+	switch e.StatusCode {
 	case usecase.BadRequest:
 		sc = http.StatusBadRequest
 	case usecase.UnAuthorized:

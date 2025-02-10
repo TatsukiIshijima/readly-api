@@ -7,6 +7,8 @@ package db
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
@@ -16,6 +18,7 @@ type Querier interface {
 	CreateGenre(ctx context.Context, name string) (Genre, error)
 	CreatePublisher(ctx context.Context, name string) (Publisher, error)
 	CreateReadingHistory(ctx context.Context, arg CreateReadingHistoryParams) (ReadingHistory, error)
+	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteAuthor(ctx context.Context, name string) error
 	DeleteBook(ctx context.Context, id int64) (int64, error)
@@ -40,10 +43,12 @@ type Querier interface {
 	GetReadingHistoryByUser(ctx context.Context, arg GetReadingHistoryByUserParams) ([]GetReadingHistoryByUserRow, error)
 	GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (GetReadingHistoryByUserAndBookRow, error)
 	GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]GetReadingHistoryByUserAndStatusRow, error)
+	GetSessionByID(ctx context.Context, id uuid.UUID) (Session, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id int64) (User, error)
 	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)
 	UpdateReadingHistory(ctx context.Context, arg UpdateReadingHistoryParams) (ReadingHistory, error)
+	UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error)
 	UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error)
 }
 

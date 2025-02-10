@@ -39,15 +39,17 @@ func TestJWTMaker(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			token, err := maker.Generate(tc.userID, tc.duration)
+			payload, err := maker.Generate(tc.userID, tc.duration)
 			if tc.genErr == nil {
 				require.NoError(t, err)
-				require.NotEmpty(t, token)
+				require.NotEmpty(t, payload.ID)
+				require.NotEmpty(t, payload.Token)
+				require.NotEmpty(t, payload.ExpiredAt)
 			} else {
 				require.EqualError(t, err, tc.genErr.Error())
-				require.Empty(t, token)
+				require.Empty(t, payload)
 			}
-			c, err := maker.Verify(token)
+			c, err := maker.Verify(payload.Token)
 			if tc.verifyErr == nil {
 				require.NoError(t, err)
 				require.NotEmpty(t, c.ID)

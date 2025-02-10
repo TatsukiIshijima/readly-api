@@ -1,33 +1,49 @@
 package usecase
 
 import (
-	"database/sql"
 	"errors"
-	"github.com/lib/pq"
-	"golang.org/x/crypto/bcrypt"
-	"readly/repository"
+	"log/slog"
 )
 
 type Error struct {
-	Message string
-	Code    ErrorCode
+	StatusCode StatusCode
+	ErrorCode  ErrorCode
+	Message    string
 }
 
-type ErrorCode string
+type StatusCode int16
 
 const (
-	UnAuthorized ErrorCode = "UNAUTHORIZED"
-	BadRequest   ErrorCode = "BAD_REQUEST"
-	NotFound     ErrorCode = "NOT_FOUND"
-	Forbidden    ErrorCode = "FORBIDDEN"
-	Conflict     ErrorCode = "CONFLICT"
-	Internal     ErrorCode = "INTERNAL"
+	BadRequest   StatusCode = 400
+	UnAuthorized StatusCode = 401
+	Forbidden    StatusCode = 403
+	NotFound     StatusCode = 404
+	Conflict     StatusCode = 409
+	Internal     StatusCode = 500
+	Maintenance  StatusCode = 503
 )
 
-func newError(message string, code ErrorCode) *Error {
+type ErrorCode int
+
+const (
+	// common
+	InternalServerError ErrorCode = 1000
+	InvalidTokenError   ErrorCode = 1001
+
+	// user
+	EmailAlreadyRegisteredError ErrorCode = 2000
+	NotFoundUserError           ErrorCode = 2001
+	InvalidPasswordError        ErrorCode = 2002
+
+	// book
+	NotFoundBookError ErrorCode = 3000
+)
+
+func newError(statusCode StatusCode, errorCode ErrorCode, message string) *Error {
 	return &Error{
-		Message: message,
-		Code:    code,
+		StatusCode: statusCode,
+		ErrorCode:  errorCode,
+		Message:    message,
 	}
 }
 
@@ -39,31 +55,11 @@ func handle(err error) error {
 	if err == nil {
 		return nil
 	}
-
-	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
-		return newError(err.Error(), UnAuthorized)
+	var e *Error
+	if errors.As(err, &e) {
+		return e
+	} else {
+		slog.Error(err.Error())
+		return newError(Internal, InternalServerError, "internal server error")
 	}
-
-	var code ErrorCode
-	var pqErr *pq.Error
-	if errors.As(err, &pqErr) {
-		switch pqErr.Code {
-		case "23503":
-			code = BadRequest
-		case "23505":
-			code = Conflict
-		default:
-			code = Internal
-		}
-		return newError(pqErr.Message, code)
-	}
-
-	if errors.Is(err, repository.ErrNoRowsDeleted) {
-		return newError(err.Error(), BadRequest)
-	}
-	if errors.Is(err, sql.ErrNoRows) {
-		return newError(err.Error(), NotFound)
-	}
-
-	return newError(err.Error(), Internal)
 }

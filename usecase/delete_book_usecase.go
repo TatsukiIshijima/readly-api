@@ -2,19 +2,28 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"readly/repository"
 )
 
-type DeleteBookUseCase struct {
-	Executor
+type DeleteBookUseCase interface {
+	DeleteBook(ctx context.Context, req DeleteBookRequest) error
+}
+
+type DeleteBookUseCaseImpl struct {
 	transactor         repository.Transactor
 	bookRepo           repository.BookRepository
 	readingHistoryRepo repository.ReadingHistoryRepository
 	userRepo           repository.UserRepository
 }
 
-func NewDeleteBookUseCase(transactor repository.Transactor, bookRepo repository.BookRepository, readingHistoryRepo repository.ReadingHistoryRepository, userRepo repository.UserRepository) DeleteBookUseCase {
-	return DeleteBookUseCase{
+func NewDeleteBookUseCase(
+	transactor repository.Transactor,
+	bookRepo repository.BookRepository,
+	readingHistoryRepo repository.ReadingHistoryRepository,
+	userRepo repository.UserRepository,
+) DeleteBookUseCase {
+	return &DeleteBookUseCaseImpl{
 		transactor:         transactor,
 		bookRepo:           bookRepo,
 		readingHistoryRepo: readingHistoryRepo,
@@ -27,7 +36,7 @@ type DeleteBookRequest struct {
 	BookID int64
 }
 
-func (u DeleteBookUseCase) DeleteBook(ctx context.Context, req DeleteBookRequest) error {
+func (u *DeleteBookUseCaseImpl) DeleteBook(ctx context.Context, req DeleteBookRequest) error {
 	err := u.transactor.Exec(ctx, func() error {
 		deleteHistoryArgs := repository.DeleteReadingHistoryRequest{
 			UserID: req.UserID,
@@ -35,14 +44,23 @@ func (u DeleteBookUseCase) DeleteBook(ctx context.Context, req DeleteBookRequest
 		}
 		err := u.readingHistoryRepo.Delete(ctx, deleteHistoryArgs)
 		if err != nil {
+			if errors.Is(err, repository.ErrNoRowsDeleted) {
+				return newError(BadRequest, NotFoundBookError, "reading history not found")
+			}
 			return err
 		}
 		err = u.deleteBookGenres(ctx, req.BookID)
 		if err != nil {
+			if errors.Is(err, repository.ErrNoRowsDeleted) {
+				return newError(BadRequest, NotFoundBookError, "genre not found")
+			}
 			return err
 		}
 		err = u.bookRepo.DeleteBook(ctx, req.BookID)
 		if err != nil {
+			if errors.Is(err, repository.ErrNoRowsDeleted) {
+				return newError(BadRequest, NotFoundBookError, "book not found")
+			}
 			return err
 		}
 		return nil
@@ -50,7 +68,7 @@ func (u DeleteBookUseCase) DeleteBook(ctx context.Context, req DeleteBookRequest
 	return handle(err)
 }
 
-func (u DeleteBookUseCase) deleteBookGenres(ctx context.Context, bookID int64) error {
+func (u *DeleteBookUseCaseImpl) deleteBookGenres(ctx context.Context, bookID int64) error {
 	genres, err := u.bookRepo.GetGenresByBookID(ctx, bookID)
 	if err != nil {
 		return err

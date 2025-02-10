@@ -9,16 +9,24 @@ import (
 	"time"
 )
 
-type RegisterBookUseCase struct {
-	Executor
+type RegisterBookUseCase interface {
+	RegisterBook(ctx context.Context, req RegisterBookRequest) (*entity.Book, error)
+}
+
+type RegisterBookUseCaseImpl struct {
 	transactor         repository.Transactor
 	bookRepo           repository.BookRepository
 	readingHistoryRepo repository.ReadingHistoryRepository
 	userRepo           repository.UserRepository
 }
 
-func NewRegisterBookUseCase(transactor repository.Transactor, bookRepo repository.BookRepository, readingHistoryRepo repository.ReadingHistoryRepository, userRepo repository.UserRepository) RegisterBookUseCase {
-	return RegisterBookUseCase{
+func NewRegisterBookUseCase(
+	transactor repository.Transactor,
+	bookRepo repository.BookRepository,
+	readingHistoryRepo repository.ReadingHistoryRepository,
+	userRepo repository.UserRepository,
+) RegisterBookUseCase {
+	return &RegisterBookUseCaseImpl{
 		transactor:         transactor,
 		bookRepo:           bookRepo,
 		readingHistoryRepo: readingHistoryRepo,
@@ -42,7 +50,7 @@ type RegisterBookRequest struct {
 	EndDate       *time.Time
 }
 
-func (u RegisterBookUseCase) RegisterBook(ctx context.Context, req RegisterBookRequest) (*entity.Book, error) {
+func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req RegisterBookRequest) (*entity.Book, error) {
 	var res *entity.Book
 	err := u.transactor.Exec(ctx, func() error {
 		err := u.createAuthorIfNeed(ctx, req.AuthorName)
@@ -114,7 +122,7 @@ func (u RegisterBookUseCase) RegisterBook(ctx context.Context, req RegisterBookR
 	return res, handle(err)
 }
 
-func (u RegisterBookUseCase) createAuthorIfNeed(ctx context.Context, author *string) error {
+func (u *RegisterBookUseCaseImpl) createAuthorIfNeed(ctx context.Context, author *string) error {
 	if author == nil {
 		return nil
 	}
@@ -128,7 +136,7 @@ func (u RegisterBookUseCase) createAuthorIfNeed(ctx context.Context, author *str
 	return nil
 }
 
-func (u RegisterBookUseCase) createPublisherIfNeed(ctx context.Context, publisher *string) error {
+func (u *RegisterBookUseCaseImpl) createPublisherIfNeed(ctx context.Context, publisher *string) error {
 	if publisher == nil {
 		return nil
 	}
@@ -142,7 +150,7 @@ func (u RegisterBookUseCase) createPublisherIfNeed(ctx context.Context, publishe
 	return err
 }
 
-func (u RegisterBookUseCase) createGenreIfNeed(ctx context.Context, genre string) error {
+func (u *RegisterBookUseCaseImpl) createGenreIfNeed(ctx context.Context, genre string) error {
 	if len(genre) == 0 {
 		return nil
 	}
@@ -153,7 +161,7 @@ func (u RegisterBookUseCase) createGenreIfNeed(ctx context.Context, genre string
 	return nil
 }
 
-func (u RegisterBookUseCase) checkDuplicateKeyError(err error) error {
+func (u *RegisterBookUseCaseImpl) checkDuplicateKeyError(err error) error {
 	var pqErr *pq.Error
 	if errors.As(err, &pqErr) && pqErr.Code != "23505" {
 		return err

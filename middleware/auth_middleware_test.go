@@ -20,10 +20,10 @@ func setAuthorizationHeader(
 	userID int64,
 	duration time.Duration,
 ) {
-	token, err := maker.Generate(userID, duration)
+	payload, err := maker.Generate(userID, duration)
 	require.NoError(t, err)
 
-	authorizationHeader := fmt.Sprintf("%s %s", authorizationType, token)
+	authorizationHeader := fmt.Sprintf("%s %s", authorizationType, payload.Token)
 	req.Header.Set(authorizationHeaderKey, authorizationHeader)
 }
 

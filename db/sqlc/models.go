@@ -9,6 +9,8 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type ReadingStatus string
@@ -103,6 +105,19 @@ type ReadingHistory struct {
 	EndDate   sql.NullTime  `json:"end_date"`
 	CreatedAt time.Time     `json:"created_at"`
 	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+// Stores session data.
+type Session struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
 }
 
 // Stores user data.

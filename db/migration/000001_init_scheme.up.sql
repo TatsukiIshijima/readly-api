@@ -15,6 +15,19 @@ CREATE TABLE "users"
     "updated_at"      timestamptz         NOT NULL DEFAULT (now())
 );
 
+CREATE TABLE "sessions"
+(
+    "id"            uuid PRIMARY KEY,
+    "user_id"       bigserial    NOT NULL,
+    "refresh_token" varchar(512) NOT NULL,
+    "expires_at"    timestamptz  NOT NULL,
+    "created_at"    timestamptz  NOT NULL DEFAULT (now()),
+    "ip_address"    varchar(45),
+    "user_agent"    varchar(2048),
+    "revoked"       boolean      NOT NULL DEFAULT (false),
+    "revoked_at"    timestamptz
+);
+
 CREATE TABLE "books"
 (
     "id"              bigserial PRIMARY KEY,
@@ -87,6 +100,9 @@ COMMENT
 ON TABLE "users" IS 'Stores user data.';
 
 COMMENT
+ON TABLE "sessions" IS 'Stores session data.';
+
+COMMENT
 ON TABLE "books" IS 'Stores book data.';
 
 COMMENT
@@ -103,6 +119,9 @@ ON TABLE "book_genres" IS 'Stores book and genre. Normalize using intermediate t
 
 COMMENT
 ON TABLE "reading_histories" IS 'Stores reading history.';
+
+ALTER TABLE "sessions"
+    ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
 
 ALTER TABLE "books"
     ADD FOREIGN KEY ("author_name") REFERENCES "authors" ("name");

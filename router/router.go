@@ -18,6 +18,7 @@ func Setup(
 		{
 			v1.POST("/signup", uc.SignUp)
 			v1.POST("/signin", uc.SignIn)
+			v1.POST("/refresh-token", uc.RefreshToken)
 
 			books := v1.Group("/books").Use(authMiddleware)
 			{
