@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"fmt"
 	"github.com/google/uuid"
 	"readly/env"
 	"readly/repository"
@@ -58,23 +57,23 @@ func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req Refresh
 		return nil, err
 	}
 	if session.IsRevoked {
-		// FIXME: エラー定義
-		err := fmt.Errorf("refresh token is revoked")
+		// FIXME:エラー定義&handleで返す
+		err := newError("refresh token is revoked", UnAuthorized)
 		return nil, err
 	}
 	if session.UserID != payload.UserID {
-		// FIXME: エラー定義
-		err := fmt.Errorf("incorrect user")
+		// FIXME:エラー定義&handleで返す
+		err := newError("incorrect user", UnAuthorized)
 		return nil, err
 	}
 	if session.RefreshToken != req.RefreshToken {
-		// FIXME: エラー定義
-		err := fmt.Errorf("mismatched refresh token")
+		// FIXME:エラー定義&handleで返す
+		err := newError("mismatched refresh token", UnAuthorized)
 		return nil, err
 	}
 	if time.Now().After(session.ExpiredAt) {
-		// FIXME: エラー定義
-		err := fmt.Errorf("refresh token is expired")
+		// FIXME:エラー定義&handleで返す
+		err := newError("refresh token is expired", UnAuthorized)
 		return nil, err
 	}
 

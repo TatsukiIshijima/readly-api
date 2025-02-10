@@ -38,9 +38,10 @@ func main() {
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	signUpUseCase := usecase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepo)
 	signInUseCase := usecase.NewSignInUseCase(config, maker, sessionRepo, userRepo)
+	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 
 	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
-	userController := controller.NewUserController(config, maker, signUpUseCase, signInUseCase)
+	userController := controller.NewUserController(config, maker, signUpUseCase, signInUseCase, refreshTokenUseCase)
 
 	r := router.Setup(middleware.Authorize(maker), bookController, userController)
 	err = r.Run(config.ServerAddress)

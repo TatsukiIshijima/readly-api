@@ -11,13 +11,15 @@ import (
 type UserController interface {
 	SignUp(ctx *gin.Context)
 	SignIn(ctx *gin.Context)
+	RefreshToken(ctx *gin.Context)
 }
 
 type UserControllerImpl struct {
-	config        env.Config
-	maker         auth.TokenMaker
-	signUpUseCase usecase.SignUpUseCase
-	signInUseCase usecase.SignInUseCase
+	config              env.Config
+	maker               auth.TokenMaker
+	signUpUseCase       usecase.SignUpUseCase
+	signInUseCase       usecase.SignInUseCase
+	RefreshTokenUseCase usecase.RefreshAccessTokenUseCase
 }
 
 func NewUserController(
@@ -25,12 +27,14 @@ func NewUserController(
 	maker auth.TokenMaker,
 	signUpUseCase usecase.SignUpUseCase,
 	signInUseCase usecase.SignInUseCase,
+	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
 ) UserController {
 	return &UserControllerImpl{
-		config:        config,
-		maker:         maker,
-		signUpUseCase: signUpUseCase,
-		signInUseCase: signInUseCase,
+		config:              config,
+		maker:               maker,
+		signUpUseCase:       signUpUseCase,
+		signInUseCase:       signInUseCase,
+		RefreshTokenUseCase: refreshTokenUseCase,
 	}
 }
 
@@ -121,6 +125,39 @@ func (uc *UserControllerImpl) SignIn(ctx *gin.Context) {
 		UserID:       result.UserID,
 		Name:         result.Name,
 		Email:        result.Email,
+	}
+
+	ctx.JSON(http.StatusOK, res)
+}
+
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
+}
+
+type RefreshTokenResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
+func (uc *UserControllerImpl) RefreshToken(ctx *gin.Context) {
+	var req RefreshTokenRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	args := usecase.RefreshAccessTokenRequest{
+		RefreshToken: req.RefreshToken,
+	}
+
+	result, err := uc.RefreshTokenUseCase.Refresh(ctx, args)
+	if err != nil {
+		code, e := toHttpStatusCode(err)
+		ctx.JSON(code, errorResponse(e))
+		return
+	}
+
+	res := RefreshTokenResponse{
+		AccessToken: result.AccessToken,
 	}
 
 	ctx.JSON(http.StatusOK, res)
