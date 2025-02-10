@@ -7,11 +7,6 @@ import (
 	"readly/usecase"
 )
 
-type ErrorResponse struct {
-	Code    int    `json:"error_code"`
-	Message string `json:"error_message"`
-}
-
 func errorResponse(err error) gin.H {
 	var e *usecase.Error
 	if !errors.As(err, &e) {
