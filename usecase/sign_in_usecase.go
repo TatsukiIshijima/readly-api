@@ -48,25 +48,31 @@ type SignInResponse struct {
 	Email        string
 }
 
-func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*SignInResponse, error) {
+func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (res *SignInResponse, err error) {
+	defer func() {
+		if err != nil {
+			err = handle(err)
+		}
+	}()
+
 	user, err := u.userRepo.GetUserByEmail(ctx, req.Email)
 	if err != nil {
-		return nil, handle(err)
+		return nil, newError(BadRequest, NotFoundUserError, "user not found")
 	}
 
 	err = checkPasswordHash(req.Password, user.Password)
 	if err != nil {
-		return nil, handle(err)
+		return nil, newError(BadRequest, InvalidPasswordError, "invalid password")
 	}
 
 	accessTokenPayload, err := u.maker.Generate(user.ID, u.config.AccessTokenDuration)
 	if err != nil {
-		return nil, handle(err)
+		return nil, err
 	}
 
 	refreshTokenPayload, err := u.maker.Generate(user.ID, u.config.RefreshTokenDuration)
 	if err != nil {
-		return nil, handle(err)
+		return nil, err
 	}
 
 	sessionReq := repository.CreateSessionRequest{
@@ -79,7 +85,7 @@ func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*Sig
 	}
 	err = u.sessionRepo.CreateSession(ctx, sessionReq)
 	if err != nil {
-		return nil, handle(err)
+		return nil, err
 	}
 
 	return &SignInResponse{

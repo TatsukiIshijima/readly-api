@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"readly/repository"
 )
 
@@ -43,14 +44,23 @@ func (u *DeleteBookUseCaseImpl) DeleteBook(ctx context.Context, req DeleteBookRe
 		}
 		err := u.readingHistoryRepo.Delete(ctx, deleteHistoryArgs)
 		if err != nil {
+			if errors.Is(err, repository.ErrNoRowsDeleted) {
+				return newError(BadRequest, NotFoundBookError, "reading history not found")
+			}
 			return err
 		}
 		err = u.deleteBookGenres(ctx, req.BookID)
 		if err != nil {
+			if errors.Is(err, repository.ErrNoRowsDeleted) {
+				return newError(BadRequest, NotFoundBookError, "genre not found")
+			}
 			return err
 		}
 		err = u.bookRepo.DeleteBook(ctx, req.BookID)
 		if err != nil {
+			if errors.Is(err, repository.ErrNoRowsDeleted) {
+				return newError(BadRequest, NotFoundBookError, "book not found")
+			}
 			return err
 		}
 		return nil

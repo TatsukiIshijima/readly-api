@@ -2,6 +2,8 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 	"readly/env"
 	"readly/repository"
@@ -66,6 +68,12 @@ func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*Sig
 			Password: hashedPassword,
 		})
 		if err != nil {
+			var pqErr *pq.Error
+			if errors.As(err, &pqErr) {
+				if pqErr.Code == "23505" {
+					return newError(Conflict, EmailAlreadyRegisteredError, "email already exists")
+				}
+			}
 			return err
 		}
 

@@ -80,7 +80,8 @@ func TestDeleteBook(t *testing.T) {
 				require.Error(t, err)
 				var e *Error
 				require.ErrorAs(t, err, &e)
-				require.Equal(t, e.Code, BadRequest)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, NotFoundBookError)
 			},
 		},
 	}

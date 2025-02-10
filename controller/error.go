@@ -17,7 +17,7 @@ func toHttpStatusCode(err error) (int, error) {
 		return http.StatusInternalServerError, err
 	}
 	var sc int
-	switch e.Code {
+	switch e.StatusCode {
 	case usecase.BadRequest:
 		sc = http.StatusBadRequest
 	case usecase.UnAuthorized:

@@ -62,7 +62,8 @@ func TestSignUp(t *testing.T) {
 				require.Nil(t, res)
 				var e *Error
 				require.ErrorAs(t, err, &e)
-				require.Equal(t, e.Code, Conflict)
+				require.Equal(t, e.StatusCode, Conflict)
+				require.Equal(t, e.ErrorCode, EmailAlreadyRegisteredError)
 			},
 		},
 	}

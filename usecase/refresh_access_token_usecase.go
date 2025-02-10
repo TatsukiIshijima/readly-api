@@ -39,7 +39,13 @@ type RefreshAccessTokenResponse struct {
 	AccessToken string
 }
 
-func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req RefreshAccessTokenRequest) (*RefreshAccessTokenResponse, error) {
+func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req RefreshAccessTokenRequest) (res *RefreshAccessTokenResponse, err error) {
+	defer func() {
+		if err != nil {
+			err = handle(err)
+		}
+	}()
+
 	payload, err := u.marker.Verify(req.RefreshToken)
 	if err != nil {
 		return nil, err
@@ -57,23 +63,19 @@ func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req Refresh
 		return nil, err
 	}
 	if session.IsRevoked {
-		// FIXME:エラー定義&handleで返す
-		err := newError("refresh token is revoked", UnAuthorized)
+		err := newError(UnAuthorized, InvalidTokenError, "refresh token is revoked")
 		return nil, err
 	}
 	if session.UserID != payload.UserID {
-		// FIXME:エラー定義&handleで返す
-		err := newError("incorrect user", UnAuthorized)
+		err := newError(UnAuthorized, InvalidTokenError, "incorrect user")
 		return nil, err
 	}
 	if session.RefreshToken != req.RefreshToken {
-		// FIXME:エラー定義&handleで返す
-		err := newError("mismatched refresh token", UnAuthorized)
+		err := newError(UnAuthorized, InvalidTokenError, "mismatched refresh token")
 		return nil, err
 	}
 	if time.Now().After(session.ExpiredAt) {
-		// FIXME:エラー定義&handleで返す
-		err := newError("refresh token is expired", UnAuthorized)
+		err := newError(UnAuthorized, InvalidTokenError, "refresh token is expired")
 		return nil, err
 	}
 
@@ -82,8 +84,7 @@ func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req Refresh
 		return nil, err
 	}
 
-	res := &RefreshAccessTokenResponse{
+	return &RefreshAccessTokenResponse{
 		AccessToken: accessTokenPayload.Token,
-	}
-	return res, nil
+	}, nil
 }

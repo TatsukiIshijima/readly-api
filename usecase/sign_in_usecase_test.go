@@ -2,9 +2,7 @@ package usecase
 
 import (
 	"context"
-	"database/sql"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/crypto/bcrypt"
 	"readly/testdata"
 	"testing"
 )
@@ -70,8 +68,8 @@ func TestSignIn(t *testing.T) {
 				require.Error(t, err)
 				var e *Error
 				require.ErrorAs(t, err, &e)
-				require.Equal(t, e.Code, NotFound)
-				require.Equal(t, e.Message, sql.ErrNoRows.Error())
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, NotFoundUserError)
 			},
 		},
 		{
@@ -97,8 +95,8 @@ func TestSignIn(t *testing.T) {
 				require.Error(t, err)
 				var e *Error
 				require.ErrorAs(t, err, &e)
-				require.Equal(t, e.Code, UnAuthorized)
-				require.Equal(t, e.Message, bcrypt.ErrMismatchedHashAndPassword.Error())
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidPasswordError)
 			},
 		},
 	}
