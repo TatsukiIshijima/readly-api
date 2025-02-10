@@ -24,8 +24,9 @@ func TestMain(m *testing.M) {
 
 func setupControllers(t *testing.T) (BookController, UserController) {
 	config := env.Config{
-		TokenSymmetricKey:   testdata.RandomString(32),
-		AccessTokenDuration: time.Minute,
+		TokenSymmetricKey:    testdata.RandomString(32),
+		AccessTokenDuration:  time.Minute,
+		RefreshTokenDuration: time.Hour,
 	}
 	fa := sqlc.FakeAdapter{}
 	db, q := fa.Connect("", "")
