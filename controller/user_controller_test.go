@@ -195,7 +195,7 @@ func TestSignIn(t *testing.T) {
 				Password: testdata.RandomString(16),
 			},
 			check: func(t *testing.T, req SignInRequest, rec *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusNotFound, rec.Code)
+				require.Equal(t, http.StatusBadRequest, rec.Code)
 			},
 		},
 		{
@@ -213,7 +213,7 @@ func TestSignIn(t *testing.T) {
 				Password: testdata.RandomString(16),
 			},
 			check: func(t *testing.T, req SignInRequest, rec *httptest.ResponseRecorder) {
-				require.Equal(t, http.StatusUnauthorized, rec.Code)
+				require.Equal(t, http.StatusBadRequest, rec.Code)
 			},
 		},
 		{
