@@ -3,6 +3,7 @@ package auth
 import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -20,13 +21,21 @@ func NewJWTMaker(secretKey string) (*JWTMaker, error) {
 }
 
 func (j *JWTMaker) Generate(userID int64, duration time.Duration) (*Payload, error) {
-	claims := NewClaims(userID, duration)
+	claims, err := NewClaims(userID, duration)
+	if err != nil {
+		return nil, err
+	}
 	jwtToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	token, err := jwtToken.SignedString([]byte(j.secretKey))
 	if err != nil {
 		return nil, err
 	}
+	id, err := uuid.Parse(claims.ID)
+	if err != nil {
+		return nil, err
+	}
 	return &Payload{
+		ID:        id,
 		Token:     token,
 		ExpiredAt: claims.ExpiresAt.Time,
 	}, nil

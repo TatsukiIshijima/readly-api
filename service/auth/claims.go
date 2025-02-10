@@ -2,6 +2,7 @@ package auth
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -10,14 +11,19 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func NewClaims(userID int64, duration time.Duration) Claims {
+func NewClaims(userID int64, duration time.Duration) (Claims, error) {
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return Claims{}, err
+	}
 	return Claims{
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
+			ID:        id.String(),
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(duration)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
-	}
+	}, nil
 }
 
 func (c Claims) IsExpired() error {
@@ -29,6 +35,7 @@ func (c Claims) IsExpired() error {
 }
 
 type Payload struct {
+	ID        uuid.UUID
 	Token     string
 	ExpiredAt time.Time
 }
