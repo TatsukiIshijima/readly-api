@@ -131,7 +131,7 @@ func (uc *UserControllerImpl) SignIn(ctx *gin.Context) {
 }
 
 type RefreshTokenRequest struct {
-	RefreshToken string `json:"refresh_token" binding:"required"`
+	RefreshToken string `json:"refresh_token" binding:"required,min=1"`
 }
 
 type RefreshTokenResponse struct {
