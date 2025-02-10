@@ -62,7 +62,10 @@ type GetSessionByIDRequest struct {
 }
 
 type GetSessionByIDResponse struct {
+	UserID       int64
 	RefreshToken string
+	ExpiredAt    time.Time
+	IsRevoked    bool
 }
 
 func (r *SessionRepositoryImpl) GetSessionByID(ctx context.Context, req GetSessionByIDRequest) (*GetSessionByIDResponse, error) {
@@ -71,6 +74,9 @@ func (r *SessionRepositoryImpl) GetSessionByID(ctx context.Context, req GetSessi
 		return nil, err
 	}
 	return &GetSessionByIDResponse{
+		UserID:       session.UserID,
 		RefreshToken: session.RefreshToken,
+		ExpiredAt:    session.ExpiresAt,
+		IsRevoked:    session.Revoked,
 	}, nil
 }
