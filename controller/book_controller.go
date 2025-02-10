@@ -20,8 +20,11 @@ type BookControllerImpl struct {
 	deleteUseCase   usecase.DeleteBookUseCase
 }
 
-func NewBookController(registerUseCase usecase.RegisterBookUseCase, deleteUseCase usecase.DeleteBookUseCase) BookControllerImpl {
-	return BookControllerImpl{
+func NewBookController(
+	registerUseCase usecase.RegisterBookUseCase,
+	deleteUseCase usecase.DeleteBookUseCase,
+) BookController {
+	return &BookControllerImpl{
 		registerUseCase: registerUseCase,
 		deleteUseCase:   deleteUseCase,
 	}
@@ -42,7 +45,7 @@ type RegisterBookRequest struct {
 	EndDate       *time.Time           `json:"end_date" binding:"omitempty"`
 }
 
-func (s BookControllerImpl) Register(ctx *gin.Context) {
+func (bc *BookControllerImpl) Register(ctx *gin.Context) {
 	var req RegisterBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -66,7 +69,7 @@ func (s BookControllerImpl) Register(ctx *gin.Context) {
 		StartDate:     req.StartDate,
 		EndDate:       req.EndDate,
 	}
-	book, err := s.registerUseCase.RegisterBook(ctx, args)
+	book, err := bc.registerUseCase.RegisterBook(ctx, args)
 	if err != nil {
 		c, e := toHttpStatusCode(err)
 		ctx.JSON(c, errorResponse(e))
@@ -80,7 +83,7 @@ type DeleteBookRequest struct {
 	BookID int64 `json:"book_id" binding:"required"`
 }
 
-func (s BookControllerImpl) Delete(ctx *gin.Context) {
+func (bc *BookControllerImpl) Delete(ctx *gin.Context) {
 	var req DeleteBookRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -93,7 +96,7 @@ func (s BookControllerImpl) Delete(ctx *gin.Context) {
 		UserID: claims.UserID,
 		BookID: req.BookID,
 	}
-	err := s.deleteUseCase.DeleteBook(ctx, args)
+	err := bc.deleteUseCase.DeleteBook(ctx, args)
 	if err != nil {
 		c, e := toHttpStatusCode(err)
 		ctx.JSON(c, errorResponse(e))

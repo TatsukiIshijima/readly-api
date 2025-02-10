@@ -20,8 +20,13 @@ type UserControllerImpl struct {
 	signInUseCase usecase.SignInUseCase
 }
 
-func NewUserController(config env.Config, maker auth.TokenMaker, signUpUseCase usecase.SignUpUseCase, signInUseCase usecase.SignInUseCase) UserControllerImpl {
-	return UserControllerImpl{
+func NewUserController(
+	config env.Config,
+	maker auth.TokenMaker,
+	signUpUseCase usecase.SignUpUseCase,
+	signInUseCase usecase.SignInUseCase,
+) UserController {
+	return &UserControllerImpl{
 		config:        config,
 		maker:         maker,
 		signUpUseCase: signUpUseCase,
@@ -43,7 +48,7 @@ type SignUpResponse struct {
 	Email        string `json:"email"`
 }
 
-func (s UserControllerImpl) SignUp(ctx *gin.Context) {
+func (uc *UserControllerImpl) SignUp(ctx *gin.Context) {
 	var req SignUpRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -56,7 +61,7 @@ func (s UserControllerImpl) SignUp(ctx *gin.Context) {
 		Password: req.Password,
 	}
 
-	result, err := s.signUpUseCase.SignUp(ctx, args)
+	result, err := uc.signUpUseCase.SignUp(ctx, args)
 	if err != nil {
 		code, e := toHttpStatusCode(err)
 		ctx.JSON(code, errorResponse(e))
@@ -87,7 +92,7 @@ type SignInResponse struct {
 	Email        string `json:"email"`
 }
 
-func (s UserControllerImpl) SignIn(ctx *gin.Context) {
+func (uc *UserControllerImpl) SignIn(ctx *gin.Context) {
 	var req SignInRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -99,7 +104,7 @@ func (s UserControllerImpl) SignIn(ctx *gin.Context) {
 		Password: req.Password,
 	}
 
-	result, err := s.signInUseCase.SignIn(ctx, args)
+	result, err := uc.signInUseCase.SignIn(ctx, args)
 	if err != nil {
 		code, e := toHttpStatusCode(err)
 		ctx.JSON(code, errorResponse(e))
