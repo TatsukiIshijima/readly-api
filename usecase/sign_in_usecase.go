@@ -70,6 +70,7 @@ func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*Sig
 	}
 
 	sessionReq := repository.CreateSessionRequest{
+		ID:           refreshTokenPayload.ID,
 		UserID:       user.ID,
 		RefreshToken: refreshTokenPayload.Token,
 		ExpiresAt:    refreshTokenPayload.ExpiredAt,

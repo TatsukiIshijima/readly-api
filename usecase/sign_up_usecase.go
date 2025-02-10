@@ -80,6 +80,7 @@ func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*Sig
 		}
 
 		sessionReq := repository.CreateSessionRequest{
+			ID:           refreshTokenPayload.ID,
 			UserID:       user.ID,
 			RefreshToken: refreshTokenPayload.Token,
 			ExpiresAt:    refreshTokenPayload.ExpiredAt,
