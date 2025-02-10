@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 	"time"
 )
 
@@ -14,12 +15,13 @@ type SessionTable struct {
 var sessionTable = SessionTable{}
 
 func (q *FakeQuerier) CreateSession(_ context.Context, arg CreateSessionParams) (Session, error) {
-	id, err := uuid.NewRandom()
-	if err != nil {
-		return Session{}, err
+	for _, s := range sessionTable.Columns {
+		if s.ID == arg.ID {
+			return Session{}, &pq.Error{Code: "23505", Message: "duplicate key value violates unique constraint"}
+		}
 	}
 	s := Session{
-		ID:           id,
+		ID:           arg.ID,
 		UserID:       arg.UserID,
 		RefreshToken: arg.RefreshToken,
 		ExpiresAt:    arg.ExpiresAt,
@@ -31,4 +33,13 @@ func (q *FakeQuerier) CreateSession(_ context.Context, arg CreateSessionParams) 
 	}
 	sessionTable.Columns = append(sessionTable.Columns, s)
 	return s, nil
+}
+
+func (q *FakeQuerier) GetSessionByID(ctx context.Context, id uuid.UUID) (Session, error) {
+	for _, s := range sessionTable.Columns {
+		if s.ID == id {
+			return s, nil
+		}
+	}
+	return Session{}, sql.ErrNoRows
 }
