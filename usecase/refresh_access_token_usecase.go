@@ -48,7 +48,7 @@ func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req Refresh
 
 	payload, err := u.marker.Verify(req.RefreshToken)
 	if err != nil {
-		return nil, err
+		return nil, newError(UnAuthorized, InvalidTokenError, "invalid refresh token")
 	}
 	id, err := uuid.Parse(payload.ID)
 	if err != nil {
@@ -60,7 +60,7 @@ func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req Refresh
 	}
 	session, err := u.sessionRepo.GetSessionByID(ctx, getSessionReq)
 	if err != nil {
-		return nil, err
+		return nil, newError(UnAuthorized, InvalidTokenError, "refresh token not found")
 	}
 	if session.IsRevoked {
 		err := newError(UnAuthorized, InvalidTokenError, "refresh token is revoked")
