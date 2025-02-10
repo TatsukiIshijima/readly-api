@@ -24,9 +24,11 @@ func TestSignIn(t *testing.T) {
 				email := testdata.RandomEmail()
 				password := testdata.RandomString(16)
 				signUpReq := SignUpRequest{
-					Name:     testdata.RandomString(16),
-					Email:    email,
-					Password: password,
+					Name:      testdata.RandomString(16),
+					Email:     email,
+					Password:  password,
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
 				}
 				_, err := signUpUseCase.SignUp(context.Background(), signUpReq)
 				require.NoError(t, err)
@@ -50,9 +52,11 @@ func TestSignIn(t *testing.T) {
 			setup: func(t *testing.T) SignInRequest {
 				password := testdata.RandomString(16)
 				signUpReq := SignUpRequest{
-					Name:     testdata.RandomString(16),
-					Email:    testdata.RandomEmail(),
-					Password: password,
+					Name:      testdata.RandomString(16),
+					Email:     testdata.RandomEmail(),
+					Password:  password,
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
 				}
 				_, err := signUpUseCase.SignUp(context.Background(), signUpReq)
 				require.NoError(t, err)
@@ -75,9 +79,11 @@ func TestSignIn(t *testing.T) {
 			setup: func(t *testing.T) SignInRequest {
 				email := testdata.RandomEmail()
 				signUpReq := SignUpRequest{
-					Name:     testdata.RandomString(16),
-					Email:    email,
-					Password: testdata.RandomString(16),
+					Name:      testdata.RandomString(16),
+					Email:     email,
+					Password:  testdata.RandomString(16),
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
 				}
 				_, err := signUpUseCase.SignUp(context.Background(), signUpReq)
 				require.NoError(t, err)

@@ -19,9 +19,11 @@ func TestSignUp(t *testing.T) {
 			name: "Sign up success",
 			setup: func(t *testing.T) SignUpRequest {
 				return SignUpRequest{
-					Name:     testdata.RandomString(10),
-					Email:    testdata.RandomEmail(),
-					Password: testdata.RandomString(16),
+					Name:      testdata.RandomString(10),
+					Email:     testdata.RandomEmail(),
+					Password:  testdata.RandomString(16),
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
 				}
 			},
 			check: func(t *testing.T, req SignUpRequest, res *SignUpResponse, err error) {
@@ -40,17 +42,19 @@ func TestSignUp(t *testing.T) {
 				email := testdata.RandomEmail()
 
 				req := SignUpRequest{
-					Name:     testdata.RandomString(10),
-					Email:    email,
-					Password: testdata.RandomString(16),
+					Name:      testdata.RandomString(10),
+					Email:     email,
+					Password:  testdata.RandomString(16),
+					IPAddress: "127.0.0.1",
 				}
 				_, err := signUpUseCase.SignUp(context.Background(), req)
 				require.NoError(t, err)
 
 				return SignUpRequest{
-					Name:     testdata.RandomString(10),
-					Email:    email,
-					Password: testdata.RandomString(16),
+					Name:      testdata.RandomString(10),
+					Email:     email,
+					Password:  testdata.RandomString(16),
+					IPAddress: "127.0.0.1",
 				}
 			},
 			check: func(t *testing.T, req SignUpRequest, res *SignUpResponse, err error) {

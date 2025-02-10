@@ -56,9 +56,11 @@ func (uc *UserControllerImpl) SignUp(ctx *gin.Context) {
 	}
 
 	args := usecase.SignUpRequest{
-		Name:     req.Name,
-		Email:    req.Email,
-		Password: req.Password,
+		Name:      req.Name,
+		Email:     req.Email,
+		Password:  req.Password,
+		IPAddress: ctx.ClientIP(),
+		UserAgent: ctx.Request.UserAgent(),
 	}
 
 	result, err := uc.signUpUseCase.SignUp(ctx, args)
@@ -100,8 +102,10 @@ func (uc *UserControllerImpl) SignIn(ctx *gin.Context) {
 	}
 
 	args := usecase.SignInRequest{
-		Email:    req.Email,
-		Password: req.Password,
+		Email:     req.Email,
+		Password:  req.Password,
+		IPAddress: ctx.ClientIP(),
+		UserAgent: ctx.Request.UserAgent(),
 	}
 
 	result, err := uc.signInUseCase.SignIn(ctx, args)

@@ -37,9 +37,11 @@ func NewSignUpUseCase(
 }
 
 type SignUpRequest struct {
-	Name     string
-	Email    string
-	Password string
+	Name      string
+	Email     string
+	Password  string
+	IPAddress string
+	UserAgent string
 }
 
 type SignUpResponse struct {
@@ -81,6 +83,8 @@ func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*Sig
 			UserID:       user.ID,
 			RefreshToken: refreshTokenPayload.Token,
 			ExpiresAt:    refreshTokenPayload.ExpiredAt,
+			IPAddress:    req.IPAddress,
+			UserAgent:    req.UserAgent,
 		}
 		err = u.sessionRepo.CreateSession(ctx, sessionReq)
 		if err != nil {
