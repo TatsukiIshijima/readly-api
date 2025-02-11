@@ -22,7 +22,7 @@ type ReadingHistoryRepositoryImpl struct {
 }
 
 func NewReadingHistoryRepository(q sqlc.Querier) ReadingHistoryRepository {
-	return ReadingHistoryRepositoryImpl{
+	return &ReadingHistoryRepositoryImpl{
 		querier: q,
 	}
 }
@@ -146,7 +146,7 @@ func newCreateReadingHistoryResponse(r sqlc.ReadingHistory) *CreateReadingHistor
 	}
 }
 
-func (r ReadingHistoryRepositoryImpl) Create(ctx context.Context, req CreateReadingHistoryRequest) (*CreateReadingHistoryResponse, error) {
+func (r *ReadingHistoryRepositoryImpl) Create(ctx context.Context, req CreateReadingHistoryRequest) (*CreateReadingHistoryResponse, error) {
 	h, err := r.querier.CreateReadingHistory(ctx, req.toParams())
 	if err != nil {
 		return nil, err
@@ -159,7 +159,7 @@ type DeleteReadingHistoryRequest struct {
 	BookID int64
 }
 
-func (r ReadingHistoryRepositoryImpl) Delete(ctx context.Context, req DeleteReadingHistoryRequest) error {
+func (r *ReadingHistoryRepositoryImpl) Delete(ctx context.Context, req DeleteReadingHistoryRequest) error {
 	rowsAffected, err := r.querier.DeleteReadingHistory(ctx, sqlc.DeleteReadingHistoryParams{
 		UserID: req.UserID,
 		BookID: req.BookID,
@@ -234,7 +234,7 @@ func newGetReadingHistoryByUserResponse(r sqlc.GetReadingHistoryByUserRow) GetRe
 	}
 }
 
-func (r ReadingHistoryRepositoryImpl) GetByUser(ctx context.Context, req GetReadingHistoryByUserRequest) ([]GetReadingHistoryByUserResponse, error) {
+func (r *ReadingHistoryRepositoryImpl) GetByUser(ctx context.Context, req GetReadingHistoryByUserRequest) ([]GetReadingHistoryByUserResponse, error) {
 	rows, err := r.querier.GetReadingHistoryByUser(ctx, req.toParams())
 	if err != nil {
 		return nil, err
@@ -306,7 +306,7 @@ func newGetReadingHistoryByUserAndBookResponse(r sqlc.GetReadingHistoryByUserAnd
 	}
 }
 
-func (r ReadingHistoryRepositoryImpl) GetByUserAndBook(ctx context.Context, req GetReadingHistoryByUserAndBookRequest) (*GetReadingHistoryByUserAndBookResponse, error) {
+func (r *ReadingHistoryRepositoryImpl) GetByUserAndBook(ctx context.Context, req GetReadingHistoryByUserAndBookRequest) (*GetReadingHistoryByUserAndBookResponse, error) {
 	row, err := r.querier.GetReadingHistoryByUserAndBook(ctx, req.toParams())
 	if err != nil {
 		return nil, err
@@ -377,7 +377,7 @@ func newGetReadingHistoryByUserAndStatusResponse(r sqlc.GetReadingHistoryByUserA
 	}
 }
 
-func (r ReadingHistoryRepositoryImpl) GetByUserAndStatus(ctx context.Context, req GetReadingHistoryByUserAndStatusRequest) ([]GetReadingHistoryByUserAndStatusResponse, error) {
+func (r *ReadingHistoryRepositoryImpl) GetByUserAndStatus(ctx context.Context, req GetReadingHistoryByUserAndStatusRequest) ([]GetReadingHistoryByUserAndStatusResponse, error) {
 	rows, err := r.querier.GetReadingHistoryByUserAndStatus(ctx, req.toParams())
 	if err != nil {
 		return nil, err
@@ -436,7 +436,7 @@ func newUpdateReadingHistoryResponse(r sqlc.ReadingHistory) *UpdateReadingHistor
 	}
 }
 
-func (r ReadingHistoryRepositoryImpl) Update(ctx context.Context, req UpdateReadingHistoryRequest) (*UpdateReadingHistoryResponse, error) {
+func (r *ReadingHistoryRepositoryImpl) Update(ctx context.Context, req UpdateReadingHistoryRequest) (*UpdateReadingHistoryResponse, error) {
 	h, err := r.querier.UpdateReadingHistory(ctx, req.toParams())
 	if err != nil {
 		return nil, err
