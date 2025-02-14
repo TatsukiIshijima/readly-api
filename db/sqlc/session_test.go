@@ -1,22 +1,21 @@
-package sqlc_test
+package db
 
 import (
 	"context"
 	"database/sql"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	db "readly/db/sqlc"
 	"readly/testdata"
 	"testing"
 	"time"
 )
 
-func createRandomSession(t *testing.T, user db.User) db.Session {
+func createRandomSession(t *testing.T, user User) Session {
 	id, err := uuid.NewRandom()
 	require.NoError(t, err)
 	refreshToken := testdata.RandomString(32)
 
-	arg := db.CreateSessionParams{
+	arg := CreateSessionParams{
 		ID:           id,
 		UserID:       user.ID,
 		RefreshToken: refreshToken,
@@ -52,7 +51,7 @@ func TestDeleteSessionByUserID(t *testing.T) {
 		createRandomSession(t, user)
 	}
 
-	arg := db.DeleteSessionByUserIDParams{
+	arg := DeleteSessionByUserIDParams{
 		UserID: user.ID,
 		Limit:  int32(limit),
 	}

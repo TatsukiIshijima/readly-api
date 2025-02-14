@@ -1,4 +1,4 @@
-package sqlc_test
+package db
 
 import (
 	"context"
@@ -7,14 +7,13 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	sqlc "readly/db/sqlc"
 	"readly/env"
 	"readly/testdata"
 	"testing"
 	"time"
 )
 
-var querier sqlc.Querier
+var querier Querier
 
 func init() {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -25,19 +24,19 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
-	h := &sqlc.Adapter{}
+	h := &Adapter{}
 	_, q := h.Connect(config.DBDriver, config.DBSource)
 	querier = q
 	os.Exit(m.Run())
 }
 
-func createRandomUser(t *testing.T) sqlc.User {
+func createRandomUser(t *testing.T) User {
 	password := testdata.RandomString(16)
 	hashedPassword, err := testdata.HashPassword(password)
 	require.NoError(t, err)
 	require.NotEmpty(t, hashedPassword)
 
-	arg := sqlc.CreateUserParams{
+	arg := CreateUserParams{
 		Name:           testdata.RandomString(12),
 		Email:          testdata.RandomEmail(),
 		HashedPassword: hashedPassword,

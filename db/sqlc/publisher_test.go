@@ -1,14 +1,13 @@
-package sqlc_test
+package db
 
 import (
 	"context"
 	"github.com/stretchr/testify/require"
-	"readly/db/sqlc"
 	"readly/testdata"
 	"testing"
 )
 
-func createRandomPublisher(t *testing.T) db.Publisher {
+func createRandomPublisher(t *testing.T) Publisher {
 	arg := testdata.RandomString(6)
 	publisher, err := querier.CreatePublisher(context.Background(), arg)
 	require.NoError(t, err)
@@ -43,7 +42,7 @@ func TestGetAllPublishers(t *testing.T) {
 		createRandomPublisher(t)
 	}
 
-	arg := db.GetAllPublishersParams{
+	arg := GetAllPublishersParams{
 		Limit:  2,
 		Offset: 0,
 	}
