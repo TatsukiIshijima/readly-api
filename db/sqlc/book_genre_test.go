@@ -1,15 +1,14 @@
-package sqlc_test
+package db
 
 import (
 	"context"
 	"github.com/stretchr/testify/require"
-	"readly/db/sqlc"
 	"readly/testdata"
 	"testing"
 )
 
-func createRandomBookGenre(t *testing.T, book db.Book, genre db.Genre) {
-	arg := db.CreateBookGenreParams{
+func createRandomBookGenre(t *testing.T, book Book, genre Genre) {
+	arg := CreateBookGenreParams{
 		BookID:    book.ID,
 		GenreName: genre.Name,
 	}
@@ -23,7 +22,7 @@ func createRandomBookGenre(t *testing.T, book db.Book, genre db.Genre) {
 }
 
 func TestCreateBookGenre(t *testing.T) {
-	book := createBook(
+	book := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
@@ -35,7 +34,7 @@ func TestCreateBookGenre(t *testing.T) {
 }
 
 func TestDeleteBookGenre(t *testing.T) {
-	book := createBook(
+	book := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
@@ -53,7 +52,7 @@ func TestDeleteBookGenre(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, genres, 3)
 
-	deleteArgs := db.DeleteBookGenreParams{
+	deleteArgs := DeleteBookGenreParams{
 		BookID:    book.ID,
 		GenreName: genre1.Name,
 	}

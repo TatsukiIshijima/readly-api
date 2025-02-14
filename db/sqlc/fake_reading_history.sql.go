@@ -1,3 +1,5 @@
+//go:build test
+
 package db
 
 import (
@@ -56,7 +58,7 @@ func (q *FakeQuerier) GetReadingHistoryByUser(ctx context.Context, arg GetReadin
 			if err != nil {
 				return rows, err
 			}
-			genres := strings(g).toByte()
+			genres := chars(g).toByte()
 			rows = append(rows, GetReadingHistoryByUserRow{
 				ID:            sql.NullInt64{Int64: b.ID, Valid: true},
 				Title:         sql.NullString{String: b.Title, Valid: true},
@@ -88,7 +90,7 @@ func (q *FakeQuerier) GetReadingHistoryByUserAndBook(ctx context.Context, arg Ge
 			if err != nil {
 				return GetReadingHistoryByUserAndBookRow{}, err
 			}
-			genres := strings(g).toByte()
+			genres := chars(g).toByte()
 			return GetReadingHistoryByUserAndBookRow{
 				ID:            sql.NullInt64{Int64: b.ID, Valid: true},
 				Title:         sql.NullString{String: b.Title, Valid: true},
@@ -122,7 +124,7 @@ func (q *FakeQuerier) GetReadingHistoryByUserAndStatus(ctx context.Context, arg 
 			if err != nil {
 				return rows, err
 			}
-			genres := strings(g).toByte()
+			genres := chars(g).toByte()
 			rows = append(rows, GetReadingHistoryByUserAndStatusRow{
 				ID:            sql.NullInt64{Int64: b.ID, Valid: true},
 				Title:         sql.NullString{String: b.Title, Valid: true},
@@ -156,12 +158,12 @@ func (q *FakeQuerier) UpdateReadingHistory(ctx context.Context, arg UpdateReadin
 	return ReadingHistory{}, sql.ErrNoRows
 }
 
-type strings []string
+type chars []string
 
-func (s strings) toByte() []byte {
+func (c chars) toByte() []byte {
 	var buffer bytes.Buffer
 
-	for _, str := range s {
+	for _, str := range c {
 		buffer.WriteString(str)
 	}
 

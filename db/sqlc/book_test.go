@@ -1,4 +1,4 @@
-package sqlc_test
+package db
 
 import (
 	"context"
@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/require"
-	"readly/db/sqlc"
 	"readly/testdata"
 	"sort"
 	"strings"
@@ -14,7 +13,7 @@ import (
 	"time"
 )
 
-func createBook(t *testing.T, title string, author string, publisher string, isbn string) db.Book {
+func createTestBook(t *testing.T, title string, author string, publisher string, isbn string) Book {
 	desc := sql.NullString{
 		String: testdata.RandomString(12),
 		Valid:  true,
@@ -41,7 +40,7 @@ func createBook(t *testing.T, title string, author string, publisher string, isb
 	pub, err := createPublisherIfNeed(t, publisher)
 	require.NoError(t, err)
 
-	arg := db.CreateBookParams{
+	arg := CreateBookParams{
 		Title:         title,
 		Description:   desc,
 		CoverImageUrl: imgURL,
@@ -119,7 +118,7 @@ func checkDuplicateKeyError(t *testing.T, err error) {
 }
 
 func TestCreateBook(t *testing.T) {
-	createBook(
+	createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
@@ -129,14 +128,14 @@ func TestCreateBook(t *testing.T) {
 }
 
 func TestGetBookByID(t *testing.T) {
-	bookWithEmptyGenres := createBook(
+	bookWithEmptyGenres := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
 		"",
 		testdata.RandomString(13),
 	)
-	bookWithGenres := createBook(
+	bookWithGenres := createTestBook(
 		t,
 		testdata.RandomString(6),
 		testdata.RandomString(8),
@@ -189,14 +188,14 @@ func TestGetBookByID(t *testing.T) {
 
 func TestGetBooksByTitle(t *testing.T) {
 	title := testdata.RandomString(8)
-	bookWithEmptyGenres := createBook(
+	bookWithEmptyGenres := createTestBook(
 		t,
 		title,
 		"",
 		"",
 		testdata.RandomString(13),
 	)
-	bookWithGenres := createBook(
+	bookWithGenres := createTestBook(
 		t,
 		title,
 		testdata.RandomString(8),
@@ -246,7 +245,7 @@ func TestGetBooksByTitle(t *testing.T) {
 
 func TestGetBooksByISBN(t *testing.T) {
 	ISBN := testdata.RandomString(13)
-	book := createBook(
+	book := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
@@ -285,14 +284,14 @@ func TestGetBooksByISBN(t *testing.T) {
 
 func TestGetBooksByAuthor(t *testing.T) {
 	author := testdata.RandomString(8)
-	bookWithEmptyGenres := createBook(
+	bookWithEmptyGenres := createTestBook(
 		t,
 		testdata.RandomString(6),
 		author,
 		"",
 		testdata.RandomString(13),
 	)
-	bookWithGenres := createBook(
+	bookWithGenres := createTestBook(
 		t,
 		testdata.RandomString(6),
 		author,
@@ -346,14 +345,14 @@ func TestGetBooksByAuthor(t *testing.T) {
 
 func TestGetBooksByPublisher(t *testing.T) {
 	publisher := testdata.RandomString(10)
-	bookWithEmptyGenres := createBook(
+	bookWithEmptyGenres := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
 		publisher,
 		testdata.RandomString(13),
 	)
-	bookWithGenres := createBook(
+	bookWithGenres := createTestBook(
 		t,
 		testdata.RandomString(6),
 		testdata.RandomString(8),
@@ -406,7 +405,7 @@ func TestGetBooksByPublisher(t *testing.T) {
 }
 
 func TestUpdateBook(t *testing.T) {
-	book1 := createBook(
+	book1 := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
@@ -414,7 +413,7 @@ func TestUpdateBook(t *testing.T) {
 		testdata.RandomString(13),
 	)
 
-	arg := db.UpdateBookParams{
+	arg := UpdateBookParams{
 		ID:            book1.ID,
 		Title:         book1.Title,
 		Description:   sql.NullString{String: testdata.RandomString(12), Valid: true},
@@ -442,7 +441,7 @@ func TestUpdateBook(t *testing.T) {
 }
 
 func TestDeleteBook(t *testing.T) {
-	book1 := createBook(
+	book1 := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",

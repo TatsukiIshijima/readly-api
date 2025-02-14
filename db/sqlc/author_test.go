@@ -1,16 +1,15 @@
-package sqlc_test
+package db
 
 import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
-	"readly/db/sqlc"
 	"readly/testdata"
 	"testing"
 	"time"
 )
 
-func createRandomAuthor(t *testing.T) db.Author {
+func createRandomAuthor(t *testing.T) Author {
 	arg := testdata.RandomString(6)
 	author, err := querier.CreateAuthor(context.Background(), arg)
 	require.NoError(t, err)
@@ -47,7 +46,7 @@ func TestGetAllAuthors(t *testing.T) {
 		createRandomAuthor(t)
 	}
 
-	arg := db.GetAllAuthorsParams{
+	arg := GetAllAuthorsParams{
 		Limit:  2,
 		Offset: 0,
 	}

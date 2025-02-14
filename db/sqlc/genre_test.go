@@ -1,16 +1,15 @@
-package sqlc_test
+package db
 
 import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
-	"readly/db/sqlc"
 	"readly/testdata"
 	"testing"
 	"time"
 )
 
-func createRandomGenre(t *testing.T) db.Genre {
+func createRandomGenre(t *testing.T) Genre {
 	arg := testdata.RandomString(6)
 	genre, err := querier.CreateGenre(context.Background(), arg)
 	require.NoError(t, err)
@@ -47,7 +46,7 @@ func TestGetAllGenre(t *testing.T) {
 		createRandomGenre(t)
 	}
 
-	arg := db.GetAllGenresParams{
+	arg := GetAllGenresParams{
 		Limit:  2,
 		Offset: 0,
 	}
@@ -60,7 +59,7 @@ func TestGetAllGenre(t *testing.T) {
 		require.NotEmpty(t, genre)
 	}
 
-	arg = db.GetAllGenresParams{
+	arg = GetAllGenresParams{
 		Limit:  2,
 		Offset: 2,
 	}

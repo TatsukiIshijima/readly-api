@@ -1,10 +1,9 @@
-package sqlc_test
+package db
 
 import (
 	"context"
 	"database/sql"
 	"golang.org/x/crypto/bcrypt"
-	"readly/db/sqlc"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -12,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func checkSameUser(t *testing.T, user1 db.User, user2 db.User) {
+func checkSameUser(t *testing.T, user1 User, user2 User) {
 	require.Equal(t, user1.ID, user2.ID)
 	require.Equal(t, user1.Name, user2.Name)
 	require.Equal(t, user1.Email, user2.Email)
@@ -31,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, hashedPassword)
 
-	arg := db.CreateUserParams{
+	arg := CreateUserParams{
 		Name:           testdata.RandomString(12),
 		Email:          testdata.RandomEmail(),
 		HashedPassword: hashedPassword,
@@ -69,7 +68,7 @@ func TestGetUserByEmail(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
-	arg := db.UpdateUserParams{
+	arg := UpdateUserParams{
 		ID:             user1.ID,
 		Name:           testdata.RandomString(12),
 		Email:          user1.Email,
@@ -104,7 +103,7 @@ func TestGetAllUsers(t *testing.T) {
 		createRandomUser(t)
 	}
 
-	arg1 := db.GetAllUsersParams{
+	arg1 := GetAllUsersParams{
 		Limit:  5,
 		Offset: 0,
 	}
@@ -117,7 +116,7 @@ func TestGetAllUsers(t *testing.T) {
 		require.NotEmpty(t, user)
 	}
 
-	arg2 := db.GetAllUsersParams{
+	arg2 := GetAllUsersParams{
 		Limit:  5,
 		Offset: 5,
 	}

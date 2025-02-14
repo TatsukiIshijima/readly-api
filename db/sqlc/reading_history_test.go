@@ -1,10 +1,9 @@
-package sqlc_test
+package db
 
 import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
-	"readly/db/sqlc"
 	"readly/testdata"
 	"sort"
 	"strings"
@@ -12,15 +11,15 @@ import (
 	"time"
 )
 
-func createRandomReadingHistory(t *testing.T, user db.User, genresLen int, status db.ReadingStatus) (db.Book, []db.Genre, db.ReadingHistory) {
-	b := createBook(
+func createRandomReadingHistory(t *testing.T, user User, genresLen int, status ReadingStatus) (Book, []Genre, ReadingHistory) {
+	b := createTestBook(
 		t,
 		testdata.RandomString(6),
 		"",
 		"",
 		testdata.RandomString(13),
 	)
-	genres := make([]db.Genre, genresLen)
+	genres := make([]Genre, genresLen)
 	for i := 0; i < genresLen; i++ {
 		g := createRandomGenre(t)
 		createRandomBookGenre(t, b, g)
@@ -36,13 +35,13 @@ func createRandomReadingHistory(t *testing.T, user db.User, genresLen int, statu
 		Valid: false,
 	}
 	switch status {
-	case db.ReadingStatusUnread:
-	case db.ReadingStatusReading:
+	case ReadingStatusUnread:
+	case ReadingStatusReading:
 		startDate = sql.NullTime{
 			Time:  time.Date(y, m, d, 0, 0, 0, 0, time.UTC),
 			Valid: true,
 		}
-	case db.ReadingStatusDone:
+	case ReadingStatusDone:
 		endDate = sql.NullTime{
 			Time:  time.Date(y, m, d, 0, 0, 0, 0, time.UTC),
 			Valid: true,
@@ -50,7 +49,7 @@ func createRandomReadingHistory(t *testing.T, user db.User, genresLen int, statu
 	default:
 		t.Fatalf("invalid status: %v", status)
 	}
-	arg := db.CreateReadingHistoryParams{
+	arg := CreateReadingHistoryParams{
 		BookID:    b.ID,
 		UserID:    user.ID,
 		Status:    status,
@@ -87,21 +86,21 @@ func compareNullTimes(t *testing.T, t1 sql.NullTime, t2 sql.NullTime) {
 
 func TestCreateReadingHistory(t *testing.T) {
 	user := createRandomUser(t)
-	createRandomReadingHistory(t, user, 0, db.ReadingStatusUnread)
+	createRandomReadingHistory(t, user, 0, ReadingStatusUnread)
 }
 
 func TestGetReadingHistoryByUser(t *testing.T) {
 	user1 := createRandomUser(t)
 	user2 := createRandomUser(t)
-	b1, _, rh1 := createRandomReadingHistory(t, user1, 0, db.ReadingStatusUnread)
-	b2, g2, rh2 := createRandomReadingHistory(t, user1, 2, db.ReadingStatusUnread)
+	b1, _, rh1 := createRandomReadingHistory(t, user1, 0, ReadingStatusUnread)
+	b2, g2, rh2 := createRandomReadingHistory(t, user1, 2, ReadingStatusUnread)
 
-	args1 := db.GetReadingHistoryByUserParams{
+	args1 := GetReadingHistoryByUserParams{
 		UserID: user1.ID,
 		Limit:  5,
 		Offset: 0,
 	}
-	args2 := db.GetReadingHistoryByUserParams{
+	args2 := GetReadingHistoryByUserParams{
 		UserID: user2.ID,
 		Limit:  5,
 		Offset: 0,
@@ -151,13 +150,13 @@ func TestGetReadingHistoryByUser(t *testing.T) {
 
 func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	user := createRandomUser(t)
-	_, _, _ = createRandomReadingHistory(t, user, 0, db.ReadingStatusUnread)
-	b2, _, rh2 := createRandomReadingHistory(t, user, 0, db.ReadingStatusReading)
-	b3, g3, rh3 := createRandomReadingHistory(t, user, 1, db.ReadingStatusReading)
+	_, _, _ = createRandomReadingHistory(t, user, 0, ReadingStatusUnread)
+	b2, _, rh2 := createRandomReadingHistory(t, user, 0, ReadingStatusReading)
+	b3, g3, rh3 := createRandomReadingHistory(t, user, 1, ReadingStatusReading)
 
-	args := db.GetReadingHistoryByUserAndStatusParams{
+	args := GetReadingHistoryByUserAndStatusParams{
 		UserID: user.ID,
-		Status: db.ReadingStatusReading,
+		Status: ReadingStatusReading,
 		Limit:  5,
 		Offset: 0,
 	}
@@ -175,7 +174,7 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	require.Equal(t, result[0].PublisherName, b2.PublisherName)
 	require.Equal(t, result[0].PublishedDate, b2.PublishedDate)
 	require.Equal(t, result[0].Isbn, b2.Isbn)
-	require.Equal(t, result[0].Status, db.ReadingStatusReading)
+	require.Equal(t, result[0].Status, ReadingStatusReading)
 	require.Equal(t, result[0].StartDate, rh2.StartDate)
 	require.Equal(t, result[0].EndDate, rh2.EndDate)
 
@@ -194,19 +193,19 @@ func TestGetReadingHistoryByUserAndStatus(t *testing.T) {
 	require.Equal(t, result[1].PublisherName, b3.PublisherName)
 	require.Equal(t, result[1].PublishedDate, b3.PublishedDate)
 	require.Equal(t, result[1].Isbn, b3.Isbn)
-	require.Equal(t, result[1].Status, db.ReadingStatusReading)
+	require.Equal(t, result[1].Status, ReadingStatusReading)
 	require.Equal(t, result[1].StartDate, rh3.StartDate)
 	require.Equal(t, result[1].EndDate, rh3.EndDate)
 }
 
 func TestUpdateReadingHistory(t *testing.T) {
 	user := createRandomUser(t)
-	_, _, readingHistory1 := createRandomReadingHistory(t, user, 0, db.ReadingStatusUnread)
+	_, _, readingHistory1 := createRandomReadingHistory(t, user, 0, ReadingStatusUnread)
 
-	arg := db.UpdateReadingHistoryParams{
+	arg := UpdateReadingHistoryParams{
 		UserID: user.ID,
 		BookID: readingHistory1.BookID,
-		Status: db.ReadingStatusReading,
+		Status: ReadingStatusReading,
 		StartDate: sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,
@@ -232,9 +231,9 @@ func TestUpdateReadingHistory(t *testing.T) {
 
 func TestDeleteReadingHistory(t *testing.T) {
 	user := createRandomUser(t)
-	_, _, readingHistory1 := createRandomReadingHistory(t, user, 0, db.ReadingStatusUnread)
+	_, _, readingHistory1 := createRandomReadingHistory(t, user, 0, ReadingStatusUnread)
 
-	args1 := db.DeleteReadingHistoryParams{
+	args1 := DeleteReadingHistoryParams{
 		UserID: user.ID,
 		BookID: readingHistory1.BookID,
 	}
@@ -242,7 +241,7 @@ func TestDeleteReadingHistory(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, int64(1), rowsAffected)
 
-	args2 := db.GetReadingHistoryByUserAndBookParams{
+	args2 := GetReadingHistoryByUserAndBookParams{
 		UserID: user.ID,
 		BookID: readingHistory1.BookID,
 	}
