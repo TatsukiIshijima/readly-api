@@ -118,7 +118,7 @@ func (u *SignInUseCaseImpl) cleanSessions(ctx context.Context, userID int64) err
 		return err
 	}
 	sessionsCount := len(sessions)
-	if sessionsCount <= maxSaveToken {
+	if sessionsCount < maxSaveToken {
 		return nil
 	}
 	sessionToDeleteLimit := sessionsCount - maxSaveToken + 1
