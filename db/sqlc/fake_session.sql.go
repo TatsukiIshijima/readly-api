@@ -43,3 +43,24 @@ func (q *FakeQuerier) GetSessionByID(ctx context.Context, id uuid.UUID) (Session
 	}
 	return Session{}, sql.ErrNoRows
 }
+
+func (q *FakeQuerier) GetSessionByUserID(ctx context.Context, userID int64) ([]Session, error) {
+	var sessions []Session
+	for _, s := range sessionTable.Columns {
+		if s.UserID == userID {
+			sessions = append(sessions, s)
+		}
+	}
+	return sessions, nil
+}
+
+func (q *FakeQuerier) DeleteSessionByUserID(ctx context.Context, arg DeleteSessionByUserIDParams) (int64, error) {
+	var count int64
+	for i, s := range sessionTable.Columns {
+		if s.UserID == arg.UserID {
+			sessionTable.Columns = append(sessionTable.Columns[:i], sessionTable.Columns[i+1:]...)
+			count++
+		}
+	}
+	return count, nil
+}

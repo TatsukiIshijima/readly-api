@@ -43,7 +43,7 @@ func setupControllers(t *testing.T) (BookController, UserController) {
 	registerBookUseCase := usecase.NewRegisterBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepo)
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepo)
 	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transaction, sessionRepo, userRepo)
-	signInUseCase := usecase.NewSignInUseCase(config, maker, sessionRepo, userRepo)
+	signInUseCase := usecase.NewSignInUseCase(config, maker, transaction, sessionRepo, userRepo)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 
 	bookController := NewBookController(registerBookUseCase, deleteBookUseCase)

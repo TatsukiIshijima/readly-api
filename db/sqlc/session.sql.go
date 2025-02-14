@@ -61,6 +61,30 @@ func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (S
 	return i, err
 }
 
+const deleteSessionByUserID = `-- name: DeleteSessionByUserID :execrows
+DELETE
+FROM sessions
+WHERE id IN (SELECT s.id
+             FROM sessions AS s
+             WHERE s.user_id = $1
+             ORDER BY s.created_at ASC
+    LIMIT $2
+    )
+`
+
+type DeleteSessionByUserIDParams struct {
+	UserID int64 `json:"user_id"`
+	Limit  int32 `json:"limit"`
+}
+
+func (q *Queries) DeleteSessionByUserID(ctx context.Context, arg DeleteSessionByUserIDParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteSessionByUserID, arg.UserID, arg.Limit)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const getSessionByID = `-- name: GetSessionByID :one
 SELECT id, user_id, refresh_token, expires_at, created_at, ip_address, user_agent, revoked, revoked_at
 FROM sessions
@@ -82,6 +106,45 @@ func (q *Queries) GetSessionByID(ctx context.Context, id uuid.UUID) (Session, er
 		&i.RevokedAt,
 	)
 	return i, err
+}
+
+const getSessionByUserID = `-- name: GetSessionByUserID :many
+SELECT id, user_id, refresh_token, expires_at, created_at, ip_address, user_agent, revoked, revoked_at
+FROM sessions
+WHERE user_id = $1
+`
+
+func (q *Queries) GetSessionByUserID(ctx context.Context, userID int64) ([]Session, error) {
+	rows, err := q.db.QueryContext(ctx, getSessionByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Session{}
+	for rows.Next() {
+		var i Session
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserID,
+			&i.RefreshToken,
+			&i.ExpiresAt,
+			&i.CreatedAt,
+			&i.IpAddress,
+			&i.UserAgent,
+			&i.Revoked,
+			&i.RevokedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateSession = `-- name: UpdateSession :one

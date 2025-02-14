@@ -26,6 +26,7 @@ type Querier interface {
 	DeleteGenre(ctx context.Context, name string) error
 	DeletePublisher(ctx context.Context, name string) error
 	DeleteReadingHistory(ctx context.Context, arg DeleteReadingHistoryParams) (int64, error)
+	DeleteSessionByUserID(ctx context.Context, arg DeleteSessionByUserIDParams) (int64, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetAllAuthors(ctx context.Context, arg GetAllAuthorsParams) ([]Author, error)
 	GetAllGenres(ctx context.Context, arg GetAllGenresParams) ([]Genre, error)
@@ -44,6 +45,7 @@ type Querier interface {
 	GetReadingHistoryByUserAndBook(ctx context.Context, arg GetReadingHistoryByUserAndBookParams) (GetReadingHistoryByUserAndBookRow, error)
 	GetReadingHistoryByUserAndStatus(ctx context.Context, arg GetReadingHistoryByUserAndStatusParams) ([]GetReadingHistoryByUserAndStatusRow, error)
 	GetSessionByID(ctx context.Context, id uuid.UUID) (Session, error)
+	GetSessionByUserID(ctx context.Context, userID int64) ([]Session, error)
 	GetUserByEmail(ctx context.Context, email string) (User, error)
 	GetUserByID(ctx context.Context, id int64) (User, error)
 	UpdateBook(ctx context.Context, arg UpdateBookParams) (Book, error)

@@ -49,7 +49,7 @@ func setupMain() {
 func newTestSignInUseCase(t *testing.T) SignInUseCase {
 	userRepo := repository.NewUserRepository(querier)
 	sessionRepo := repository.NewSessionRepository(querier)
-	return NewSignInUseCase(config, maker, sessionRepo, userRepo)
+	return NewSignInUseCase(config, maker, tx, sessionRepo, userRepo)
 }
 
 func newTestSignUpUseCase(t *testing.T) SignUpUseCase {
