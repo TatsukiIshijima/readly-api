@@ -37,7 +37,7 @@ func main() {
 	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	signUpUseCase := usecase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepo)
-	signInUseCase := usecase.NewSignInUseCase(config, maker, sessionRepo, userRepo)
+	signInUseCase := usecase.NewSignInUseCase(config, maker, t, sessionRepo, userRepo)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 
 	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
