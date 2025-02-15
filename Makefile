@@ -8,12 +8,14 @@ createdb:
 dropdb:
 	docker exec -it postgres17.2 dropdb readly
 
+# dependency migrate CLI(https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
 migrateup:
 	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/readly?sslmode=disable" -verbose up
 
 migratedown:
-	 migrate -path db/migration -database "postgresql://root:secret@localhost:5432/readly?sslmode=disable" -verbose down
+	migrate -path db/migration -database "postgresql://root:secret@localhost:5432/readly?sslmode=disable" -verbose down
 
+# dependency sqlc CLI(https://github.com/sqlc-dev/sqlc#installation)
 sqlc:
 	sqlc generate
 
@@ -23,6 +25,9 @@ test:
 launchserver:
 	go run cmd/main.go
 
+# dependencies
+# Protocol buffer compiler(https://grpc.io/docs/protoc-installation/)
+# Go plugin for the protocol compiler(protoc-gen-go, protoc-gen-go-grpc)
 proto:
 	rm -f pb/*.go
 	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
