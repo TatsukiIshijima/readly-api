@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "readly/pb";
+
+message SignInRequest {
+  string email = 1;
+  string password = 2;
+}
+
+message SignInResponse {
+  string access_token = 1;
+  string refresh_token = 2;
+  int64 user_id = 3;
+  string name = 4;
+  string email = 5;
+}

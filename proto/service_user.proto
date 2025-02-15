@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "rpc_sign_in.proto";
 import "rpc_sign_up.proto";
 
 package pb;
@@ -7,5 +8,6 @@ package pb;
 option go_package = "readly/pb";
 
 service User {
+  rpc SignIn(SignInRequest) returns (SignInResponse) {}
   rpc SignUp(SignUpRequest) returns (SignUpResponse) {}
 }
