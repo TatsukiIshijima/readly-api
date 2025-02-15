@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+import "rpc_sign_up.proto";
+
+package pb;
+
+option go_package = "readly/pb";
+
+service User {
+  rpc SignUp(SignUpRequest) returns (SignUpResponse) {}
+}
