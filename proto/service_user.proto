@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "rpc_sign_in.proto";
+import "rpc_sign_up.proto";
+
+package pb;
+
+option go_package = "readly/pb";
+
+service User {
+  rpc SignIn(SignInRequest) returns (SignInResponse) {
+    option (google.api.http) = {
+      post: "/v1/signin"
+      body: "*"
+    };
+  }
+  rpc SignUp(SignUpRequest) returns (SignUpResponse) {
+    option (google.api.http) = {
+      post: "/v1/signup"
+      body: "*"
+    };
+  }
+}

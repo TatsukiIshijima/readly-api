@@ -5,6 +5,7 @@
       <option name="customFlags">
         <array>
           <option value="test" />
+          <option value="tools" />
         </array>
       </option>
     </buildTags>
