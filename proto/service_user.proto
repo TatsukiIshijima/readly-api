@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "googleapis/google/api/annotations.proto";
+import "google/api/annotations.proto";
 import "rpc_sign_in.proto";
 import "rpc_sign_up.proto";
 
