@@ -17,7 +17,6 @@ type UserServerImpl struct {
 	refreshTokenUseCase usecase.RefreshAccessTokenUseCase
 }
 
-// TODO:ここinterface返すではなくてOK？
 func NewUserServer(
 	config env.Config,
 	maker auth.TokenMaker,
@@ -35,7 +34,7 @@ func NewUserServer(
 }
 
 func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
-	// TODO: ShouldBindJSONの代わりの実装
+	// TODO: バリデーション
 	args := usecase.SignInRequest{
 		Email:    req.Email,
 		Password: req.Password,
@@ -45,8 +44,7 @@ func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb
 	}
 	result, err := s.signInUseCase.SignIn(ctx, args)
 	if err != nil {
-		// TODO:エラーをどう返すか
-		return nil, err
+		return nil, gRPCStatusError(err)
 	}
 	return &pb.SignInResponse{
 		AccessToken:  result.AccessToken,
@@ -58,19 +56,18 @@ func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb
 }
 
 func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb.SignUpResponse, error) {
-	// TODO: ShouldBindJSONの代わりの実装
+	// TODO:メアドやパスワード等のバリデーション
 	args := usecase.SignUpRequest{
-		Name:     req.Name,
-		Email:    req.Email,
-		Password: req.Password,
+		Name:     req.GetName(),
+		Email:    req.GetEmail(),
+		Password: req.GetPassword(),
 		// TODO:値の取得
 		IPAddress: "",
 		UserAgent: "",
 	}
 	result, err := s.signUpUseCase.SignUp(ctx, args)
 	if err != nil {
-		// TODO:エラーをどう返すか
-		return nil, err
+		return nil, gRPCStatusError(err)
 	}
 	return &pb.SignUpResponse{
 		AccessToken:  result.AccessToken,
@@ -82,15 +79,13 @@ func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb
 }
 
 func (s *UserServerImpl) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
-	// TODO: ShouldBindJSONの代わりの実装
 	args := usecase.RefreshAccessTokenRequest{
 		RefreshToken: req.RefreshToken,
 	}
 
 	result, err := s.refreshTokenUseCase.Refresh(ctx, args)
 	if err != nil {
-		// TODO:エラーをどう返すか
-		return nil, err
+		return nil, gRPCStatusError(err)
 	}
 
 	return &pb.RefreshTokenResponse{
