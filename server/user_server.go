@@ -35,12 +35,13 @@ func NewUserServer(
 
 func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
 	// TODO: バリデーション
+
+	meta := newMetadataFrom(ctx)
 	args := usecase.SignInRequest{
-		Email:    req.Email,
-		Password: req.Password,
-		// TODO:値の取得
-		IPAddress: "",
-		UserAgent: "",
+		Email:     req.GetEmail(),
+		Password:  req.GetPassword(),
+		IPAddress: meta.IPAddress,
+		UserAgent: meta.UserAgent,
 	}
 	result, err := s.signInUseCase.SignIn(ctx, args)
 	if err != nil {
@@ -57,13 +58,13 @@ func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb
 
 func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb.SignUpResponse, error) {
 	// TODO:メアドやパスワード等のバリデーション
+	meta := newMetadataFrom(ctx)
 	args := usecase.SignUpRequest{
-		Name:     req.GetName(),
-		Email:    req.GetEmail(),
-		Password: req.GetPassword(),
-		// TODO:値の取得
-		IPAddress: "",
-		UserAgent: "",
+		Name:      req.GetName(),
+		Email:     req.GetEmail(),
+		Password:  req.GetPassword(),
+		IPAddress: meta.IPAddress,
+		UserAgent: meta.UserAgent,
 	}
 	result, err := s.signUpUseCase.SignUp(ctx, args)
 	if err != nil {
