@@ -2,10 +2,13 @@ package server
 
 import (
 	"context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"readly/env"
 	"readly/pb"
 	"readly/service/auth"
 	"readly/usecase"
+	"readly/util"
 )
 
 type UserServerImpl struct {
@@ -34,7 +37,23 @@ func NewUserServer(
 }
 
 func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb.SignInResponse, error) {
-	// TODO: バリデーション
+
+	validateFunc := func() error {
+		err := util.StringValidator(req.GetEmail()).ValidateEmail()
+		if err != nil {
+			return err
+		}
+		err = util.StringValidator(req.GetPassword()).ValidatePassword()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	err := validateFunc()
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
 
 	meta := newMetadataFrom(ctx)
 	args := usecase.SignInRequest{
@@ -57,7 +76,28 @@ func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb
 }
 
 func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb.SignUpResponse, error) {
-	// TODO:メアドやパスワード等のバリデーション
+
+	validateFunc := func() error {
+		err := util.StringValidator(req.GetName()).ValidateUsername()
+		if err != nil {
+			return err
+		}
+		err = util.StringValidator(req.GetEmail()).ValidateEmail()
+		if err != nil {
+			return err
+		}
+		err = util.StringValidator(req.GetPassword()).ValidatePassword()
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+
+	err := validateFunc()
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+	}
+
 	meta := newMetadataFrom(ctx)
 	args := usecase.SignUpRequest{
 		Name:      req.GetName(),
