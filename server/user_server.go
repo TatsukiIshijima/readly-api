@@ -12,7 +12,7 @@ import (
 )
 
 type UserServerImpl struct {
-	pb.UnimplementedUserServer
+	pb.UnimplementedUserServiceServer
 	config              env.Config
 	maker               auth.TokenMaker
 	signUpUseCase       usecase.SignUpUseCase
