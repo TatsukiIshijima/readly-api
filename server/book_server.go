@@ -5,10 +5,12 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"readly/entity"
 	"readly/middleware"
 	"readly/pb"
 	"readly/service/auth"
 	"readly/usecase"
+	"readly/util"
 )
 
 type BookServerImpl struct {
@@ -30,6 +32,19 @@ func NewBookServer(
 	}
 }
 
+func (b *BookServerImpl) toReadingStatusEntity(status pb.ReadingStatus) entity.ReadingStatus {
+	switch status {
+	case pb.ReadingStatus_UNREAD:
+		return entity.Unread
+	case pb.ReadingStatus_READING:
+		return entity.Reading
+	case pb.ReadingStatus_DONE:
+		return entity.Done
+	default:
+		return entity.Unknown
+	}
+}
+
 func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookRequest) (*pb.Book, error) {
 	claims, err := middleware.Authenticate(ctx, b.maker)
 	if err != nil {
@@ -42,16 +57,16 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 		UserID:        claims.UserID,
 		Title:         req.GetTitle(),
 		Genres:        req.GetGenres(),
-		Description:   req.GetDescription(),
-		CoverImageURL: req.GetCoverImageUrl(),
-		URL:           req.GetUrl(),
-		AuthorName:    req.GetAuthorName(),
-		PublisherName: req.GetPublisherName(),
-		PublishDate:   req.GetPublishDate(),
-		ISBN:          req.GetIsbn(),
-		Status:        req.GetReadingStatus(),
-		StartDate:     req.GetStartDate(),
-		EndDate:       req.GetEndDate(),
+		Description:   util.ToStringOrNil(req.GetDescription()),
+		CoverImageURL: util.ToStringOrNil(req.GetCoverImageUrl()),
+		URL:           util.ToStringOrNil(req.GetUrl()),
+		AuthorName:    util.ToStringOrNil(req.GetAuthorName()),
+		PublisherName: util.ToStringOrNil(req.GetPublisherName()),
+		PublishDate:   util.ToTimeOrNil(req.GetPublishDate()),
+		ISBN:          util.ToStringOrNil(req.GetIsbn()),
+		Status:        b.toReadingStatusEntity(req.GetReadingStatus()),
+		StartDate:     util.ToTimeOrNil(req.GetStartDate()),
+		EndDate:       util.ToTimeOrNil(req.GetEndDate()),
 	}
 	book, err := b.registerUseCase.RegisterBook(ctx, args)
 	if err != nil {
@@ -66,11 +81,11 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 		Url:           book.URL,
 		AuthorName:    book.AuthorName,
 		PublisherName: book.PublisherName,
-		PublishDate:   book.PublishDate,
+		PublishDate:   util.ToTimestampOrNil(book.PublishDate),
 		Isbn:          book.ISBN,
 		ReadingStatus: pb.ReadingStatus(book.Status),
-		StartDate:     book.StartDate,
-		EndDate:       book.EndDate,
+		StartDate:     util.ToTimestampOrNil(book.StartDate),
+		EndDate:       util.ToTimestampOrNil(book.EndDate),
 	}, nil
 }
 
@@ -79,9 +94,6 @@ func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookReque
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
-
-	// TODO:ユーザが登録したBookであるかチェック（認可 Authorization）
-
 	args := usecase.DeleteBookRequest{
 		UserID: claims.UserID,
 		BookID: req.GetBookId(),
