@@ -9,7 +9,7 @@ package pb;
 
 option go_package = "readly/pb";
 
-service User {
+service UserService {
   rpc SignIn(SignInRequest) returns (SignInResponse) {
     option (google.api.http) = {
       post: "/v1/signin"

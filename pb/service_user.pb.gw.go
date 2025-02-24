@@ -35,7 +35,7 @@ var (
 	_ = metadata.Join
 )
 
-func request_User_SignIn_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_SignIn_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq SignInRequest
 		metadata runtime.ServerMetadata
@@ -47,7 +47,7 @@ func request_User_SignIn_0(ctx context.Context, marshaler runtime.Marshaler, cli
 	return msg, metadata, err
 }
 
-func local_request_User_SignIn_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_SignIn_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq SignInRequest
 		metadata runtime.ServerMetadata
@@ -59,7 +59,7 @@ func local_request_User_SignIn_0(ctx context.Context, marshaler runtime.Marshale
 	return msg, metadata, err
 }
 
-func request_User_SignUp_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_SignUp_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq SignUpRequest
 		metadata runtime.ServerMetadata
@@ -71,7 +71,7 @@ func request_User_SignUp_0(ctx context.Context, marshaler runtime.Marshaler, cli
 	return msg, metadata, err
 }
 
-func local_request_User_SignUp_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_SignUp_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq SignUpRequest
 		metadata runtime.ServerMetadata
@@ -83,7 +83,7 @@ func local_request_User_SignUp_0(ctx context.Context, marshaler runtime.Marshale
 	return msg, metadata, err
 }
 
-func request_User_RefreshToken_0(ctx context.Context, marshaler runtime.Marshaler, client UserClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_UserService_RefreshToken_0(ctx context.Context, marshaler runtime.Marshaler, client UserServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq RefreshTokenRequest
 		metadata runtime.ServerMetadata
@@ -95,7 +95,7 @@ func request_User_RefreshToken_0(ctx context.Context, marshaler runtime.Marshale
 	return msg, metadata, err
 }
 
-func local_request_User_RefreshToken_0(ctx context.Context, marshaler runtime.Marshaler, server UserServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_UserService_RefreshToken_0(ctx context.Context, marshaler runtime.Marshaler, server UserServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var (
 		protoReq RefreshTokenRequest
 		metadata runtime.ServerMetadata
@@ -107,79 +107,79 @@ func local_request_User_RefreshToken_0(ctx context.Context, marshaler runtime.Ma
 	return msg, metadata, err
 }
 
-// RegisterUserHandlerServer registers the http handlers for service User to "mux".
-// UnaryRPC     :call UserServer directly.
+// RegisterUserServiceHandlerServer registers the http handlers for service UserService to "mux".
+// UnaryRPC     :call UserServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterUserHandlerFromEndpoint instead.
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterUserServiceHandlerFromEndpoint instead.
 // GRPC interceptors will not work for this type of registration. To use interceptors, you must use the "runtime.WithMiddlewares" option in the "runtime.NewServeMux" call.
-func RegisterUserHandlerServer(ctx context.Context, mux *runtime.ServeMux, server UserServer) error {
-	mux.Handle(http.MethodPost, pattern_User_SignIn_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+func RegisterUserServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server UserServiceServer) error {
+	mux.Handle(http.MethodPost, pattern_UserService_SignIn_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.User/SignIn", runtime.WithHTTPPathPattern("/v1/signin"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.UserService/SignIn", runtime.WithHTTPPathPattern("/v1/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_User_SignIn_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_SignIn_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_User_SignIn_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_SignIn_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_User_SignUp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_SignUp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.User/SignUp", runtime.WithHTTPPathPattern("/v1/signup"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.UserService/SignUp", runtime.WithHTTPPathPattern("/v1/signup"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_User_SignUp_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_SignUp_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_User_SignUp_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_SignUp_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_User_RefreshToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_RefreshToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.User/RefreshToken", runtime.WithHTTPPathPattern("/v1/refresh-token"))
+		annotatedContext, err := runtime.AnnotateIncomingContext(ctx, mux, req, "/pb.UserService/RefreshToken", runtime.WithHTTPPathPattern("/v1/refresh-token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_User_RefreshToken_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_UserService_RefreshToken_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_User_RefreshToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_RefreshToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 
 	return nil
 }
 
-// RegisterUserHandlerFromEndpoint is same as RegisterUserHandler but
+// RegisterUserServiceHandlerFromEndpoint is same as RegisterUserServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterUserHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterUserServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.NewClient(endpoint, opts...)
 	if err != nil {
 		return err
@@ -198,83 +198,83 @@ func RegisterUserHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux,
 			}
 		}()
 	}()
-	return RegisterUserHandler(ctx, mux, conn)
+	return RegisterUserServiceHandler(ctx, mux, conn)
 }
 
-// RegisterUserHandler registers the http handlers for service User to "mux".
+// RegisterUserServiceHandler registers the http handlers for service UserService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterUserHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterUserHandlerClient(ctx, mux, NewUserClient(conn))
+func RegisterUserServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterUserServiceHandlerClient(ctx, mux, NewUserServiceClient(conn))
 }
 
-// RegisterUserHandlerClient registers the http handlers for service User
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "UserClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "UserClient"
+// RegisterUserServiceHandlerClient registers the http handlers for service UserService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "UserServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "UserServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "UserClient" to call the correct interceptors. This client ignores the HTTP middlewares.
-func RegisterUserHandlerClient(ctx context.Context, mux *runtime.ServeMux, client UserClient) error {
-	mux.Handle(http.MethodPost, pattern_User_SignIn_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+// "UserServiceClient" to call the correct interceptors. This client ignores the HTTP middlewares.
+func RegisterUserServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client UserServiceClient) error {
+	mux.Handle(http.MethodPost, pattern_UserService_SignIn_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pb.User/SignIn", runtime.WithHTTPPathPattern("/v1/signin"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pb.UserService/SignIn", runtime.WithHTTPPathPattern("/v1/signin"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_User_SignIn_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_SignIn_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_User_SignIn_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_SignIn_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_User_SignUp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_SignUp_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pb.User/SignUp", runtime.WithHTTPPathPattern("/v1/signup"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pb.UserService/SignUp", runtime.WithHTTPPathPattern("/v1/signup"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_User_SignUp_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_SignUp_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_User_SignUp_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_SignUp_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
-	mux.Handle(http.MethodPost, pattern_User_RefreshToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle(http.MethodPost, pattern_UserService_RefreshToken_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pb.User/RefreshToken", runtime.WithHTTPPathPattern("/v1/refresh-token"))
+		annotatedContext, err := runtime.AnnotateContext(ctx, mux, req, "/pb.UserService/RefreshToken", runtime.WithHTTPPathPattern("/v1/refresh-token"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_User_RefreshToken_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_UserService_RefreshToken_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		forward_User_RefreshToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_UserService_RefreshToken_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 	})
 	return nil
 }
 
 var (
-	pattern_User_SignIn_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "signin"}, ""))
-	pattern_User_SignUp_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "signup"}, ""))
-	pattern_User_RefreshToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "refresh-token"}, ""))
+	pattern_UserService_SignIn_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "signin"}, ""))
+	pattern_UserService_SignUp_0       = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "signup"}, ""))
+	pattern_UserService_RefreshToken_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "refresh-token"}, ""))
 )
 
 var (
-	forward_User_SignIn_0       = runtime.ForwardResponseMessage
-	forward_User_SignUp_0       = runtime.ForwardResponseMessage
-	forward_User_RefreshToken_0 = runtime.ForwardResponseMessage
+	forward_UserService_SignIn_0       = runtime.ForwardResponseMessage
+	forward_UserService_SignUp_0       = runtime.ForwardResponseMessage
+	forward_UserService_RefreshToken_0 = runtime.ForwardResponseMessage
 )
