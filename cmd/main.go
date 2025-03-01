@@ -49,6 +49,18 @@ func main() {
 	signInUseCase := usecase.NewSignInUseCase(config, maker, t, sessionRepo, userRepo)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 
+	// メインルーチンでgRPC Serverの起動しているとそこでブロックしてしまい、
+	//HTTP Gatewayの起動ができないため、別のルーチンで起動する
+	go runGatewayServer(
+		config,
+		maker,
+		registerBookUseCase,
+		deleteBookUseCase,
+		signUpUseCase,
+		signInUseCase,
+		refreshTokenUseCase,
+	)
+
 	//runGinServer(
 	//	config,
 	//	maker,
@@ -68,8 +80,6 @@ func main() {
 		signInUseCase,
 		refreshTokenUseCase,
 	)
-
-	//go runGatewayServer()
 }
 
 func runGinServer(
@@ -131,14 +141,6 @@ func runGRPCServer(
 	}
 }
 
-// 43~46, 49, 53まではみてみる
-// 46はgrpcに移行したためIPアドレスやUserAgentの取得方法っぽい
-// 49のバリデーションはginからgrpcへ移行したので独自実装になるっぽい
-// grpcの移行は徐々にできなそうなのでGinでのコードは残しつつやるようだ
-// 53updateUserAPIのための認可。metadataのセクションが関連している
-// これも独自実装になるっぽい。HTTPとGRPCどちらも対応するため。
-
-// コース45を参考
 func runGatewayServer(
 	config env.Config,
 	maker auth.TokenMaker,
@@ -148,9 +150,6 @@ func runGatewayServer(
 	signInUseCase usecase.SignInUseCase,
 	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
 ) {
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
 	userServer := server.NewUserServer(
 		config,
 		maker,
@@ -175,6 +174,9 @@ func runGatewayServer(
 	// HTTPリクエストをgRPCのリクエストに変換する
 	grpcMux := runtime.NewServeMux(jsonOption)
 
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	err := pb.RegisterUserServiceHandlerServer(ctx, grpcMux, userServer)
 	if err != nil {
 		log.Fatalf("cannot register handle server: %v", err)
@@ -184,7 +186,9 @@ func runGatewayServer(
 		log.Fatalf("cannot register handle server: %v", err)
 	}
 
+	// クライアントから実際のHTTPリクエストを受け取る
 	httpMux := http.NewServeMux()
+	// HTTPリクエストをgRPCのリクエストに変換するするためにgrpcMuxにルーティングする
 	httpMux.Handle("/", grpcMux)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
