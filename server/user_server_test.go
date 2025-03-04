@@ -184,3 +184,150 @@ func TestSignUp(t *testing.T) {
 		})
 	}
 }
+
+func TestSignIn(t *testing.T) {
+	us := NewTestUserServer(t)
+	ctx := metadata.NewIncomingContext(
+		context.Background(),
+		NewTestMetadata(
+			"grpc-node-js/1.11.0-postman.1",
+			"",
+			"127.0.0.1",
+		),
+	)
+
+	wrongPasswordCaseEmail := testdata.RandomEmail()
+	successCaseEmail := testdata.RandomEmail()
+
+	testCases := []struct {
+		name    string
+		prepare func(t *testing.T)
+		req     *pb.SignInRequest
+		check   func(t *testing.T, res *pb.SignInResponse, err error)
+	}{
+		{
+			name: "invalid request by missing required fields",
+			prepare: func(t *testing.T) {
+			},
+			req: &pb.SignInRequest{},
+			check: func(t *testing.T, res *pb.SignInResponse, err error) {
+				require.Nil(t, res)
+				require.Error(t, err)
+				s, ok := status.FromError(err)
+				require.True(t, ok)
+				require.Equal(t, codes.InvalidArgument, s.Code())
+			},
+		},
+		{
+			name: "invalid request by invalid email",
+			prepare: func(t *testing.T) {
+			},
+			req: &pb.SignInRequest{
+				Email:    "invalid",
+				Password: "1234abcD@",
+			},
+			check: func(t *testing.T, res *pb.SignInResponse, err error) {
+				require.Nil(t, res)
+				require.Error(t, err)
+				s, ok := status.FromError(err)
+				require.True(t, ok)
+				require.Equal(t, codes.InvalidArgument, s.Code())
+			},
+		},
+		{
+			name: "invalid request by short password",
+			prepare: func(t *testing.T) {
+			},
+			req: &pb.SignInRequest{
+				Email:    testdata.RandomEmail(),
+				Password: "short",
+			},
+			check: func(t *testing.T, res *pb.SignInResponse, err error) {
+				require.Nil(t, res)
+				require.Error(t, err)
+				s, ok := status.FromError(err)
+				require.True(t, ok)
+				require.Equal(t, codes.InvalidArgument, s.Code())
+			},
+		},
+		{
+			name: "failure: not found email",
+			prepare: func(t *testing.T) {
+				req := pb.SignUpRequest{
+					Name:     "TestUser",
+					Email:    testdata.RandomEmail(),
+					Password: "1234abcD@",
+				}
+				_, err := us.SignUp(ctx, &req)
+				require.NoError(t, err)
+			},
+			req: &pb.SignInRequest{
+				Email:    testdata.RandomEmail(),
+				Password: "1234abcD@",
+			},
+			check: func(t *testing.T, res *pb.SignInResponse, err error) {
+				require.Nil(t, res)
+				require.Error(t, err)
+				s, ok := status.FromError(err)
+				require.True(t, ok)
+				require.Equal(t, codes.InvalidArgument, s.Code())
+			},
+		},
+		{
+			name: "failure: wrong password",
+			prepare: func(t *testing.T) {
+				req := pb.SignUpRequest{
+					Name:     "TestUser",
+					Email:    wrongPasswordCaseEmail,
+					Password: "1234abcD@",
+				}
+				_, err := us.SignUp(ctx, &req)
+				require.NoError(t, err)
+			},
+			req: &pb.SignInRequest{
+				Email:    wrongPasswordCaseEmail,
+				Password: "1234abcD",
+			},
+			check: func(t *testing.T, res *pb.SignInResponse, err error) {
+				require.Nil(t, res)
+				require.Error(t, err)
+				s, ok := status.FromError(err)
+				require.True(t, ok)
+				require.Equal(t, codes.InvalidArgument, s.Code())
+			},
+		},
+		{
+			name: "success: valid request",
+			prepare: func(t *testing.T) {
+				req := pb.SignUpRequest{
+					Name:     "TestUser",
+					Email:    successCaseEmail,
+					Password: "1234abcD@",
+				}
+				_, err := us.SignUp(ctx, &req)
+				require.NoError(t, err)
+			},
+			req: &pb.SignInRequest{
+				Email:    successCaseEmail,
+				Password: "1234abcD@",
+			},
+			check: func(t *testing.T, res *pb.SignInResponse, err error) {
+				require.NoError(t, err)
+				require.NotNil(t, res)
+				require.NotEmpty(t, res.GetAccessToken())
+				require.NotEmpty(t, res.GetRefreshToken())
+				require.NotEmpty(t, res.GetUserId())
+				require.Equal(t, "TestUser", res.GetName())
+				require.Equal(t, successCaseEmail, res.GetEmail())
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.prepare(t)
+			res, err := us.SignIn(ctx, tc.req)
+			tc.check(t, res, err)
+		})
+	}
+}
