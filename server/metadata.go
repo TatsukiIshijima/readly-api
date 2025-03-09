@@ -23,8 +23,7 @@ func newMetadataFrom(ctx context.Context) *Metadata {
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
 		if userAgents := md.Get(grpcGatewayUserAgentHeader); len(userAgents) > 0 {
 			meta.UserAgent = userAgents[0]
-		}
-		if userAgents := md.Get(userAgentHeader); len(userAgents) > 0 {
+		} else if userAgents := md.Get(userAgentHeader); len(userAgents) > 0 {
 			meta.UserAgent = userAgents[0]
 		}
 		if ipAddresses := md.Get(xForwardedForHeader); len(ipAddresses) > 0 {
@@ -32,8 +31,10 @@ func newMetadataFrom(ctx context.Context) *Metadata {
 		}
 	}
 
-	if ip, ok := peer.FromContext(ctx); ok {
-		meta.IPAddress = ip.Addr.String()
+	if meta.IPAddress == "" {
+		if ip, ok := peer.FromContext(ctx); ok {
+			meta.IPAddress = ip.Addr.String()
+		}
 	}
 
 	return meta
