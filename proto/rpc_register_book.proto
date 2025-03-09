@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "readly/pb";
+
+import "reading_status.proto";
+import "google/protobuf/timestamp.proto";
+
+message RegisterBookRequest {
+  string title = 1;
+  repeated string genres = 2;
+  optional string description = 3;
+  optional string cover_image_url = 4;
+  optional string url = 5;
+  optional string author_name = 6;
+  optional string publisher_name = 7;
+  optional google.protobuf.Timestamp publish_date = 8;
+  optional string isbn = 9;
+  ReadingStatus reading_status = 10;
+  optional google.protobuf.Timestamp start_date = 11;
+  optional google.protobuf.Timestamp end_date = 12;
+}

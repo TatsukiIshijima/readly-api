@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "readly/pb";
+
+enum ReadingStatus {
+  UNREAD = 0;
+  READING = 1;
+  DONE = 2;
+  UNKNOWN = 3;
+}

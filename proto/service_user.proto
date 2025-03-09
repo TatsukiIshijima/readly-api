@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
+import "rpc_refresh_token.proto";
 import "rpc_sign_in.proto";
 import "rpc_sign_up.proto";
 
@@ -8,7 +9,7 @@ package pb;
 
 option go_package = "readly/pb";
 
-service User {
+service UserService {
   rpc SignIn(SignInRequest) returns (SignInResponse) {
     option (google.api.http) = {
       post: "/v1/signin"
@@ -18,6 +19,12 @@ service User {
   rpc SignUp(SignUpRequest) returns (SignUpResponse) {
     option (google.api.http) = {
       post: "/v1/signup"
+      body: "*"
+    };
+  }
+  rpc RefreshToken(RefreshTokenRequest) returns (RefreshTokenResponse) {
+    option (google.api.http) = {
+      post: "/v1/refresh-token"
       body: "*"
     };
   }
