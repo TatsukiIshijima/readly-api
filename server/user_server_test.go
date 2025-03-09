@@ -331,3 +331,88 @@ func TestSignIn(t *testing.T) {
 		})
 	}
 }
+
+func TestRefreshAccessToken(t *testing.T) {
+	us := NewTestUserServer(t)
+	ctx := metadata.NewIncomingContext(
+		context.Background(),
+		NewTestMetadata(
+			"grpc-node-js/1.11.0-postman.1",
+			"",
+			"127.0.0.1",
+		),
+	)
+
+	testCases := []struct {
+		name    string
+		prepare func(t *testing.T) pb.RefreshTokenRequest
+		check   func(t *testing.T, req *pb.RefreshTokenRequest, res *pb.RefreshTokenResponse, err error)
+	}{
+		{
+			name: "Refresh token success if correct refresh token",
+			prepare: func(t *testing.T) pb.RefreshTokenRequest {
+				req := pb.SignUpRequest{
+					Name:     "TestUser",
+					Email:    testdata.RandomEmail(),
+					Password: "1234abcD@",
+				}
+				res, err := us.SignUp(ctx, &req)
+				require.NoError(t, err)
+
+				return pb.RefreshTokenRequest{
+					RefreshToken: res.GetRefreshToken(),
+				}
+			},
+			check: func(t *testing.T, req *pb.RefreshTokenRequest, res *pb.RefreshTokenResponse, err error) {
+				require.NoError(t, err)
+				require.NotNil(t, res)
+				require.NotEmpty(t, res.GetAccessToken())
+				require.Equal(t, res.GetAccessToken(), res.GetAccessToken())
+			},
+		},
+		{
+			name: "Refresh token failure if request empty",
+			prepare: func(t *testing.T) pb.RefreshTokenRequest {
+				return pb.RefreshTokenRequest{}
+			},
+			check: func(t *testing.T, req *pb.RefreshTokenRequest, res *pb.RefreshTokenResponse, err error) {
+				require.Nil(t, res)
+				require.Error(t, err)
+				s, ok := status.FromError(err)
+				require.True(t, ok)
+				require.Equal(t, codes.Unauthenticated, s.Code())
+			},
+		},
+		{
+			name: "Refresh token failure if invalid refresh token",
+			prepare: func(t *testing.T) pb.RefreshTokenRequest {
+				req := pb.SignUpRequest{
+					Name:     "TestUser",
+					Email:    testdata.RandomEmail(),
+					Password: "1234abcD@",
+				}
+				res, err := us.SignUp(ctx, &req)
+				require.NoError(t, err)
+
+				return pb.RefreshTokenRequest{
+					RefreshToken: res.GetRefreshToken() + "_invalid",
+				}
+			},
+			check: func(t *testing.T, req *pb.RefreshTokenRequest, res *pb.RefreshTokenResponse, err error) {
+				require.Nil(t, res)
+				require.Error(t, err)
+				s, ok := status.FromError(err)
+				require.True(t, ok)
+				require.Equal(t, codes.Unauthenticated, s.Code())
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req := tc.prepare(t)
+			res, err := us.RefreshToken(ctx, &req)
+			tc.check(t, &req, res, err)
+		})
+	}
+}
