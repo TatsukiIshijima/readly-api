@@ -5,6 +5,15 @@ import (
 	"regexp"
 )
 
+var (
+	usernameRegex  = regexp.MustCompile(`^[A-Za-z0-9]{5,30}$`)
+	emailRegex     = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	upperCaseRegex = regexp.MustCompile(`[A-Z]`)
+	lowerCaseRegex = regexp.MustCompile(`[a-z]`)
+	digitRegex     = regexp.MustCompile(`[0-9]`)
+	symbolRegex    = regexp.MustCompile(`[\-^$*.@]`)
+)
+
 type StringValidator string
 
 func (s StringValidator) ValidateLength(minLength int, maxLength int) error {
@@ -14,8 +23,7 @@ func (s StringValidator) ValidateLength(minLength int, maxLength int) error {
 	return nil
 }
 
-func (s StringValidator) validateRegex(pattern string) error {
-	re := regexp.MustCompile(pattern)
+func (s StringValidator) validateRegex(re *regexp.Regexp) error {
 	if !re.MatchString(string(s)) {
 		return fmt.Errorf("'%s' invalid format", s)
 	}
@@ -24,11 +32,11 @@ func (s StringValidator) validateRegex(pattern string) error {
 
 func (s StringValidator) ValidateUsername() error {
 	//5文字以上30文字以内 英大文字（A-Z） 英小文字（a-z） 数字（0-9）
-	return s.validateRegex(`^[A-Za-z0-9]{5,30}$`)
+	return s.validateRegex(usernameRegex)
 }
 
 func (s StringValidator) ValidateEmail() error {
-	return s.validateRegex(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	return s.validateRegex(emailRegex)
 }
 
 func (s StringValidator) ValidatePassword() error {
@@ -52,22 +60,22 @@ func (s StringValidator) ValidatePassword() error {
 }
 
 func (s StringValidator) hasUpperCase() bool {
-	err := s.validateRegex(`[A-Z]`)
+	err := s.validateRegex(upperCaseRegex)
 	return err == nil
 }
 
 func (s StringValidator) hasLowerCase() bool {
-	err := s.validateRegex(`[a-z]`)
+	err := s.validateRegex(lowerCaseRegex)
 	return err == nil
 }
 
 func (s StringValidator) hasDigit() bool {
-	err := s.validateRegex(`[0-9]`)
+	err := s.validateRegex(digitRegex)
 	return err == nil
 }
 
 func (s StringValidator) hasSymbol() bool {
 	// -^$*.@ のいずれかの文字を含む
-	err := s.validateRegex(`[\-^$*.@]`)
+	err := s.validateRegex(symbolRegex)
 	return err == nil
 }
