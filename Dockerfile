@@ -8,6 +8,8 @@ RUN go build -o main ./cmd
 FROM debian:bullseye-20250224-slim
 WORKDIR /app
 COPY --from=builder /app/main .
+# TODO: Load env from secret
+COPY env/app.env /env/app.env
 
 EXPOSE 8080
 CMD ["/app/main"]
