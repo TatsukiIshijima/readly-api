@@ -1,0 +1,32 @@
+services:
+
+  postgres:
+    image: postgres:17.2-alpine
+    container_name: postgres
+    # TODO: Load env from secret
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: readly
+    healthcheck:
+      # API起動前にPostgreSQLが起動しているかを確認する
+      # PostgreSQLクライアントツールのpg_isreadyを使ってPostgreSQLのヘルスチェックを行う
+      # チェック時に0以外の値であれば接続できていない状態として扱われる
+      test: [ "CMD-SHELL", "pg_isready -U root -d readly" ]
+      interval: 5s
+      retries: 5
+      timeout: 3s
+
+  readly_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: readly_api
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # TODO: Load env from secret
+    environment:
+      DB_SOURCE: postgresql://root:secret@postgres:5432/readly?sslmode=disable
+    ports:
+      - "8080:8080"
