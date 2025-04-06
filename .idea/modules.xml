@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/readly.iml" filepath="$PROJECT_DIR$/.idea/readly.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/readly-api.iml" filepath="$PROJECT_DIR$/.idea/readly-api.iml" />
     </modules>
   </component>
 </project>
