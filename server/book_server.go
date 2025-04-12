@@ -48,7 +48,7 @@ func (b *BookServerImpl) toReadingStatusEntity(status pb.ReadingStatus) entity.R
 func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookRequest) (*pb.Book, error) {
 	claims, err := middleware.Authenticate(ctx, b.maker)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, err.Error())
+		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
 
 	// TODO:バリデーション
@@ -92,7 +92,7 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*emptypb.Empty, error) {
 	claims, err := middleware.Authenticate(ctx, b.maker)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, err.Error())
+		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
 	args := usecase.DeleteBookRequest{
 		UserID: claims.UserID,

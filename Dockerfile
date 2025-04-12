@@ -1,7 +1,5 @@
-# TODO: 各バージョンをgo.modとGitHubActionと合わせる
-
 # Build
-FROM golang:1.23.4-bullseye AS builder
+FROM golang:1.24.2-bullseye AS builder
 WORKDIR /app
 COPY . .
 # go buildでmain（実行ファイル）を作成

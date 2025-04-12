@@ -52,7 +52,7 @@ func (s *UserServerImpl) SignIn(ctx context.Context, req *pb.SignInRequest) (*pb
 
 	err := validateFunc()
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	meta := newMetadataFrom(ctx)
@@ -95,7 +95,7 @@ func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb
 
 	err := validateFunc()
 	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, err.Error())
+		return nil, status.Error(codes.InvalidArgument, err.Error())
 	}
 
 	meta := newMetadataFrom(ctx)
