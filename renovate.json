@@ -2,5 +2,101 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "groupName": "Go version update",
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchPackagePatterns": [
+        "^go$"
+      ]
+    },
+    {
+      "groupName": "Go version update",
+      "matchManagers": [
+        "dockerfile"
+      ],
+      "matchPackageNames": [
+        "golang"
+      ],
+      "matchDatasources": [
+        "docker"
+      ]
+    },
+    {
+      "groupName": "Go version update",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "actions/setup-go"
+      ]
+    },
+    {
+      "groupName": "PostgreSQL version update",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchPackageNames": [
+        "postgres"
+      ],
+      "matchDatasources": [
+        "docker"
+      ]
+    },
+    {
+      "groupName": "PostgreSQL version update",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "matchPackageNames": [
+        "postgres"
+      ],
+      "matchDatasources": [
+        "docker"
+      ]
+    },
+    {
+      "groupName": "PostgreSQL version update",
+      "matchManagers": [
+        "regex"
+      ],
+      "matchPackageNames": [
+        "postgres"
+      ],
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPaths": [
+        "Makefile",
+        ".*\\.ya?ml"
+      ]
+    }
+  ],
+  "regexManagers": [
+    {
+      "fileMatch": [
+        "^Makefile$"
+      ],
+      "matchStrings": [
+        "postgres:(?<currentValue>\\d+(\\.\\d+)?)",
+        "POSTGRES_IMAGE\\s*=\\s*postgres:(?<currentValue>\\d+(\\.\\d+)?)",
+        "image\\s*=\\s*postgres:(?<currentValue>\\d+(\\.\\d+)?)"
+      ],
+      "depNameTemplate": "postgres",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "fileMatch": [
+        ".*\\.ya?ml$"
+      ],
+      "matchStrings": [
+        "image:\\s*postgres:(?<currentValue>\\d+(\\.\\d+)?)"
+      ],
+      "depNameTemplate": "postgres",
+      "datasourceTemplate": "docker"
+    }
   ]
 }
