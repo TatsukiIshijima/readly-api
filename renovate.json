@@ -103,6 +103,6 @@
       ],
       "depNameTemplate": "postgres",
       "datasourceTemplate": "docker"
-    },
+    }
   ]
 }
