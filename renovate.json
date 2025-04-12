@@ -97,6 +97,13 @@
       ],
       "depNameTemplate": "postgres",
       "datasourceTemplate": "docker"
+    },
+
+    {
+      "groupName": "gRPC-related packages(genproto/googleapis/api, protobuf, grpc, protoc-gen-go-grpc etc.)",
+      "matchPackagePatterns": [
+        "^google\\.golang\\.org/(grpc|protobuf|genproto)(/.*)?$"
+      ]
     }
   ]
 }
