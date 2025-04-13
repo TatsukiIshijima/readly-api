@@ -7,20 +7,20 @@ import (
 	"readly/repository"
 )
 
-type UploadImgLocalUseCase interface {
+type UploadImgUseCase interface {
 	Upload(req UploadRequest) (*UploadImgResponse, error)
 }
 
-type UploadImgLocalUseCaseImpl struct {
+type UploadImgUseCaseImpl struct {
 	config  env.Config
 	imgRepo repository.ImageRepository
 }
 
-func NewUploadImgLocalUseCase(
+func NewUploadImgUseCase(
 	config env.Config,
 	imgRepo repository.ImageRepository,
-) UploadImgLocalUseCase {
-	return &UploadImgLocalUseCaseImpl{
+) UploadImgUseCase {
+	return &UploadImgUseCaseImpl{
 		config:  config,
 		imgRepo: imgRepo,
 	}
@@ -35,7 +35,7 @@ type UploadImgResponse struct {
 	Path string
 }
 
-func (u *UploadImgLocalUseCaseImpl) Upload(req UploadRequest) (*UploadImgResponse, error) {
+func (u *UploadImgUseCaseImpl) Upload(req UploadRequest) (*UploadImgResponse, error) {
 	dst := filepath.Join(env.ProjectRoot(), ".storage/cover_img")
 	fileName := uuid.NewString() + req.ext
 	saveReq := repository.SaveRequest{
