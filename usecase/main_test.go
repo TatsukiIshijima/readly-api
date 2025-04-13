@@ -112,7 +112,7 @@ func newTestRefreshAccessTokenUseCase(t *testing.T) RefreshAccessTokenUseCase {
 	return NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 }
 
-func newTestUploadImgUseCase(t *testing.T) UploadImgLocalUseCase {
+func newTestUploadImgUseCase(t *testing.T) UploadImgUseCase {
 	imgRepo := repository.NewImageRepository()
-	return NewUploadImgLocalUseCase(config, imgRepo)
+	return NewUploadImgUseCase(config, imgRepo)
 }
