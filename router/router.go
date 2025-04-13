@@ -2,13 +2,12 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"readly/controller"
+	"readly/server"
 )
 
 func Setup(
 	authMiddleware gin.HandlerFunc,
-	bc controller.BookController,
-	uc controller.UserController,
+	imageServer server.ImageServer,
 ) *gin.Engine {
 	router := gin.Default()
 
@@ -16,15 +15,8 @@ func Setup(
 	{
 		v1 := root.Group("v1")
 		{
-			v1.POST("/signup", uc.SignUp)
-			v1.POST("/signin", uc.SignIn)
-			v1.POST("/refresh-token", uc.RefreshToken)
-
-			books := v1.Group("/books").Use(authMiddleware)
-			{
-				books.POST("", bc.Register)
-				books.DELETE("", bc.Delete)
-			}
+			//v1.POST("/image/upload", imageServer.Upload).Use(authMiddleware)
+			v1.POST("/image/upload", imageServer.Upload)
 		}
 	}
 	return router
