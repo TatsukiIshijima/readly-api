@@ -16,19 +16,19 @@ func NewImageRepository() ImageRepository {
 }
 
 type SaveRequest struct {
-	dst      string
-	fileName string
-	data     []byte
+	Dst      string
+	FileName string
+	Data     []byte
 }
 
 func (r *ImageRepositoryImpl) Save(req SaveRequest) error {
-	savePath := filepath.Join(req.dst, req.fileName)
+	savePath := filepath.Join(req.Dst, req.FileName)
 
-	if err := os.MkdirAll(filepath.Dir(req.dst), os.ModePerm); err != nil {
+	if err := os.MkdirAll(filepath.Dir(req.Dst), os.ModePerm); err != nil {
 		return err
 	}
 
-	if err := os.WriteFile(savePath, req.data, os.ModePerm); err != nil {
+	if err := os.WriteFile(savePath, req.Data, os.ModePerm); err != nil {
 		return err
 	}
 	return nil
