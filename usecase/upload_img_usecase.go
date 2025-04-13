@@ -27,8 +27,8 @@ func NewUploadImgUseCase(
 }
 
 type UploadRequest struct {
-	data []byte
-	ext  string
+	Data []byte
+	Ext  string
 }
 
 type UploadImgResponse struct {
@@ -37,15 +37,15 @@ type UploadImgResponse struct {
 
 func (u *UploadImgUseCaseImpl) Upload(req UploadRequest) (*UploadImgResponse, error) {
 	dst := filepath.Join(env.ProjectRoot(), ".storage/cover_img")
-	fileName := uuid.NewString() + req.ext
+	fileName := uuid.NewString() + req.Ext
 	saveReq := repository.SaveRequest{
 		Dst:      dst,
 		FileName: fileName,
-		Data:     req.data,
+		Data:     req.Data,
 	}
 	err := u.imgRepo.Save(saveReq)
 	if err != nil {
-		return nil, err
+		return nil, newError(Internal, InternalServerError, err.Error())
 	}
 	return &UploadImgResponse{
 		Path: filepath.Join(dst, fileName),

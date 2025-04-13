@@ -23,8 +23,8 @@ func TestUploadImage(t *testing.T) {
 				data, err := os.ReadFile(inputImg)
 				require.NoError(t, err)
 				return UploadRequest{
-					data: data,
-					ext:  filepath.Ext(inputImg),
+					Data: data,
+					Ext:  filepath.Ext(inputImg),
 				}
 			},
 			check: func(t *testing.T, res *UploadImgResponse, err error) {
