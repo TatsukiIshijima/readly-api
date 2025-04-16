@@ -26,15 +26,8 @@ launchserver:
 	go run cmd/main.go
 
 # dependencies
-# Protocol buffer compiler(https://grpc.io/docs/protoc-installation/)
-# Go plugin for the protocol compiler(protoc-gen-go, protoc-gen-go-grpc)
-# grpc-gateway(https://github.com/grpc-ecosystem/grpc-gateway)
-# googleapisをサブモジュール+sparse-checkout管理しているため、コード生成時にgoogle/apiがルートになるように -I でインクルードパス指定している
+# Buf CLI(https://buf.build/docs/)
 proto:
-	rm -f pb/*.go
-	protoc -I proto -I proto/googleapis --go_out=pb --go_opt=paths=source_relative \
-        --go-grpc_out=pb --go-grpc_opt=paths=source_relative \
-        --grpc-gateway_out=pb --grpc-gateway_opt paths=source_relative \
-        proto/*.proto
+	buf generate
 
 .PHONY: launchpostgres createdb dropdb migrateup migratedown sqlc test launchserver proto
