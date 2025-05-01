@@ -6,7 +6,6 @@ import (
 	"github.com/lib/pq"
 	"readly/entity"
 	"readly/repository"
-	"time"
 )
 
 type RegisterBookUseCase interface {
@@ -43,11 +42,11 @@ type RegisterBookRequest struct {
 	URL           *string
 	AuthorName    *string
 	PublisherName *string
-	PublishDate   *time.Time
+	PublishDate   *entity.Date
 	ISBN          *string
 	Status        entity.ReadingStatus
-	StartDate     *time.Time
-	EndDate       *time.Time
+	StartDate     *entity.Date
+	EndDate       *entity.Date
 }
 
 func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req RegisterBookRequest) (*entity.Book, error) {

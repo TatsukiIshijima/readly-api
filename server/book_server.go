@@ -62,11 +62,11 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 		URL:           util.ToStringOrNil(req.GetUrl()),
 		AuthorName:    util.ToStringOrNil(req.GetAuthorName()),
 		PublisherName: util.ToStringOrNil(req.GetPublisherName()),
-		PublishDate:   util.ToTimeOrNil(req.GetPublishDate()),
+		PublishDate:   entity.NewDateEntityFromProto(req.GetPublishDate()),
 		ISBN:          util.ToStringOrNil(req.GetIsbn()),
 		Status:        b.toReadingStatusEntity(req.GetReadingStatus()),
-		StartDate:     util.ToTimeOrNil(req.GetStartDate()),
-		EndDate:       util.ToTimeOrNil(req.GetEndDate()),
+		StartDate:     entity.NewDateEntityFromProto(req.GetStartDate()),
+		EndDate:       entity.NewDateEntityFromProto(req.GetEndDate()),
 	}
 	book, err := b.registerUseCase.RegisterBook(ctx, args)
 	if err != nil {
@@ -81,11 +81,11 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 		Url:           book.URL,
 		AuthorName:    book.AuthorName,
 		PublisherName: book.PublisherName,
-		PublishDate:   util.ToTimestampOrNil(book.PublishDate),
+		PublishDate:   book.PublishDate.ToProto(),
 		Isbn:          book.ISBN,
 		ReadingStatus: pb.ReadingStatus(book.Status),
-		StartDate:     util.ToTimestampOrNil(book.StartDate),
-		EndDate:       util.ToTimestampOrNil(book.EndDate),
+		StartDate:     book.StartDate.ToProto(),
+		EndDate:       book.EndDate.ToProto(),
 	}, nil
 }
 
