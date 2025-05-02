@@ -9,7 +9,6 @@ package pb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -168,7 +167,7 @@ const file_book_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
 	"book.proto\x12\x02pb\x1a\n" +
-	"date.proto\x1a\x14reading_status.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe3\x04\n" +
+	"date.proto\x1a\x14reading_status.proto\"\xe3\x04\n" +
 	"\x04Book\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
