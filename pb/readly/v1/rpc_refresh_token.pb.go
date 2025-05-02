@@ -117,8 +117,8 @@ const file_readly_v1_rpc_refresh_token_proto_rawDesc = "" +
 	"\x13RefreshTokenRequest\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"9\n" +
 	"\x14RefreshTokenResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessTokenBu\n" +
-	"\rcom.readly.v1B\x14RpcRefreshTokenProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessTokenB\x82\x01\n" +
+	"\rcom.readly.v1B\x14RpcRefreshTokenProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
 var (

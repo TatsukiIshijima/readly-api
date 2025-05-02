@@ -31,8 +31,8 @@ const file_readly_v1_service_user_proto_rawDesc = "" +
 	"/v1/signin\x12T\n" +
 	"\x06SignUp\x12\x18.readly.v1.SignUpRequest\x1a\x19.readly.v1.SignUpResponse\"\x15\x82\xd3\xe4\x93\x02\x0f:\x01*\"\n" +
 	"/v1/signup\x12m\n" +
-	"\fRefreshToken\x12\x1e.readly.v1.RefreshTokenRequest\x1a\x1f.readly.v1.RefreshTokenResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/refresh-tokenBq\n" +
-	"\rcom.readly.v1B\x10ServiceUserProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"\fRefreshToken\x12\x1e.readly.v1.RefreshTokenRequest\x1a\x1f.readly.v1.RefreshTokenResponse\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*\"\x11/v1/refresh-tokenB~\n" +
+	"\rcom.readly.v1B\x10ServiceUserProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
 var file_readly_v1_service_user_proto_goTypes = []any{

@@ -30,8 +30,8 @@ const file_readly_v1_service_book_proto_rawDesc = "" +
 	"\vBookService\x12U\n" +
 	"\fRegisterBook\x12\x1e.readly.v1.RegisterBookRequest\x1a\x0f.readly.v1.Book\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/books\x12_\n" +
 	"\n" +
-	"DeleteBook\x12\x1c.readly.v1.DeleteBookRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/books/{book_id}Bq\n" +
-	"\rcom.readly.v1B\x10ServiceBookProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"DeleteBook\x12\x1c.readly.v1.DeleteBookRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/books/{book_id}B~\n" +
+	"\rcom.readly.v1B\x10ServiceBookProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
 var file_readly_v1_service_book_proto_goTypes = []any{

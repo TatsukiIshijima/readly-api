@@ -83,8 +83,8 @@ const file_readly_v1_reading_status_proto_rawDesc = "" +
 	"\x06UNREAD\x10\x00\x12\v\n" +
 	"\aREADING\x10\x01\x12\b\n" +
 	"\x04DONE\x10\x02\x12\v\n" +
-	"\aUNKNOWN\x10\x03Bs\n" +
-	"\rcom.readly.v1B\x12ReadingStatusProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"\aUNKNOWN\x10\x03B\x80\x01\n" +
+	"\rcom.readly.v1B\x12ReadingStatusProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
 var (

@@ -71,8 +71,8 @@ const file_readly_v1_rpc_delete_book_proto_rawDesc = "" +
 	"\n" +
 	"\x1freadly/v1/rpc_delete_book.proto\x12\treadly.v1\",\n" +
 	"\x11DeleteBookRequest\x12\x17\n" +
-	"\abook_id\x18\x01 \x01(\x03R\x06bookIdBs\n" +
-	"\rcom.readly.v1B\x12RpcDeleteBookProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"\abook_id\x18\x01 \x01(\x03R\x06bookIdB\x80\x01\n" +
+	"\rcom.readly.v1B\x12RpcDeleteBookProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
 var (

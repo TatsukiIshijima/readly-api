@@ -171,8 +171,8 @@ const file_readly_v1_rpc_sign_up_proto_rawDesc = "" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x12\n" +
 	"\x04name\x18\x04 \x01(\tR\x04name\x12\x14\n" +
-	"\x05email\x18\x05 \x01(\tR\x05emailBo\n" +
-	"\rcom.readly.v1B\x0eRpcSignUpProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"\x05email\x18\x05 \x01(\tR\x05emailB|\n" +
+	"\rcom.readly.v1B\x0eRpcSignUpProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
 var (

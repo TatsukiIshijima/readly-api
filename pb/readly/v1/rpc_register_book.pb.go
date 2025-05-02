@@ -182,8 +182,8 @@ const file_readly_v1_rpc_register_book_proto_rawDesc = "" +
 	"\r_publish_dateB\a\n" +
 	"\x05_isbnB\r\n" +
 	"\v_start_dateB\v\n" +
-	"\t_end_dateBu\n" +
-	"\rcom.readly.v1B\x14RpcRegisterBookProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"\t_end_dateB\x82\x01\n" +
+	"\rcom.readly.v1B\x14RpcRegisterBookProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
 var (
