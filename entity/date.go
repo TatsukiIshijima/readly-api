@@ -2,7 +2,7 @@ package entity
 
 import (
 	"database/sql"
-	"google.golang.org/genproto/googleapis/type/date"
+	"readly/pb"
 	"time"
 )
 
@@ -21,7 +21,7 @@ func Now() Date {
 	}
 }
 
-func NewDateEntityFromProto(proto *date.Date) *Date {
+func NewDateEntityFromProto(proto *pb.Date) *Date {
 	if proto == nil {
 		return nil
 	}
@@ -44,8 +44,8 @@ func NewDateEntityFromNullTime(nt sql.NullTime) *Date {
 	}
 }
 
-func (d *Date) ToProto() *date.Date {
-	return &date.Date{
+func (d *Date) ToProto() *pb.Date {
+	return &pb.Date{
 		Year:  d.Year,
 		Month: d.Month,
 		Day:   d.Day,
