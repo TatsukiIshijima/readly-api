@@ -2,7 +2,7 @@ package entity
 
 import (
 	"database/sql"
-	"readly/pb"
+	"readly/pb/readly/v1"
 	"time"
 )
 

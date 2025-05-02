@@ -5,7 +5,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"readly/env"
-	"readly/pb"
+	"readly/pb/readly/v1"
 	"readly/service/auth"
 	"readly/usecase"
 	"readly/util"

@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	sqlc "readly/db/sqlc"
 	"readly/env"
-	"readly/pb"
+	"readly/pb/readly/v1"
 	"readly/repository"
 	"readly/service/auth"
 	"readly/testdata"
