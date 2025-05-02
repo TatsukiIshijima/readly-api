@@ -15,7 +15,7 @@ import (
 	sqlc "readly/db/sqlc"
 	"readly/env"
 	"readly/middleware"
-	"readly/pb"
+	"readly/pb/readly/v1"
 	"readly/repository"
 	"readly/router"
 	"readly/server"

@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: service_book.proto
+// source: readly/v1/service_book.proto
 
 package pb
 
@@ -20,8 +20,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BookService_RegisterBook_FullMethodName = "/pb.BookService/RegisterBook"
-	BookService_DeleteBook_FullMethodName   = "/pb.BookService/DeleteBook"
+	BookService_RegisterBook_FullMethodName = "/readly.v1.BookService/RegisterBook"
+	BookService_DeleteBook_FullMethodName   = "/readly.v1.BookService/DeleteBook"
 )
 
 // BookServiceClient is the client API for BookService service.
@@ -143,7 +143,7 @@ func _BookService_DeleteBook_Handler(srv interface{}, ctx context.Context, dec f
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var BookService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.BookService",
+	ServiceName: "readly.v1.BookService",
 	HandlerType: (*BookServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -156,5 +156,5 @@ var BookService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "service_book.proto",
+	Metadata: "readly/v1/service_book.proto",
 }

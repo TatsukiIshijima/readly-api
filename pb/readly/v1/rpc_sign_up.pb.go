@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: rpc_sign_up.proto
+// source: readly/v1/rpc_sign_up.proto
 
 package pb
 
@@ -32,7 +32,7 @@ type SignUpRequest struct {
 
 func (x *SignUpRequest) Reset() {
 	*x = SignUpRequest{}
-	mi := &file_rpc_sign_up_proto_msgTypes[0]
+	mi := &file_readly_v1_rpc_sign_up_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +44,7 @@ func (x *SignUpRequest) String() string {
 func (*SignUpRequest) ProtoMessage() {}
 
 func (x *SignUpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_sign_up_proto_msgTypes[0]
+	mi := &file_readly_v1_rpc_sign_up_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +57,7 @@ func (x *SignUpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignUpRequest.ProtoReflect.Descriptor instead.
 func (*SignUpRequest) Descriptor() ([]byte, []int) {
-	return file_rpc_sign_up_proto_rawDescGZIP(), []int{0}
+	return file_readly_v1_rpc_sign_up_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *SignUpRequest) GetName() string {
@@ -94,7 +94,7 @@ type SignUpResponse struct {
 
 func (x *SignUpResponse) Reset() {
 	*x = SignUpResponse{}
-	mi := &file_rpc_sign_up_proto_msgTypes[1]
+	mi := &file_readly_v1_rpc_sign_up_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -106,7 +106,7 @@ func (x *SignUpResponse) String() string {
 func (*SignUpResponse) ProtoMessage() {}
 
 func (x *SignUpResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_sign_up_proto_msgTypes[1]
+	mi := &file_readly_v1_rpc_sign_up_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -119,7 +119,7 @@ func (x *SignUpResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignUpResponse.ProtoReflect.Descriptor instead.
 func (*SignUpResponse) Descriptor() ([]byte, []int) {
-	return file_rpc_sign_up_proto_rawDescGZIP(), []int{1}
+	return file_readly_v1_rpc_sign_up_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SignUpResponse) GetAccessToken() string {
@@ -157,11 +157,11 @@ func (x *SignUpResponse) GetEmail() string {
 	return ""
 }
 
-var File_rpc_sign_up_proto protoreflect.FileDescriptor
+var File_readly_v1_rpc_sign_up_proto protoreflect.FileDescriptor
 
-const file_rpc_sign_up_proto_rawDesc = "" +
+const file_readly_v1_rpc_sign_up_proto_rawDesc = "" +
 	"\n" +
-	"\x11rpc_sign_up.proto\x12\x02pb\"U\n" +
+	"\x1breadly/v1/rpc_sign_up.proto\x12\treadly.v1\"U\n" +
 	"\rSignUpRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -171,27 +171,28 @@ const file_rpc_sign_up_proto_rawDesc = "" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\x03R\x06userId\x12\x12\n" +
 	"\x04name\x18\x04 \x01(\tR\x04name\x12\x14\n" +
-	"\x05email\x18\x05 \x01(\tR\x05emailBK\n" +
-	"\x06com.pbB\x0eRpcSignUpProtoP\x01Z\treadly/pb\xa2\x02\x03PXX\xaa\x02\x02Pb\xca\x02\x02Pb\xe2\x02\x0ePb\\GPBMetadata\xea\x02\x02Pbb\x06proto3"
+	"\x05email\x18\x05 \x01(\tR\x05emailB|\n" +
+	"\rcom.readly.v1B\x0eRpcSignUpProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"Readly::V1b\x06proto3"
 
 var (
-	file_rpc_sign_up_proto_rawDescOnce sync.Once
-	file_rpc_sign_up_proto_rawDescData []byte
+	file_readly_v1_rpc_sign_up_proto_rawDescOnce sync.Once
+	file_readly_v1_rpc_sign_up_proto_rawDescData []byte
 )
 
-func file_rpc_sign_up_proto_rawDescGZIP() []byte {
-	file_rpc_sign_up_proto_rawDescOnce.Do(func() {
-		file_rpc_sign_up_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_rpc_sign_up_proto_rawDesc), len(file_rpc_sign_up_proto_rawDesc)))
+func file_readly_v1_rpc_sign_up_proto_rawDescGZIP() []byte {
+	file_readly_v1_rpc_sign_up_proto_rawDescOnce.Do(func() {
+		file_readly_v1_rpc_sign_up_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_readly_v1_rpc_sign_up_proto_rawDesc), len(file_readly_v1_rpc_sign_up_proto_rawDesc)))
 	})
-	return file_rpc_sign_up_proto_rawDescData
+	return file_readly_v1_rpc_sign_up_proto_rawDescData
 }
 
-var file_rpc_sign_up_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_rpc_sign_up_proto_goTypes = []any{
-	(*SignUpRequest)(nil),  // 0: pb.SignUpRequest
-	(*SignUpResponse)(nil), // 1: pb.SignUpResponse
+var file_readly_v1_rpc_sign_up_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_readly_v1_rpc_sign_up_proto_goTypes = []any{
+	(*SignUpRequest)(nil),  // 0: readly.v1.SignUpRequest
+	(*SignUpResponse)(nil), // 1: readly.v1.SignUpResponse
 }
-var file_rpc_sign_up_proto_depIdxs = []int32{
+var file_readly_v1_rpc_sign_up_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -199,26 +200,26 @@ var file_rpc_sign_up_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_rpc_sign_up_proto_init() }
-func file_rpc_sign_up_proto_init() {
-	if File_rpc_sign_up_proto != nil {
+func init() { file_readly_v1_rpc_sign_up_proto_init() }
+func file_readly_v1_rpc_sign_up_proto_init() {
+	if File_readly_v1_rpc_sign_up_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rpc_sign_up_proto_rawDesc), len(file_rpc_sign_up_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_readly_v1_rpc_sign_up_proto_rawDesc), len(file_readly_v1_rpc_sign_up_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_rpc_sign_up_proto_goTypes,
-		DependencyIndexes: file_rpc_sign_up_proto_depIdxs,
-		MessageInfos:      file_rpc_sign_up_proto_msgTypes,
+		GoTypes:           file_readly_v1_rpc_sign_up_proto_goTypes,
+		DependencyIndexes: file_readly_v1_rpc_sign_up_proto_depIdxs,
+		MessageInfos:      file_readly_v1_rpc_sign_up_proto_msgTypes,
 	}.Build()
-	File_rpc_sign_up_proto = out.File
-	file_rpc_sign_up_proto_goTypes = nil
-	file_rpc_sign_up_proto_depIdxs = nil
+	File_readly_v1_rpc_sign_up_proto = out.File
+	file_readly_v1_rpc_sign_up_proto_goTypes = nil
+	file_readly_v1_rpc_sign_up_proto_depIdxs = nil
 }

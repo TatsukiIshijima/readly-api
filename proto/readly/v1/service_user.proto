@@ -1,13 +1,13 @@
 syntax = "proto3";
 
 import "google/api/annotations.proto";
-import "rpc_refresh_token.proto";
-import "rpc_sign_in.proto";
-import "rpc_sign_up.proto";
+import "readly/v1/rpc_refresh_token.proto";
+import "readly/v1/rpc_sign_in.proto";
+import "readly/v1/rpc_sign_up.proto";
 
-package pb;
+package readly.v1;
 
-option go_package = "readly/pb";
+option go_package = "readly/pb/readly/v1;pb";
 
 service UserService {
   rpc SignIn(SignInRequest) returns (SignInResponse) {

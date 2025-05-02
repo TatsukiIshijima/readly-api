@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"readly/entity"
 	"readly/middleware"
-	"readly/pb"
+	"readly/pb/readly/v1"
 	"readly/service/auth"
 	"readly/usecase"
 	"readly/util"
