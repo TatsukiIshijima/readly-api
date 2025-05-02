@@ -1,7 +1,5 @@
 package entity
 
-import "time"
-
 type Book struct {
 	ID            int64         `json:"id"`
 	Title         string        `json:"title"`
@@ -11,9 +9,9 @@ type Book struct {
 	URL           *string       `json:"url"`
 	AuthorName    *string       `json:"author_name"`
 	PublisherName *string       `json:"publisher_name"`
-	PublishDate   *time.Time    `json:"publish_date"`
+	PublishDate   *Date         `json:"publish_date"`
 	ISBN          *string       `json:"isbn"`
 	Status        ReadingStatus `json:"status"`
-	StartDate     *time.Time    `json:"start_date"`
-	EndDate       *time.Time    `json:"end_date"`
+	StartDate     *Date         `json:"start_date"`
+	EndDate       *Date         `json:"end_date"`
 }

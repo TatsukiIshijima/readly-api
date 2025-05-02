@@ -9,7 +9,6 @@ package pb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -31,11 +30,11 @@ type RegisterBookRequest struct {
 	Url           *string                `protobuf:"bytes,5,opt,name=url,proto3,oneof" json:"url,omitempty"`
 	AuthorName    *string                `protobuf:"bytes,6,opt,name=author_name,json=authorName,proto3,oneof" json:"author_name,omitempty"`
 	PublisherName *string                `protobuf:"bytes,7,opt,name=publisher_name,json=publisherName,proto3,oneof" json:"publisher_name,omitempty"`
-	PublishDate   *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=publish_date,json=publishDate,proto3,oneof" json:"publish_date,omitempty"`
+	PublishDate   *Date                  `protobuf:"bytes,8,opt,name=publish_date,json=publishDate,proto3,oneof" json:"publish_date,omitempty"`
 	Isbn          *string                `protobuf:"bytes,9,opt,name=isbn,proto3,oneof" json:"isbn,omitempty"`
 	ReadingStatus ReadingStatus          `protobuf:"varint,10,opt,name=reading_status,json=readingStatus,proto3,enum=pb.ReadingStatus" json:"reading_status,omitempty"`
-	StartDate     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=start_date,json=startDate,proto3,oneof" json:"start_date,omitempty"`
-	EndDate       *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=end_date,json=endDate,proto3,oneof" json:"end_date,omitempty"`
+	StartDate     *Date                  `protobuf:"bytes,11,opt,name=start_date,json=startDate,proto3,oneof" json:"start_date,omitempty"`
+	EndDate       *Date                  `protobuf:"bytes,12,opt,name=end_date,json=endDate,proto3,oneof" json:"end_date,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -119,7 +118,7 @@ func (x *RegisterBookRequest) GetPublisherName() string {
 	return ""
 }
 
-func (x *RegisterBookRequest) GetPublishDate() *timestamppb.Timestamp {
+func (x *RegisterBookRequest) GetPublishDate() *Date {
 	if x != nil {
 		return x.PublishDate
 	}
@@ -140,14 +139,14 @@ func (x *RegisterBookRequest) GetReadingStatus() ReadingStatus {
 	return ReadingStatus_UNREAD
 }
 
-func (x *RegisterBookRequest) GetStartDate() *timestamppb.Timestamp {
+func (x *RegisterBookRequest) GetStartDate() *Date {
 	if x != nil {
 		return x.StartDate
 	}
 	return nil
 }
 
-func (x *RegisterBookRequest) GetEndDate() *timestamppb.Timestamp {
+func (x *RegisterBookRequest) GetEndDate() *Date {
 	if x != nil {
 		return x.EndDate
 	}
@@ -158,7 +157,8 @@ var File_rpc_register_book_proto protoreflect.FileDescriptor
 
 const file_rpc_register_book_proto_rawDesc = "" +
 	"\n" +
-	"\x17rpc_register_book.proto\x12\x02pb\x1a\x14reading_status.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x98\x05\n" +
+	"\x17rpc_register_book.proto\x12\x02pb\x1a\n" +
+	"date.proto\x1a\x14reading_status.proto\"\xe2\x04\n" +
 	"\x13RegisterBookRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x16\n" +
 	"\x06genres\x18\x02 \x03(\tR\x06genres\x12%\n" +
@@ -167,14 +167,14 @@ const file_rpc_register_book_proto_rawDesc = "" +
 	"\x03url\x18\x05 \x01(\tH\x02R\x03url\x88\x01\x01\x12$\n" +
 	"\vauthor_name\x18\x06 \x01(\tH\x03R\n" +
 	"authorName\x88\x01\x01\x12*\n" +
-	"\x0epublisher_name\x18\a \x01(\tH\x04R\rpublisherName\x88\x01\x01\x12B\n" +
-	"\fpublish_date\x18\b \x01(\v2\x1a.google.protobuf.TimestampH\x05R\vpublishDate\x88\x01\x01\x12\x17\n" +
+	"\x0epublisher_name\x18\a \x01(\tH\x04R\rpublisherName\x88\x01\x01\x120\n" +
+	"\fpublish_date\x18\b \x01(\v2\b.pb.DateH\x05R\vpublishDate\x88\x01\x01\x12\x17\n" +
 	"\x04isbn\x18\t \x01(\tH\x06R\x04isbn\x88\x01\x01\x128\n" +
 	"\x0ereading_status\x18\n" +
-	" \x01(\x0e2\x11.pb.ReadingStatusR\rreadingStatus\x12>\n" +
+	" \x01(\x0e2\x11.pb.ReadingStatusR\rreadingStatus\x12,\n" +
 	"\n" +
-	"start_date\x18\v \x01(\v2\x1a.google.protobuf.TimestampH\aR\tstartDate\x88\x01\x01\x12:\n" +
-	"\bend_date\x18\f \x01(\v2\x1a.google.protobuf.TimestampH\bR\aendDate\x88\x01\x01B\x0e\n" +
+	"start_date\x18\v \x01(\v2\b.pb.DateH\aR\tstartDate\x88\x01\x01\x12(\n" +
+	"\bend_date\x18\f \x01(\v2\b.pb.DateH\bR\aendDate\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\x12\n" +
 	"\x10_cover_image_urlB\x06\n" +
 	"\x04_urlB\x0e\n" +
@@ -200,15 +200,15 @@ func file_rpc_register_book_proto_rawDescGZIP() []byte {
 
 var file_rpc_register_book_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_rpc_register_book_proto_goTypes = []any{
-	(*RegisterBookRequest)(nil),   // 0: pb.RegisterBookRequest
-	(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
-	(ReadingStatus)(0),            // 2: pb.ReadingStatus
+	(*RegisterBookRequest)(nil), // 0: pb.RegisterBookRequest
+	(*Date)(nil),                // 1: pb.Date
+	(ReadingStatus)(0),          // 2: pb.ReadingStatus
 }
 var file_rpc_register_book_proto_depIdxs = []int32{
-	1, // 0: pb.RegisterBookRequest.publish_date:type_name -> google.protobuf.Timestamp
+	1, // 0: pb.RegisterBookRequest.publish_date:type_name -> pb.Date
 	2, // 1: pb.RegisterBookRequest.reading_status:type_name -> pb.ReadingStatus
-	1, // 2: pb.RegisterBookRequest.start_date:type_name -> google.protobuf.Timestamp
-	1, // 3: pb.RegisterBookRequest.end_date:type_name -> google.protobuf.Timestamp
+	1, // 2: pb.RegisterBookRequest.start_date:type_name -> pb.Date
+	1, // 3: pb.RegisterBookRequest.end_date:type_name -> pb.Date
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
@@ -221,6 +221,7 @@ func file_rpc_register_book_proto_init() {
 	if File_rpc_register_book_proto != nil {
 		return
 	}
+	file_date_proto_init()
 	file_reading_status_proto_init()
 	file_rpc_register_book_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}

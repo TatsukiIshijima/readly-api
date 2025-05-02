@@ -4,6 +4,7 @@ package pb;
 
 option go_package = "readly/pb";
 
+import "date.proto";
 import "reading_status.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -16,9 +17,9 @@ message Book {
   optional string url = 6;
   optional string author_name = 7;
   optional string publisher_name = 8;
-  optional google.protobuf.Timestamp publish_date = 9;
+  optional Date publish_date = 9;
   optional string isbn = 10;
   ReadingStatus reading_status = 11;
-  optional google.protobuf.Timestamp start_date = 12;
-  optional google.protobuf.Timestamp end_date = 13;
+  optional Date start_date = 12;
+  optional Date end_date = 13;
 }

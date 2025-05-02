@@ -7,7 +7,6 @@ import (
 	"readly/middleware"
 	"readly/service/auth"
 	"readly/usecase"
-	"time"
 )
 
 type BookController interface {
@@ -38,11 +37,11 @@ type RegisterBookRequest struct {
 	URL           *string              `json:"url" binding:"omitempty,url,max=2048"`
 	AuthorName    *string              `json:"author_name" binding:"omitempty,max=255"`
 	PublisherName *string              `json:"publisher_name" binding:"omitempty,max=255"`
-	PublishDate   *time.Time           `json:"publish_date" binding:"omitempty"`
+	PublishDate   *entity.Date         `json:"publish_date" binding:"omitempty"`
 	ISBN          *string              `json:"isbn" binding:"omitempty,isbn"`
 	Status        entity.ReadingStatus `json:"status" binding:"required"`
-	StartDate     *time.Time           `json:"start_date" binding:"omitempty"`
-	EndDate       *time.Time           `json:"end_date" binding:"omitempty"`
+	StartDate     *entity.Date         `json:"start_date" binding:"omitempty"`
+	EndDate       *entity.Date         `json:"end_date" binding:"omitempty"`
 }
 
 func (bc *BookControllerImpl) Register(ctx *gin.Context) {
