@@ -6,7 +6,6 @@ option go_package = "readly/pb";
 
 import "date.proto";
 import "reading_status.proto";
-import "google/protobuf/timestamp.proto";
 
 message Book {
   int64  id = 1;
