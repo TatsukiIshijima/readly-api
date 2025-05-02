@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: book.proto
+// source: readly/v1/book.proto
 
 package pb
 
@@ -33,7 +33,7 @@ type Book struct {
 	PublisherName *string                `protobuf:"bytes,8,opt,name=publisher_name,json=publisherName,proto3,oneof" json:"publisher_name,omitempty"`
 	PublishDate   *Date                  `protobuf:"bytes,9,opt,name=publish_date,json=publishDate,proto3,oneof" json:"publish_date,omitempty"`
 	Isbn          *string                `protobuf:"bytes,10,opt,name=isbn,proto3,oneof" json:"isbn,omitempty"`
-	ReadingStatus ReadingStatus          `protobuf:"varint,11,opt,name=reading_status,json=readingStatus,proto3,enum=pb.ReadingStatus" json:"reading_status,omitempty"`
+	ReadingStatus ReadingStatus          `protobuf:"varint,11,opt,name=reading_status,json=readingStatus,proto3,enum=readly.v1.ReadingStatus" json:"reading_status,omitempty"`
 	StartDate     *Date                  `protobuf:"bytes,12,opt,name=start_date,json=startDate,proto3,oneof" json:"start_date,omitempty"`
 	EndDate       *Date                  `protobuf:"bytes,13,opt,name=end_date,json=endDate,proto3,oneof" json:"end_date,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -42,7 +42,7 @@ type Book struct {
 
 func (x *Book) Reset() {
 	*x = Book{}
-	mi := &file_book_proto_msgTypes[0]
+	mi := &file_readly_v1_book_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -54,7 +54,7 @@ func (x *Book) String() string {
 func (*Book) ProtoMessage() {}
 
 func (x *Book) ProtoReflect() protoreflect.Message {
-	mi := &file_book_proto_msgTypes[0]
+	mi := &file_readly_v1_book_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -67,7 +67,7 @@ func (x *Book) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Book.ProtoReflect.Descriptor instead.
 func (*Book) Descriptor() ([]byte, []int) {
-	return file_book_proto_rawDescGZIP(), []int{0}
+	return file_readly_v1_book_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Book) GetId() int64 {
@@ -161,13 +161,11 @@ func (x *Book) GetEndDate() *Date {
 	return nil
 }
 
-var File_book_proto protoreflect.FileDescriptor
+var File_readly_v1_book_proto protoreflect.FileDescriptor
 
-const file_book_proto_rawDesc = "" +
+const file_readly_v1_book_proto_rawDesc = "" +
 	"\n" +
-	"\n" +
-	"book.proto\x12\x02pb\x1a\n" +
-	"date.proto\x1a\x14reading_status.proto\"\xe3\x04\n" +
+	"\x14readly/v1/book.proto\x12\treadly.v1\x1a\x14readly/v1/date.proto\x1a\x1ereadly/v1/reading_status.proto\"\xff\x04\n" +
 	"\x04Book\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x16\n" +
@@ -177,14 +175,14 @@ const file_book_proto_rawDesc = "" +
 	"\x03url\x18\x06 \x01(\tH\x02R\x03url\x88\x01\x01\x12$\n" +
 	"\vauthor_name\x18\a \x01(\tH\x03R\n" +
 	"authorName\x88\x01\x01\x12*\n" +
-	"\x0epublisher_name\x18\b \x01(\tH\x04R\rpublisherName\x88\x01\x01\x120\n" +
-	"\fpublish_date\x18\t \x01(\v2\b.pb.DateH\x05R\vpublishDate\x88\x01\x01\x12\x17\n" +
+	"\x0epublisher_name\x18\b \x01(\tH\x04R\rpublisherName\x88\x01\x01\x127\n" +
+	"\fpublish_date\x18\t \x01(\v2\x0f.readly.v1.DateH\x05R\vpublishDate\x88\x01\x01\x12\x17\n" +
 	"\x04isbn\x18\n" +
-	" \x01(\tH\x06R\x04isbn\x88\x01\x01\x128\n" +
-	"\x0ereading_status\x18\v \x01(\x0e2\x11.pb.ReadingStatusR\rreadingStatus\x12,\n" +
+	" \x01(\tH\x06R\x04isbn\x88\x01\x01\x12?\n" +
+	"\x0ereading_status\x18\v \x01(\x0e2\x18.readly.v1.ReadingStatusR\rreadingStatus\x123\n" +
 	"\n" +
-	"start_date\x18\f \x01(\v2\b.pb.DateH\aR\tstartDate\x88\x01\x01\x12(\n" +
-	"\bend_date\x18\r \x01(\v2\b.pb.DateH\bR\aendDate\x88\x01\x01B\x0e\n" +
+	"start_date\x18\f \x01(\v2\x0f.readly.v1.DateH\aR\tstartDate\x88\x01\x01\x12/\n" +
+	"\bend_date\x18\r \x01(\v2\x0f.readly.v1.DateH\bR\aendDate\x88\x01\x01B\x0e\n" +
 	"\f_descriptionB\x12\n" +
 	"\x10_cover_image_urlB\x06\n" +
 	"\x04_urlB\x0e\n" +
@@ -193,32 +191,33 @@ const file_book_proto_rawDesc = "" +
 	"\r_publish_dateB\a\n" +
 	"\x05_isbnB\r\n" +
 	"\v_start_dateB\v\n" +
-	"\t_end_dateBF\n" +
-	"\x06com.pbB\tBookProtoP\x01Z\treadly/pb\xa2\x02\x03PXX\xaa\x02\x02Pb\xca\x02\x02Pb\xe2\x02\x0ePb\\GPBMetadata\xea\x02\x02Pbb\x06proto3"
+	"\t_end_dateBj\n" +
+	"\rcom.readly.v1B\tBookProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"Readly::V1b\x06proto3"
 
 var (
-	file_book_proto_rawDescOnce sync.Once
-	file_book_proto_rawDescData []byte
+	file_readly_v1_book_proto_rawDescOnce sync.Once
+	file_readly_v1_book_proto_rawDescData []byte
 )
 
-func file_book_proto_rawDescGZIP() []byte {
-	file_book_proto_rawDescOnce.Do(func() {
-		file_book_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_book_proto_rawDesc), len(file_book_proto_rawDesc)))
+func file_readly_v1_book_proto_rawDescGZIP() []byte {
+	file_readly_v1_book_proto_rawDescOnce.Do(func() {
+		file_readly_v1_book_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_readly_v1_book_proto_rawDesc), len(file_readly_v1_book_proto_rawDesc)))
 	})
-	return file_book_proto_rawDescData
+	return file_readly_v1_book_proto_rawDescData
 }
 
-var file_book_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_book_proto_goTypes = []any{
-	(*Book)(nil),       // 0: pb.Book
-	(*Date)(nil),       // 1: pb.Date
-	(ReadingStatus)(0), // 2: pb.ReadingStatus
+var file_readly_v1_book_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_readly_v1_book_proto_goTypes = []any{
+	(*Book)(nil),       // 0: readly.v1.Book
+	(*Date)(nil),       // 1: readly.v1.Date
+	(ReadingStatus)(0), // 2: readly.v1.ReadingStatus
 }
-var file_book_proto_depIdxs = []int32{
-	1, // 0: pb.Book.publish_date:type_name -> pb.Date
-	2, // 1: pb.Book.reading_status:type_name -> pb.ReadingStatus
-	1, // 2: pb.Book.start_date:type_name -> pb.Date
-	1, // 3: pb.Book.end_date:type_name -> pb.Date
+var file_readly_v1_book_proto_depIdxs = []int32{
+	1, // 0: readly.v1.Book.publish_date:type_name -> readly.v1.Date
+	2, // 1: readly.v1.Book.reading_status:type_name -> readly.v1.ReadingStatus
+	1, // 2: readly.v1.Book.start_date:type_name -> readly.v1.Date
+	1, // 3: readly.v1.Book.end_date:type_name -> readly.v1.Date
 	4, // [4:4] is the sub-list for method output_type
 	4, // [4:4] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
@@ -226,29 +225,29 @@ var file_book_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_book_proto_init() }
-func file_book_proto_init() {
-	if File_book_proto != nil {
+func init() { file_readly_v1_book_proto_init() }
+func file_readly_v1_book_proto_init() {
+	if File_readly_v1_book_proto != nil {
 		return
 	}
-	file_date_proto_init()
-	file_reading_status_proto_init()
-	file_book_proto_msgTypes[0].OneofWrappers = []any{}
+	file_readly_v1_date_proto_init()
+	file_readly_v1_reading_status_proto_init()
+	file_readly_v1_book_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_book_proto_rawDesc), len(file_book_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_readly_v1_book_proto_rawDesc), len(file_readly_v1_book_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_book_proto_goTypes,
-		DependencyIndexes: file_book_proto_depIdxs,
-		MessageInfos:      file_book_proto_msgTypes,
+		GoTypes:           file_readly_v1_book_proto_goTypes,
+		DependencyIndexes: file_readly_v1_book_proto_depIdxs,
+		MessageInfos:      file_readly_v1_book_proto_msgTypes,
 	}.Build()
-	File_book_proto = out.File
-	file_book_proto_goTypes = nil
-	file_book_proto_depIdxs = nil
+	File_readly_v1_book_proto = out.File
+	file_readly_v1_book_proto_goTypes = nil
+	file_readly_v1_book_proto_depIdxs = nil
 }

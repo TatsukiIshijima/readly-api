@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: rpc_delete_book.proto
+// source: readly/v1/rpc_delete_book.proto
 
 package pb
 
@@ -30,7 +30,7 @@ type DeleteBookRequest struct {
 
 func (x *DeleteBookRequest) Reset() {
 	*x = DeleteBookRequest{}
-	mi := &file_rpc_delete_book_proto_msgTypes[0]
+	mi := &file_readly_v1_rpc_delete_book_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +42,7 @@ func (x *DeleteBookRequest) String() string {
 func (*DeleteBookRequest) ProtoMessage() {}
 
 func (x *DeleteBookRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_delete_book_proto_msgTypes[0]
+	mi := &file_readly_v1_rpc_delete_book_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +55,7 @@ func (x *DeleteBookRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBookRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBookRequest) Descriptor() ([]byte, []int) {
-	return file_rpc_delete_book_proto_rawDescGZIP(), []int{0}
+	return file_readly_v1_rpc_delete_book_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DeleteBookRequest) GetBookId() int64 {
@@ -65,32 +65,33 @@ func (x *DeleteBookRequest) GetBookId() int64 {
 	return 0
 }
 
-var File_rpc_delete_book_proto protoreflect.FileDescriptor
+var File_readly_v1_rpc_delete_book_proto protoreflect.FileDescriptor
 
-const file_rpc_delete_book_proto_rawDesc = "" +
+const file_readly_v1_rpc_delete_book_proto_rawDesc = "" +
 	"\n" +
-	"\x15rpc_delete_book.proto\x12\x02pb\",\n" +
+	"\x1freadly/v1/rpc_delete_book.proto\x12\treadly.v1\",\n" +
 	"\x11DeleteBookRequest\x12\x17\n" +
-	"\abook_id\x18\x01 \x01(\x03R\x06bookIdBO\n" +
-	"\x06com.pbB\x12RpcDeleteBookProtoP\x01Z\treadly/pb\xa2\x02\x03PXX\xaa\x02\x02Pb\xca\x02\x02Pb\xe2\x02\x0ePb\\GPBMetadata\xea\x02\x02Pbb\x06proto3"
+	"\abook_id\x18\x01 \x01(\x03R\x06bookIdBs\n" +
+	"\rcom.readly.v1B\x12RpcDeleteBookProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"Readly::V1b\x06proto3"
 
 var (
-	file_rpc_delete_book_proto_rawDescOnce sync.Once
-	file_rpc_delete_book_proto_rawDescData []byte
+	file_readly_v1_rpc_delete_book_proto_rawDescOnce sync.Once
+	file_readly_v1_rpc_delete_book_proto_rawDescData []byte
 )
 
-func file_rpc_delete_book_proto_rawDescGZIP() []byte {
-	file_rpc_delete_book_proto_rawDescOnce.Do(func() {
-		file_rpc_delete_book_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_rpc_delete_book_proto_rawDesc), len(file_rpc_delete_book_proto_rawDesc)))
+func file_readly_v1_rpc_delete_book_proto_rawDescGZIP() []byte {
+	file_readly_v1_rpc_delete_book_proto_rawDescOnce.Do(func() {
+		file_readly_v1_rpc_delete_book_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_readly_v1_rpc_delete_book_proto_rawDesc), len(file_readly_v1_rpc_delete_book_proto_rawDesc)))
 	})
-	return file_rpc_delete_book_proto_rawDescData
+	return file_readly_v1_rpc_delete_book_proto_rawDescData
 }
 
-var file_rpc_delete_book_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_rpc_delete_book_proto_goTypes = []any{
-	(*DeleteBookRequest)(nil), // 0: pb.DeleteBookRequest
+var file_readly_v1_rpc_delete_book_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_readly_v1_rpc_delete_book_proto_goTypes = []any{
+	(*DeleteBookRequest)(nil), // 0: readly.v1.DeleteBookRequest
 }
-var file_rpc_delete_book_proto_depIdxs = []int32{
+var file_readly_v1_rpc_delete_book_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -98,26 +99,26 @@ var file_rpc_delete_book_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_rpc_delete_book_proto_init() }
-func file_rpc_delete_book_proto_init() {
-	if File_rpc_delete_book_proto != nil {
+func init() { file_readly_v1_rpc_delete_book_proto_init() }
+func file_readly_v1_rpc_delete_book_proto_init() {
+	if File_readly_v1_rpc_delete_book_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_rpc_delete_book_proto_rawDesc), len(file_rpc_delete_book_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_readly_v1_rpc_delete_book_proto_rawDesc), len(file_readly_v1_rpc_delete_book_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_rpc_delete_book_proto_goTypes,
-		DependencyIndexes: file_rpc_delete_book_proto_depIdxs,
-		MessageInfos:      file_rpc_delete_book_proto_msgTypes,
+		GoTypes:           file_readly_v1_rpc_delete_book_proto_goTypes,
+		DependencyIndexes: file_readly_v1_rpc_delete_book_proto_depIdxs,
+		MessageInfos:      file_readly_v1_rpc_delete_book_proto_msgTypes,
 	}.Build()
-	File_rpc_delete_book_proto = out.File
-	file_rpc_delete_book_proto_goTypes = nil
-	file_rpc_delete_book_proto_depIdxs = nil
+	File_readly_v1_rpc_delete_book_proto = out.File
+	file_readly_v1_rpc_delete_book_proto_goTypes = nil
+	file_readly_v1_rpc_delete_book_proto_depIdxs = nil
 }

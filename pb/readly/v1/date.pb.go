@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: date.proto
+// source: readly/v1/date.proto
 
 package pb
 
@@ -32,7 +32,7 @@ type Date struct {
 
 func (x *Date) Reset() {
 	*x = Date{}
-	mi := &file_date_proto_msgTypes[0]
+	mi := &file_readly_v1_date_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -44,7 +44,7 @@ func (x *Date) String() string {
 func (*Date) ProtoMessage() {}
 
 func (x *Date) ProtoReflect() protoreflect.Message {
-	mi := &file_date_proto_msgTypes[0]
+	mi := &file_readly_v1_date_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -57,7 +57,7 @@ func (x *Date) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Date.ProtoReflect.Descriptor instead.
 func (*Date) Descriptor() ([]byte, []int) {
-	return file_date_proto_rawDescGZIP(), []int{0}
+	return file_readly_v1_date_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Date) GetYear() int32 {
@@ -81,35 +81,35 @@ func (x *Date) GetDay() int32 {
 	return 0
 }
 
-var File_date_proto protoreflect.FileDescriptor
+var File_readly_v1_date_proto protoreflect.FileDescriptor
 
-const file_date_proto_rawDesc = "" +
+const file_readly_v1_date_proto_rawDesc = "" +
 	"\n" +
-	"\n" +
-	"date.proto\x12\x02pb\"B\n" +
+	"\x14readly/v1/date.proto\x12\treadly.v1\"B\n" +
 	"\x04Date\x12\x12\n" +
 	"\x04year\x18\x01 \x01(\x05R\x04year\x12\x14\n" +
 	"\x05month\x18\x02 \x01(\x05R\x05month\x12\x10\n" +
-	"\x03day\x18\x03 \x01(\x05R\x03dayBF\n" +
-	"\x06com.pbB\tDateProtoP\x01Z\treadly/pb\xa2\x02\x03PXX\xaa\x02\x02Pb\xca\x02\x02Pb\xe2\x02\x0ePb\\GPBMetadata\xea\x02\x02Pbb\x06proto3"
+	"\x03day\x18\x03 \x01(\x05R\x03dayBj\n" +
+	"\rcom.readly.v1B\tDateProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"Readly::V1b\x06proto3"
 
 var (
-	file_date_proto_rawDescOnce sync.Once
-	file_date_proto_rawDescData []byte
+	file_readly_v1_date_proto_rawDescOnce sync.Once
+	file_readly_v1_date_proto_rawDescData []byte
 )
 
-func file_date_proto_rawDescGZIP() []byte {
-	file_date_proto_rawDescOnce.Do(func() {
-		file_date_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_date_proto_rawDesc), len(file_date_proto_rawDesc)))
+func file_readly_v1_date_proto_rawDescGZIP() []byte {
+	file_readly_v1_date_proto_rawDescOnce.Do(func() {
+		file_readly_v1_date_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_readly_v1_date_proto_rawDesc), len(file_readly_v1_date_proto_rawDesc)))
 	})
-	return file_date_proto_rawDescData
+	return file_readly_v1_date_proto_rawDescData
 }
 
-var file_date_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_date_proto_goTypes = []any{
-	(*Date)(nil), // 0: pb.Date
+var file_readly_v1_date_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_readly_v1_date_proto_goTypes = []any{
+	(*Date)(nil), // 0: readly.v1.Date
 }
-var file_date_proto_depIdxs = []int32{
+var file_readly_v1_date_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -117,26 +117,26 @@ var file_date_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_date_proto_init() }
-func file_date_proto_init() {
-	if File_date_proto != nil {
+func init() { file_readly_v1_date_proto_init() }
+func file_readly_v1_date_proto_init() {
+	if File_readly_v1_date_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_date_proto_rawDesc), len(file_date_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_readly_v1_date_proto_rawDesc), len(file_readly_v1_date_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_date_proto_goTypes,
-		DependencyIndexes: file_date_proto_depIdxs,
-		MessageInfos:      file_date_proto_msgTypes,
+		GoTypes:           file_readly_v1_date_proto_goTypes,
+		DependencyIndexes: file_readly_v1_date_proto_depIdxs,
+		MessageInfos:      file_readly_v1_date_proto_msgTypes,
 	}.Build()
-	File_date_proto = out.File
-	file_date_proto_goTypes = nil
-	file_date_proto_depIdxs = nil
+	File_readly_v1_date_proto = out.File
+	file_readly_v1_date_proto_goTypes = nil
+	file_readly_v1_date_proto_depIdxs = nil
 }

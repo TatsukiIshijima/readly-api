@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.6
 // 	protoc        (unknown)
-// source: reading_status.proto
+// source: readly/v1/reading_status.proto
 
 package pb
 
@@ -57,11 +57,11 @@ func (x ReadingStatus) String() string {
 }
 
 func (ReadingStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_reading_status_proto_enumTypes[0].Descriptor()
+	return file_readly_v1_reading_status_proto_enumTypes[0].Descriptor()
 }
 
 func (ReadingStatus) Type() protoreflect.EnumType {
-	return &file_reading_status_proto_enumTypes[0]
+	return &file_readly_v1_reading_status_proto_enumTypes[0]
 }
 
 func (x ReadingStatus) Number() protoreflect.EnumNumber {
@@ -70,39 +70,40 @@ func (x ReadingStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ReadingStatus.Descriptor instead.
 func (ReadingStatus) EnumDescriptor() ([]byte, []int) {
-	return file_reading_status_proto_rawDescGZIP(), []int{0}
+	return file_readly_v1_reading_status_proto_rawDescGZIP(), []int{0}
 }
 
-var File_reading_status_proto protoreflect.FileDescriptor
+var File_readly_v1_reading_status_proto protoreflect.FileDescriptor
 
-const file_reading_status_proto_rawDesc = "" +
+const file_readly_v1_reading_status_proto_rawDesc = "" +
 	"\n" +
-	"\x14reading_status.proto\x12\x02pb*?\n" +
+	"\x1ereadly/v1/reading_status.proto\x12\treadly.v1*?\n" +
 	"\rReadingStatus\x12\n" +
 	"\n" +
 	"\x06UNREAD\x10\x00\x12\v\n" +
 	"\aREADING\x10\x01\x12\b\n" +
 	"\x04DONE\x10\x02\x12\v\n" +
-	"\aUNKNOWN\x10\x03BO\n" +
-	"\x06com.pbB\x12ReadingStatusProtoP\x01Z\treadly/pb\xa2\x02\x03PXX\xaa\x02\x02Pb\xca\x02\x02Pb\xe2\x02\x0ePb\\GPBMetadata\xea\x02\x02Pbb\x06proto3"
+	"\aUNKNOWN\x10\x03Bs\n" +
+	"\rcom.readly.v1B\x12ReadingStatusProtoP\x01Z\treadly/pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
+	"Readly::V1b\x06proto3"
 
 var (
-	file_reading_status_proto_rawDescOnce sync.Once
-	file_reading_status_proto_rawDescData []byte
+	file_readly_v1_reading_status_proto_rawDescOnce sync.Once
+	file_readly_v1_reading_status_proto_rawDescData []byte
 )
 
-func file_reading_status_proto_rawDescGZIP() []byte {
-	file_reading_status_proto_rawDescOnce.Do(func() {
-		file_reading_status_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_reading_status_proto_rawDesc), len(file_reading_status_proto_rawDesc)))
+func file_readly_v1_reading_status_proto_rawDescGZIP() []byte {
+	file_readly_v1_reading_status_proto_rawDescOnce.Do(func() {
+		file_readly_v1_reading_status_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_readly_v1_reading_status_proto_rawDesc), len(file_readly_v1_reading_status_proto_rawDesc)))
 	})
-	return file_reading_status_proto_rawDescData
+	return file_readly_v1_reading_status_proto_rawDescData
 }
 
-var file_reading_status_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_reading_status_proto_goTypes = []any{
-	(ReadingStatus)(0), // 0: pb.ReadingStatus
+var file_readly_v1_reading_status_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_readly_v1_reading_status_proto_goTypes = []any{
+	(ReadingStatus)(0), // 0: readly.v1.ReadingStatus
 }
-var file_reading_status_proto_depIdxs = []int32{
+var file_readly_v1_reading_status_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -110,26 +111,26 @@ var file_reading_status_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_reading_status_proto_init() }
-func file_reading_status_proto_init() {
-	if File_reading_status_proto != nil {
+func init() { file_readly_v1_reading_status_proto_init() }
+func file_readly_v1_reading_status_proto_init() {
+	if File_readly_v1_reading_status_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_reading_status_proto_rawDesc), len(file_reading_status_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_readly_v1_reading_status_proto_rawDesc), len(file_readly_v1_reading_status_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_reading_status_proto_goTypes,
-		DependencyIndexes: file_reading_status_proto_depIdxs,
-		EnumInfos:         file_reading_status_proto_enumTypes,
+		GoTypes:           file_readly_v1_reading_status_proto_goTypes,
+		DependencyIndexes: file_readly_v1_reading_status_proto_depIdxs,
+		EnumInfos:         file_readly_v1_reading_status_proto_enumTypes,
 	}.Build()
-	File_reading_status_proto = out.File
-	file_reading_status_proto_goTypes = nil
-	file_reading_status_proto_depIdxs = nil
+	File_readly_v1_reading_status_proto = out.File
+	file_readly_v1_reading_status_proto_goTypes = nil
+	file_readly_v1_reading_status_proto_depIdxs = nil
 }
