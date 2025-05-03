@@ -8,6 +8,7 @@ import "readly/v1/book.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "readly/v1/rpc_delete_book.proto";
+import "readly/v1/rpc_get_book.proto";
 import "readly/v1/rpc_register_book.proto";
 
 service BookService {
@@ -15,6 +16,12 @@ service BookService {
     option (google.api.http) = {
       post: "/v1/books"
       body: "*"
+    };
+  }
+
+  rpc GetBook(GetBookRequest) returns (Book) {
+    option (google.api.http) = {
+      get: "/v1/books/{book_id}"
     };
   }
 

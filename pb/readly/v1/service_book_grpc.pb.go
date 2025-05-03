@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	BookService_RegisterBook_FullMethodName = "/readly.v1.BookService/RegisterBook"
+	BookService_GetBook_FullMethodName      = "/readly.v1.BookService/GetBook"
 	BookService_DeleteBook_FullMethodName   = "/readly.v1.BookService/DeleteBook"
 )
 
@@ -29,6 +30,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type BookServiceClient interface {
 	RegisterBook(ctx context.Context, in *RegisterBookRequest, opts ...grpc.CallOption) (*Book, error)
+	GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*Book, error)
 	DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -50,6 +52,16 @@ func (c *bookServiceClient) RegisterBook(ctx context.Context, in *RegisterBookRe
 	return out, nil
 }
 
+func (c *bookServiceClient) GetBook(ctx context.Context, in *GetBookRequest, opts ...grpc.CallOption) (*Book, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(Book)
+	err := c.cc.Invoke(ctx, BookService_GetBook_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bookServiceClient) DeleteBook(ctx context.Context, in *DeleteBookRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -65,6 +77,7 @@ func (c *bookServiceClient) DeleteBook(ctx context.Context, in *DeleteBookReques
 // for forward compatibility.
 type BookServiceServer interface {
 	RegisterBook(context.Context, *RegisterBookRequest) (*Book, error)
+	GetBook(context.Context, *GetBookRequest) (*Book, error)
 	DeleteBook(context.Context, *DeleteBookRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedBookServiceServer()
 }
@@ -78,6 +91,9 @@ type UnimplementedBookServiceServer struct{}
 
 func (UnimplementedBookServiceServer) RegisterBook(context.Context, *RegisterBookRequest) (*Book, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterBook not implemented")
+}
+func (UnimplementedBookServiceServer) GetBook(context.Context, *GetBookRequest) (*Book, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetBook not implemented")
 }
 func (UnimplementedBookServiceServer) DeleteBook(context.Context, *DeleteBookRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteBook not implemented")
@@ -121,6 +137,24 @@ func _BookService_RegisterBook_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BookService_GetBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetBookRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BookServiceServer).GetBook(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BookService_GetBook_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BookServiceServer).GetBook(ctx, req.(*GetBookRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BookService_DeleteBook_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(DeleteBookRequest)
 	if err := dec(in); err != nil {
@@ -149,6 +183,10 @@ var BookService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RegisterBook",
 			Handler:    _BookService_RegisterBook_Handler,
+		},
+		{
+			MethodName: "GetBook",
+			Handler:    _BookService_GetBook_Handler,
 		},
 		{
 			MethodName: "DeleteBook",
