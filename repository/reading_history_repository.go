@@ -108,18 +108,20 @@ type CreateReadingHistoryRequest struct {
 	UserID    int64
 	BookID    int64
 	Status    ReadingStatus
-	StartDate *time.Time
-	EndDate   *time.Time
+	StartDate *entity.Date
+	EndDate   *entity.Date
 }
 
 func (r CreateReadingHistoryRequest) toParams() sqlc.CreateReadingHistoryParams {
 	sd := sql.NullTime{Time: time.Time{}, Valid: false}
 	ed := sql.NullTime{Time: time.Time{}, Valid: false}
 	if r.StartDate != nil {
-		sd = sql.NullTime{Time: *r.StartDate, Valid: true}
+		t := r.StartDate.ToTime()
+		sd = sql.NullTime{Time: *t, Valid: true}
 	}
 	if r.EndDate != nil {
-		ed = sql.NullTime{Time: *r.EndDate, Valid: true}
+		t := r.EndDate.ToTime()
+		ed = sql.NullTime{Time: *t, Valid: true}
 	}
 	return sqlc.CreateReadingHistoryParams{
 		UserID:    r.UserID,
@@ -133,16 +135,16 @@ func (r CreateReadingHistoryRequest) toParams() sqlc.CreateReadingHistoryParams 
 type CreateReadingHistoryResponse struct {
 	BookID    int64
 	Status    ReadingStatus
-	StartDate *time.Time
-	EndDate   *time.Time
+	StartDate *entity.Date
+	EndDate   *entity.Date
 }
 
 func newCreateReadingHistoryResponse(r sqlc.ReadingHistory) *CreateReadingHistoryResponse {
 	return &CreateReadingHistoryResponse{
 		BookID:    r.BookID,
 		Status:    NewReadingStatus(r.Status),
-		StartDate: nilTime(r.StartDate),
-		EndDate:   nilTime(r.EndDate),
+		StartDate: entity.NewDateEntityFromNullTime(r.StartDate),
+		EndDate:   entity.NewDateEntityFromNullTime(r.EndDate),
 	}
 }
 

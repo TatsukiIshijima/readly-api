@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	"github.com/stretchr/testify/require"
+	"readly/entity"
 	"readly/testdata"
 	"testing"
-	"time"
 )
 
 func TestDeleteBook(t *testing.T) {
@@ -34,12 +34,11 @@ func TestDeleteBook(t *testing.T) {
 				url := testdata.RandomString(255)
 				author := testdata.RandomString(10)
 				publisher := testdata.RandomString(10)
-				publishDate, err := testdata.TimeFrom("1970-01-01 00:00:00")
+				publishDate := entity.Date{Year: 2018, Month: 12, Day: 31}
 				require.NoError(t, err)
-				pb := publishDate.UTC()
 				ISBN := testdata.RandomString(13)
-				startDate := time.Now().UTC()
-				endDate := time.Now().Add(time.Duration(60*60*24) * time.Second).UTC()
+				startDate := entity.Date{Year: 2018, Month: 12, Day: 31}
+				endDate := entity.Date{Year: 2019, Month: 1, Day: 30}
 
 				registerReq := RegisterBookRequest{
 					UserID:        signUpRes.UserID,
@@ -50,7 +49,7 @@ func TestDeleteBook(t *testing.T) {
 					URL:           &url,
 					AuthorName:    &author,
 					PublisherName: &publisher,
-					PublishDate:   &pb,
+					PublishDate:   &publishDate,
 					ISBN:          &ISBN,
 					Status:        0,
 					StartDate:     &startDate,

@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
+	"readly/entity"
 	"readly/testdata"
 	"testing"
-	"time"
 )
 
 func createRandomAuthor(t *testing.T) *string {
@@ -29,7 +29,7 @@ func createRandomBook(t *testing.T) *CreateBookResponse {
 	description := testdata.RandomString(10)
 	coverImageUrl := "https://example.com"
 	url := "https://example.com"
-	publishDate := time.Now().UTC()
+	publishDate := entity.Now()
 	isbn := testdata.RandomString(13)
 
 	req := CreateBookRequest{
@@ -60,7 +60,7 @@ func TestCreateBook(t *testing.T) {
 	require.Equal(t, *b.URL, gb.Url.String)
 	require.Equal(t, sql.NullString{}, gb.AuthorName)
 	require.Equal(t, sql.NullString{}, gb.PublisherName)
-	require.Equal(t, *b.PublishDate, gb.PublishedDate.Time.UTC())
+	require.Equal(t, *b.PublishDate, *entity.NewDateEntityFromNullTime(gb.PublishedDate))
 	require.Equal(t, *b.ISBN, gb.Isbn.String)
 }
 

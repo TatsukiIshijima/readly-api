@@ -6,7 +6,6 @@ import (
 	"readly/entity"
 	"readly/testdata"
 	"testing"
-	"time"
 )
 
 func TestRegisterBook(t *testing.T) {
@@ -61,12 +60,11 @@ func TestRegisterBook(t *testing.T) {
 				url := testdata.RandomString(255)
 				author := testdata.RandomString(10)
 				publisher := testdata.RandomString(10)
-				publishDate, err := testdata.TimeFrom("1970-01-01 00:00:00")
+				publishDate := entity.Date{Year: 2018, Month: 12, Day: 31}
 				require.NoError(t, err)
-				pb := publishDate.UTC()
 				ISBN := testdata.RandomString(13)
-				startDate := time.Now().UTC()
-				endDate := time.Now().Add(time.Duration(60*60*24) * time.Second).UTC()
+				startDate := entity.Date{Year: 2018, Month: 12, Day: 31}
+				endDate := entity.Date{Year: 2019, Month: 1, Day: 30}
 
 				return RegisterBookRequest{
 					UserID:        signUpRes.UserID,
@@ -77,7 +75,7 @@ func TestRegisterBook(t *testing.T) {
 					URL:           &url,
 					AuthorName:    &author,
 					PublisherName: &publisher,
-					PublishDate:   &pb,
+					PublishDate:   &publishDate,
 					ISBN:          &ISBN,
 					Status:        2,
 					StartDate:     &startDate,
@@ -144,7 +142,7 @@ func TestRegisterBook(t *testing.T) {
 			setup: func(t *testing.T) RegisterBookRequest {
 				author := testdata.RandomString(10)
 				publisher := testdata.RandomString(10)
-				startDate := time.Now().UTC()
+				startDate := entity.Now()
 
 				req := RegisterBookRequest{
 					UserID:        signUpRes.UserID,
@@ -195,14 +193,14 @@ func TestRegisterBook(t *testing.T) {
 	}
 }
 
-func isSameDate(t1, t2 *time.Time) bool {
+func isSameDate(t1, t2 *entity.Date) bool {
 	if t1 == nil && t2 == nil {
 		return true
 	}
 	if t1 == nil || t2 == nil {
 		return false
 	}
-	return t1.Year() == t2.Year() && t1.Month() == t2.Month() && t1.Day() == t2.Day()
+	return t1.Year == t2.Year && t1.Month == t2.Month && t1.Day == t2.Day
 }
 
 // TODO: Goroutineを使ったテストケースを追加する

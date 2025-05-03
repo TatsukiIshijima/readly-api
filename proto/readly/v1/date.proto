@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package readly.v1;
+
+option go_package = "readly/pb/readly/v1;pb";
+
+// Bufを用いてprotoからTypeScriptのgoogle/type/Date型を生成すると
+// 生成はされるもののCannot find module 'google/type/date'というエラーが出るため独自protoを定義
+// （Timestamp型はBigIntを使用しているためJSONに変換できない）
+// Date型はgoogle/type/date.protoをそのまま参考にしている
+// https://github.com/googleapis/googleapis/blob/master/google/type/date.proto
+
+message Date {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}

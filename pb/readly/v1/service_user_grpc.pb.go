@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: service_user.proto
+// source: readly/v1/service_user.proto
 
 package pb
 
@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserService_SignIn_FullMethodName       = "/pb.UserService/SignIn"
-	UserService_SignUp_FullMethodName       = "/pb.UserService/SignUp"
-	UserService_RefreshToken_FullMethodName = "/pb.UserService/RefreshToken"
+	UserService_SignIn_FullMethodName       = "/readly.v1.UserService/SignIn"
+	UserService_SignUp_FullMethodName       = "/readly.v1.UserService/SignUp"
+	UserService_RefreshToken_FullMethodName = "/readly.v1.UserService/RefreshToken"
 )
 
 // UserServiceClient is the client API for UserService service.
@@ -176,7 +176,7 @@ func _UserService_RefreshToken_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UserService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.UserService",
+	ServiceName: "readly.v1.UserService",
 	HandlerType: (*UserServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -193,5 +193,5 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "service_user.proto",
+	Metadata: "readly/v1/service_user.proto",
 }

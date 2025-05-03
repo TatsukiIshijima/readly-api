@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package pb;
+package readly.v1;
 
-option go_package = "readly/pb";
+option go_package = "readly/pb/readly/v1;pb";
 
 message RefreshTokenRequest {
   string refresh_token = 1;

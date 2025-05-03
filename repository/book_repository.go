@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	sqlc "readly/db/sqlc"
+	"readly/entity"
 	"strings"
 	"time"
 )
@@ -48,7 +49,7 @@ type CreateBookRequest struct {
 	URL           *string
 	Author        *string
 	Publisher     *string
-	PublishDate   *time.Time
+	PublishDate   *entity.Date
 	ISBN          *string
 }
 
@@ -76,7 +77,8 @@ func (r CreateBookRequest) toParams() sqlc.CreateBookParams {
 		p = sql.NullString{String: *r.Publisher, Valid: true}
 	}
 	if r.PublishDate != nil {
-		pd = sql.NullTime{Time: *r.PublishDate, Valid: true}
+		t := r.PublishDate.ToTime()
+		pd = sql.NullTime{Time: *t, Valid: true}
 	}
 	if r.ISBN != nil {
 		ISBN = sql.NullString{String: *r.ISBN, Valid: true}
@@ -101,7 +103,7 @@ type CreateBookResponse struct {
 	URL           *string
 	Author        *string
 	Publisher     *string
-	PublishDate   *time.Time
+	PublishDate   *entity.Date
 	ISBN          *string
 }
 
@@ -114,7 +116,7 @@ func newCreateResponse(b sqlc.Book) *CreateBookResponse {
 		URL:           nilString(b.Url),
 		Author:        nilString(b.AuthorName),
 		Publisher:     nilString(b.PublisherName),
-		PublishDate:   nilTime(b.PublishedDate),
+		PublishDate:   entity.NewDateEntityFromNullTime(b.PublishedDate),
 		ISBN:          nilString(b.Isbn),
 	}
 }
