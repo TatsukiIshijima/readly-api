@@ -11,7 +11,7 @@ type SessionRepository interface {
 	CreateSession(ctx context.Context, req CreateSessionRequest) error
 	GetSessionByID(ctx context.Context, req GetSessionByIDRequest) (*SessionResponse, error)
 	GetSessionByUserID(ctx context.Context, req GetSessionByUserIDRequest) ([]SessionResponse, error)
-	DeleteSessionByUserID(ctx context.Context, req DeleteSessionByUserIDRequest) (int64, error)
+	DeleteSessionByUserID(ctx context.Context, req DeleteSessionByUserIDRequest) (*DeleteSessionByUserIDResponse, error)
 }
 
 type SessionRepositoryImpl struct {
@@ -77,19 +77,10 @@ func (r *SessionRepositoryImpl) GetSessionByUserID(ctx context.Context, req GetS
 	return res, nil
 }
 
-type DeleteSessionByUserIDRequest struct {
-	UserID int64
-	Limit  int32
-}
-
-func (r *SessionRepositoryImpl) DeleteSessionByUserID(ctx context.Context, req DeleteSessionByUserIDRequest) (int64, error) {
-	args := sqlc.DeleteSessionByUserIDParams{
-		UserID: req.UserID,
-		Limit:  req.Limit,
-	}
-	count, err := r.querier.DeleteSessionByUserID(ctx, args)
+func (r *SessionRepositoryImpl) DeleteSessionByUserID(ctx context.Context, req DeleteSessionByUserIDRequest) (*DeleteSessionByUserIDResponse, error) {
+	count, err := r.querier.DeleteSessionByUserID(ctx, req.toSQLC())
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
-	return count, nil
+	return newDeleteSessionByUserIDResponse(count), nil
 }
