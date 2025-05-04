@@ -1,6 +1,9 @@
 package entity
 
-import pb "readly/pb/readly/v1"
+import (
+	sqlc "readly/db/sqlc"
+	pb "readly/pb/readly/v1"
+)
 
 type ReadingStatus int
 
@@ -18,6 +21,19 @@ func NewReadingStatusFromProto(proto pb.ReadingStatus) ReadingStatus {
 	case pb.ReadingStatus_READING:
 		return Reading
 	case pb.ReadingStatus_DONE:
+		return Done
+	default:
+		return Unknown
+	}
+}
+
+func NewReadingStatusFromSQLC(sqlcStatus sqlc.ReadingStatus) ReadingStatus {
+	switch sqlcStatus {
+	case sqlc.ReadingStatusUnread:
+		return Unread
+	case sqlc.ReadingStatusReading:
+		return Reading
+	case sqlc.ReadingStatusDone:
 		return Done
 	default:
 		return Unknown

@@ -104,28 +104,12 @@ func NewReadingStatus[T Convertible](src T) ReadingStatus {
 
 }
 
-type CreateReadingHistoryResponse struct {
-	BookID    int64
-	Status    ReadingStatus
-	StartDate *entity.Date
-	EndDate   *entity.Date
-}
-
-func newCreateReadingHistoryResponse(r sqlc.ReadingHistory) *CreateReadingHistoryResponse {
-	return &CreateReadingHistoryResponse{
-		BookID:    r.BookID,
-		Status:    NewReadingStatus(r.Status),
-		StartDate: entity.NewDateEntityFromNullTime(r.StartDate),
-		EndDate:   entity.NewDateEntityFromNullTime(r.EndDate),
-	}
-}
-
 func (r *ReadingHistoryRepositoryImpl) Create(ctx context.Context, req CreateReadingHistoryRequest) (*CreateReadingHistoryResponse, error) {
-	h, err := r.querier.CreateReadingHistory(ctx, req.toSQLC())
+	res, err := r.querier.CreateReadingHistory(ctx, req.toSQLC())
 	if err != nil {
 		return nil, err
 	}
-	return newCreateReadingHistoryResponse(h), nil
+	return newCreateReadingHistoryResponseFromSQLC(res), nil
 }
 
 type DeleteReadingHistoryRequest struct {
