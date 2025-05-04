@@ -10,7 +10,7 @@ type UserRepository interface {
 	DeleteUser(ctx context.Context, req DeleteUserRequest) error
 	GetUserByEmail(ctx context.Context, req GetUserByEmailRequest) (*GetUserResponse, error)
 	GetUserByID(ctx context.Context, req GetUserByIDRequest) (*GetUserResponse, error)
-	UpdateUser(ctx context.Context, req UpdateRequest) (*UpdateResponse, error)
+	UpdateUser(ctx context.Context, req UpdateUserRequest) (*UpdateUserResponse, error)
 }
 
 type UserRepositoryImpl struct {
@@ -55,20 +55,20 @@ func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, req GetUserByIDReq
 	return newGetUserResponseFromSQLC(res), nil
 }
 
-type UpdateRequest struct {
+type UpdateUserRequest struct {
 	ID       int64
 	Name     string
 	Email    string
 	Password string
 }
 
-type UpdateResponse struct {
+type UpdateUserResponse struct {
 	ID    int64
 	Name  string
 	Email string
 }
 
-func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) (*UpdateResponse, error) {
+func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateUserRequest) (*UpdateUserResponse, error) {
 	args := sqlc.UpdateUserParams{
 		ID:             req.ID,
 		Name:           req.Name,
@@ -79,7 +79,7 @@ func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateRequest) 
 	if err != nil {
 		return nil, err
 	}
-	u := &UpdateResponse{
+	u := &UpdateUserResponse{
 		ID:    res.ID,
 		Name:  res.Name,
 		Email: res.Email,
