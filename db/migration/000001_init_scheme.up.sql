@@ -37,7 +37,7 @@ CREATE TABLE "books"
     "url"             varchar(2048),
     "author_name"     varchar(255),
     "publisher_name"  varchar(255),
-    "published_date"  timestamptz,
+    "published_date"  date,
     "isbn"            char(13),
     "created_at"      timestamptz  NOT NULL DEFAULT (now()),
     "updated_at"      timestamptz  NOT NULL DEFAULT (now())
