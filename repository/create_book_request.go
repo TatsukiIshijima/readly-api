@@ -18,7 +18,7 @@ type CreateBookRequest struct {
 	ISBN          *string
 }
 
-func (r CreateBookRequest) toParams() sqlc.CreateBookParams {
+func (r CreateBookRequest) toSQLC() sqlc.CreateBookParams {
 	desc := sql.NullString{String: "", Valid: false}
 	coverImgURL := sql.NullString{String: "", Valid: false}
 	URL := sql.NullString{String: "", Valid: false}

@@ -68,7 +68,7 @@ func newCreateResponse(b sqlc.Book) *CreateBookResponse {
 }
 
 func (r *BookRepositoryImpl) CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error) {
-	p := req.toParams()
+	p := req.toSQLC()
 	b, err := r.querier.CreateBook(ctx, p)
 	if err != nil {
 		return nil, err
