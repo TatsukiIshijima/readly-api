@@ -3,8 +3,6 @@ package repository
 import (
 	"context"
 	sqlc "readly/db/sqlc"
-	"strings"
-	"time"
 )
 
 type BookRepository interface {
@@ -18,7 +16,7 @@ type BookRepository interface {
 	DeleteBookGenre(ctx context.Context, req DeleteBookGenreRequest) error
 	DeleteGenre(ctx context.Context, req DeleteGenreRequest) error
 	DeletePublisher(ctx context.Context, req DeletePublisherRequest) error
-	GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error)
+	GetBookByID(ctx context.Context, req GetBookRequest) (*GetBookResponse, error)
 	GetGenresByBookID(ctx context.Context, id int64) ([]string, error)
 }
 
@@ -141,40 +139,12 @@ func (r *BookRepositoryImpl) DeletePublisher(ctx context.Context, req DeletePubl
 	return r.querier.DeletePublisher(ctx, req.Name)
 }
 
-type GetBookResponse struct {
-	ID            int64
-	Title         string
-	Genres        []string
-	Description   *string
-	CoverImageURL *string
-	URL           *string
-	AuthorName    *string
-	PublisherName *string
-	PublishDate   *time.Time
-	ISBN          *string
-}
-
-func newGetBookResponse(b sqlc.GetBooksByIDRow) *GetBookResponse {
-	return &GetBookResponse{
-		ID:            b.ID,
-		Title:         b.Title,
-		Genres:        strings.Split(string(b.Genres), ", "),
-		Description:   nilString(b.Description),
-		CoverImageURL: nilString(b.CoverImageUrl),
-		URL:           nilString(b.Url),
-		AuthorName:    nilString(b.AuthorName),
-		PublisherName: nilString(b.PublisherName),
-		PublishDate:   nilTime(b.PublishedDate),
-		ISBN:          nilString(b.Isbn),
-	}
-}
-
-func (r *BookRepositoryImpl) GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error) {
-	b, err := r.querier.GetBooksByID(ctx, id)
+func (r *BookRepositoryImpl) GetBookByID(ctx context.Context, req GetBookRequest) (*GetBookResponse, error) {
+	b, err := r.querier.GetBooksByID(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}
-	return newGetBookResponse(b), nil
+	return newGetBookResponseFromSQLC(b), nil
 }
 
 func (r *BookRepositoryImpl) GetGenresByBookID(ctx context.Context, id int64) ([]string, error) {
