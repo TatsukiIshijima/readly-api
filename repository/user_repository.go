@@ -7,7 +7,7 @@ import (
 
 type UserRepository interface {
 	CreateUser(ctx context.Context, req CreateUserRequest) (*CreateUserResponse, error)
-	DeleteUser(ctx context.Context, id int64) error
+	DeleteUser(ctx context.Context, req DeleteUserRequest) error
 	GetUserByEmail(ctx context.Context, req GetUserByEmailRequest) (*GetUserResponse, error)
 	GetUserByID(ctx context.Context, req GetUserByIDRequest) (*GetUserResponse, error)
 	UpdateUser(ctx context.Context, req UpdateRequest) (*UpdateResponse, error)
@@ -31,8 +31,8 @@ func (r *UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserReque
 	return newCreateUserResponseFromSQLC(res), nil
 }
 
-func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
-	err := r.querier.DeleteUser(ctx, id)
+func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, req DeleteUserRequest) error {
+	err := r.querier.DeleteUser(ctx, req.ID)
 	if err != nil {
 		return err
 	}
