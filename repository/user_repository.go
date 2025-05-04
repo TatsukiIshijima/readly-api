@@ -55,34 +55,10 @@ func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, req GetUserByIDReq
 	return newGetUserResponseFromSQLC(res), nil
 }
 
-type UpdateUserRequest struct {
-	ID       int64
-	Name     string
-	Email    string
-	Password string
-}
-
-type UpdateUserResponse struct {
-	ID    int64
-	Name  string
-	Email string
-}
-
 func (r *UserRepositoryImpl) UpdateUser(ctx context.Context, req UpdateUserRequest) (*UpdateUserResponse, error) {
-	args := sqlc.UpdateUserParams{
-		ID:             req.ID,
-		Name:           req.Name,
-		Email:          req.Email,
-		HashedPassword: req.Password,
-	}
-	res, err := r.querier.UpdateUser(ctx, args)
+	res, err := r.querier.UpdateUser(ctx, req.toSQLC())
 	if err != nil {
 		return nil, err
 	}
-	u := &UpdateUserResponse{
-		ID:    res.ID,
-		Name:  res.Name,
-		Email: res.Email,
-	}
-	return u, nil
+	return newUpdateUserResponseFromSQLC(res), nil
 }
