@@ -12,7 +12,7 @@ type BookRepository interface {
 	CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error)
 	CreateBookGenre(ctx context.Context, req CreateBookGenreRequest) (*CreateBookGenreResponse, error)
 	CreateGenre(ctx context.Context, req CreateGenreRequest) (*CreateGenreResponse, error)
-	CreatePublisher(ctx context.Context, name string) (*string, error)
+	CreatePublisher(ctx context.Context, req CreatePublisherRequest) (*CreatePublisherResponse, error)
 	DeleteAuthor(ctx context.Context, name string) error
 	DeleteBook(ctx context.Context, id int64) error
 	DeleteBookGenre(ctx context.Context, req DeleteBookGenreRequest) error
@@ -90,12 +90,12 @@ func (r *BookRepositoryImpl) CreateGenre(ctx context.Context, req CreateGenreReq
 	return newCreateGenreResponseFromSQLC(g), nil
 }
 
-func (r *BookRepositoryImpl) CreatePublisher(ctx context.Context, name string) (*string, error) {
-	p, err := r.querier.CreatePublisher(ctx, name)
+func (r *BookRepositoryImpl) CreatePublisher(ctx context.Context, req CreatePublisherRequest) (*CreatePublisherResponse, error) {
+	p, err := r.querier.CreatePublisher(ctx, req.Name)
 	if err != nil {
 		return nil, err
 	}
-	return &p.Name, nil
+	return newCreatePublisherResponseFromSQLC(p), nil
 }
 
 func (r *BookRepositoryImpl) DeleteAuthor(ctx context.Context, name string) error {
