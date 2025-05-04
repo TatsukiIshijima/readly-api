@@ -27,6 +27,9 @@ func NewReadingHistoryRepository(q sqlc.Querier) ReadingHistoryRepository {
 	}
 }
 
+// TODO:各層でマッパーを用意するには冗長なのでserver層でproto→entity変換してentityでやり取りする。DBとはentity→sqlcにrepositoryで変換
+// と思ったけどアーキテクチャ的に層を飛び越えてパッケージ参照できてしまう可能性と循環参照になるかもしれないのでこのままでも良いかも
+// ReadingStatusはentityのやつで良さそう
 type ReadingStatus int
 
 const (
