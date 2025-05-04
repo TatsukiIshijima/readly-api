@@ -8,8 +8,8 @@ import (
 type UserRepository interface {
 	CreateUser(ctx context.Context, req CreateUserRequest) (*CreateUserResponse, error)
 	DeleteUser(ctx context.Context, id int64) error
-	GetUserByEmail(ctx context.Context, email string) (*GetUserResponse, error)
-	GetUserByID(ctx context.Context, id int64) (*GetUserResponse, error)
+	GetUserByEmail(ctx context.Context, req GetUserByEmailRequest) (*GetUserResponse, error)
+	GetUserByID(ctx context.Context, req GetUserByIDRequest) (*GetUserResponse, error)
 	UpdateUser(ctx context.Context, req UpdateRequest) (*UpdateResponse, error)
 }
 
@@ -39,39 +39,20 @@ func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
 	return nil
 }
 
-type GetUserResponse struct {
-	ID       int64
-	Name     string
-	Password string
-	Email    string
-}
-
-func (r *UserRepositoryImpl) GetUserByEmail(ctx context.Context, email string) (*GetUserResponse, error) {
-	res, err := r.querier.GetUserByEmail(ctx, email)
+func (r *UserRepositoryImpl) GetUserByEmail(ctx context.Context, req GetUserByEmailRequest) (*GetUserResponse, error) {
+	res, err := r.querier.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
-	u := &GetUserResponse{
-		ID:       res.ID,
-		Name:     res.Name,
-		Password: res.HashedPassword,
-		Email:    res.Email,
-	}
-	return u, nil
+	return newGetUserResponseFromSQLC(res), nil
 }
 
-func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, id int64) (*GetUserResponse, error) {
-	res, err := r.querier.GetUserByID(ctx, id)
+func (r *UserRepositoryImpl) GetUserByID(ctx context.Context, req GetUserByIDRequest) (*GetUserResponse, error) {
+	res, err := r.querier.GetUserByID(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}
-	u := &GetUserResponse{
-		ID:       res.ID,
-		Name:     res.Name,
-		Password: res.HashedPassword,
-		Email:    res.Email,
-	}
-	return u, nil
+	return newGetUserResponseFromSQLC(res), nil
 }
 
 type UpdateRequest struct {
