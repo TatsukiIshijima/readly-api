@@ -10,7 +10,7 @@ import (
 type CreateReadingHistoryRequest struct {
 	UserID    int64
 	BookID    int64
-	Status    ReadingStatus
+	Status    entity.ReadingStatus
 	StartDate *entity.Date
 	EndDate   *entity.Date
 }
@@ -29,7 +29,7 @@ func (r CreateReadingHistoryRequest) toSQLC() sqlc.CreateReadingHistoryParams {
 	return sqlc.CreateReadingHistoryParams{
 		UserID:    r.UserID,
 		BookID:    r.BookID,
-		Status:    r.Status.toSqlc(),
+		Status:    r.Status.ToSQLC(),
 		StartDate: sd,
 		EndDate:   ed,
 	}

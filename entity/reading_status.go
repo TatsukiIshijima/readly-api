@@ -39,3 +39,16 @@ func NewReadingStatusFromSQLC(sqlcStatus sqlc.ReadingStatus) ReadingStatus {
 		return Unknown
 	}
 }
+
+func (r ReadingStatus) ToSQLC() sqlc.ReadingStatus {
+	switch r {
+	case Unread:
+		return sqlc.ReadingStatusUnread
+	case Reading:
+		return sqlc.ReadingStatusReading
+	case Done:
+		return sqlc.ReadingStatusDone
+	default:
+		return sqlc.ReadingStatusUnknown
+	}
+}

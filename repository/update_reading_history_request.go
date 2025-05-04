@@ -3,13 +3,14 @@ package repository
 import (
 	"database/sql"
 	sqlc "readly/db/sqlc"
+	"readly/entity"
 	"time"
 )
 
 type UpdateReadingHistoryRequest struct {
 	UserID    int64
 	BookID    int64
-	Status    ReadingStatus
+	Status    entity.ReadingStatus
 	StartDate *time.Time
 	EndDate   *time.Time
 }
@@ -26,7 +27,7 @@ func (r UpdateReadingHistoryRequest) toSQLC() sqlc.UpdateReadingHistoryParams {
 	return sqlc.UpdateReadingHistoryParams{
 		UserID:    r.UserID,
 		BookID:    r.BookID,
-		Status:    r.Status.toSqlc(),
+		Status:    r.Status.ToSQLC(),
 		StartDate: sd,
 		EndDate:   ed,
 	}

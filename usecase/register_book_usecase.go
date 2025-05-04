@@ -93,7 +93,7 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 		createHistoryArgs := repository.CreateReadingHistoryRequest{
 			UserID:    req.UserID,
 			BookID:    b.ID,
-			Status:    repository.NewReadingStatus[entity.ReadingStatus](req.Status),
+			Status:    req.Status,
 			StartDate: req.StartDate,
 			EndDate:   req.EndDate,
 		}
@@ -112,7 +112,7 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 			PublisherName: b.Publisher,
 			PublishDate:   b.PublishDate,
 			ISBN:          b.ISBN,
-			Status:        rh.Status.ToEntity(),
+			Status:        rh.Status,
 			StartDate:     rh.StartDate,
 			EndDate:       rh.EndDate,
 		}
