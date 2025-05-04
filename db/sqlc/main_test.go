@@ -46,9 +46,3 @@ func createRandomUser(t *testing.T) User {
 	require.NotEmpty(t, user)
 	return user
 }
-
-func EqualDate(t *testing.T, a, b time.Time) {
-	require.Equal(t, a.Year(), b.Year())
-	require.Equal(t, a.Month(), b.Month())
-	require.Equal(t, a.Day(), b.Day())
-}

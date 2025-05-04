@@ -62,7 +62,7 @@ func createTestBook(t *testing.T, title string, author string, publisher string,
 	require.Equal(t, arg.Url, book.Url)
 	require.Equal(t, arg.AuthorName, book.AuthorName)
 	require.Equal(t, arg.PublisherName, book.PublisherName)
-	EqualDate(t, arg.PublishedDate.Time, book.PublishedDate.Time)
+	require.WithinDuration(t, arg.PublishedDate.Time, book.PublishedDate.Time, time.Second)
 	require.Equal(t, arg.Isbn, book.Isbn)
 
 	return book
