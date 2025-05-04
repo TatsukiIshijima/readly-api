@@ -112,16 +112,8 @@ func (r *ReadingHistoryRepositoryImpl) Create(ctx context.Context, req CreateRea
 	return newCreateReadingHistoryResponseFromSQLC(res), nil
 }
 
-type DeleteReadingHistoryRequest struct {
-	UserID int64
-	BookID int64
-}
-
 func (r *ReadingHistoryRepositoryImpl) Delete(ctx context.Context, req DeleteReadingHistoryRequest) error {
-	rowsAffected, err := r.querier.DeleteReadingHistory(ctx, sqlc.DeleteReadingHistoryParams{
-		UserID: req.UserID,
-		BookID: req.BookID,
-	})
+	rowsAffected, err := r.querier.DeleteReadingHistory(ctx, req.toSQLC())
 	if err != nil {
 		return err
 	}
