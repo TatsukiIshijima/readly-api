@@ -8,7 +8,7 @@ import (
 )
 
 type BookRepository interface {
-	CreateAuthor(ctx context.Context, name string) (*string, error)
+	CreateAuthor(ctx context.Context, req CreateAuthorRequest) (*CreateAuthorResponse, error)
 	CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error)
 	CreateBookGenre(ctx context.Context, req CreateBookGenreRequest) (*CreateBookGenreResponse, error)
 	CreateGenre(ctx context.Context, name string) (*string, error)
@@ -32,12 +32,12 @@ func NewBookRepository(q sqlc.Querier) BookRepository {
 	}
 }
 
-func (r *BookRepositoryImpl) CreateAuthor(ctx context.Context, name string) (*string, error) {
-	author, err := r.querier.CreateAuthor(ctx, name)
+func (r *BookRepositoryImpl) CreateAuthor(ctx context.Context, req CreateAuthorRequest) (*CreateAuthorResponse, error) {
+	res, err := r.querier.CreateAuthor(ctx, req.Name)
 	if err != nil {
 		return nil, err
 	}
-	return &author.Name, nil
+	return newCreateAuthorResponseFromSQLC(res), nil
 }
 
 func (r *BookRepositoryImpl) CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error) {
