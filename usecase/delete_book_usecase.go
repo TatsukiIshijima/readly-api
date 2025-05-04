@@ -56,7 +56,7 @@ func (u *DeleteBookUseCaseImpl) DeleteBook(ctx context.Context, req DeleteBookRe
 			}
 			return err
 		}
-		err = u.bookRepo.DeleteBook(ctx, req.BookID)
+		err = u.bookRepo.DeleteBook(ctx, repository.NewDeleteBookRequest(req.BookID))
 		if err != nil {
 			if errors.Is(err, repository.ErrNoRowsDeleted) {
 				return newError(BadRequest, NotFoundBookError, "book not found")
@@ -69,11 +69,11 @@ func (u *DeleteBookUseCaseImpl) DeleteBook(ctx context.Context, req DeleteBookRe
 }
 
 func (u *DeleteBookUseCaseImpl) deleteBookGenres(ctx context.Context, bookID int64) error {
-	genres, err := u.bookRepo.GetGenresByBookID(ctx, bookID)
+	res, err := u.bookRepo.GetGenresByBookID(ctx, repository.NewGetGenresByBookIDRequest(bookID))
 	if err != nil {
 		return err
 	}
-	for _, g := range genres {
+	for _, g := range res.Genres {
 		args := repository.DeleteBookGenreRequest{
 			BookID:    bookID,
 			GenreName: g,
