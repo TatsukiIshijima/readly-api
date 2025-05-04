@@ -16,7 +16,7 @@ type BookRepository interface {
 	DeleteAuthor(ctx context.Context, req DeleteAuthorRequest) error
 	DeleteBook(ctx context.Context, req DeleteBookRequest) error
 	DeleteBookGenre(ctx context.Context, req DeleteBookGenreRequest) error
-	DeleteGenre(ctx context.Context, name string) error
+	DeleteGenre(ctx context.Context, req DeleteGenreRequest) error
 	DeletePublisher(ctx context.Context, name string) error
 	GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error)
 	GetGenresByBookID(ctx context.Context, id int64) ([]string, error)
@@ -133,8 +133,8 @@ func (r *BookRepositoryImpl) DeleteBookGenre(ctx context.Context, req DeleteBook
 	return nil
 }
 
-func (r *BookRepositoryImpl) DeleteGenre(ctx context.Context, name string) error {
-	return r.querier.DeleteGenre(ctx, name)
+func (r *BookRepositoryImpl) DeleteGenre(ctx context.Context, req DeleteGenreRequest) error {
+	return r.querier.DeleteGenre(ctx, req.Name)
 }
 
 func (r *BookRepositoryImpl) DeletePublisher(ctx context.Context, name string) error {
