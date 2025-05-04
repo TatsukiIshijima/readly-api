@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	sqlc "readly/db/sqlc"
+	"readly/entity"
 	"testing"
 	"time"
 )
@@ -13,7 +14,7 @@ func createReadingHistory(t *testing.T, uid int64, bid int64) *CreateReadingHist
 	req := CreateReadingHistoryRequest{
 		UserID: uid,
 		BookID: bid,
-		Status: Unread,
+		Status: entity.Unread,
 	}
 	rh, err := readingHistoryRepo.Create(context.Background(), req)
 	require.NoError(t, err)
@@ -32,7 +33,7 @@ func TestCreate(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, rh.BookID, b.ID)
-	require.Equal(t, rh.Status, Unread)
+	require.Equal(t, rh.Status, entity.Unread)
 	require.Nil(t, rh.StartDate)
 	require.Nil(t, rh.EndDate)
 }
@@ -108,7 +109,7 @@ func TestGetByUserAndStatus(t *testing.T) {
 	updateReq := UpdateReadingHistoryRequest{
 		UserID:    u.ID,
 		BookID:    b1.ID,
-		Status:    Reading,
+		Status:    entity.Reading,
 		StartDate: &now,
 		EndDate:   nil,
 	}
@@ -117,7 +118,7 @@ func TestGetByUserAndStatus(t *testing.T) {
 
 	getReq := GetReadingHistoryByUserAndStatusRequest{
 		UserID: u.ID,
-		Status: Reading,
+		Status: entity.Reading,
 		Limit:  5,
 		Offset: 0,
 	}
@@ -125,10 +126,11 @@ func TestGetByUserAndStatus(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, grhs, 1)
 	require.Equal(t, rh1.BookID, grhs[0].BookID)
-	require.Equal(t, Reading, grhs[0].Status)
-	require.Equal(t, now.Year(), grhs[0].StartDate.Year())
-	require.Equal(t, now.Month(), grhs[0].StartDate.Month())
-	require.Equal(t, now.Day(), grhs[0].StartDate.Day())
+	require.Equal(t, entity.Reading, grhs[0].Status)
+
+	require.Equal(t, int32(now.Year()), grhs[0].StartDate.Year)
+	require.Equal(t, int32(now.Month()), grhs[0].StartDate.Month)
+	require.Equal(t, int32(now.Day()), grhs[0].StartDate.Day)
 	require.Nil(t, grhs[0].EndDate)
 }
 
@@ -141,7 +143,7 @@ func TestUpdate(t *testing.T) {
 	updateReq := UpdateReadingHistoryRequest{
 		UserID:    u.ID,
 		BookID:    b.ID,
-		Status:    Reading,
+		Status:    entity.Reading,
 		StartDate: &now,
 		EndDate:   nil,
 	}
@@ -149,9 +151,9 @@ func TestUpdate(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, rh.BookID, urh.BookID)
-	require.Equal(t, Reading, urh.Status)
-	require.Equal(t, now.Year(), urh.StartDate.Year())
-	require.Equal(t, now.Month(), urh.StartDate.Month())
-	require.Equal(t, now.Day(), urh.StartDate.Day())
+	require.Equal(t, entity.Reading, urh.Status)
+	require.Equal(t, int32(now.Year()), urh.StartDate.Year)
+	require.Equal(t, int32(now.Month()), urh.StartDate.Month)
+	require.Equal(t, int32(now.Day()), urh.StartDate.Day)
 	require.Nil(t, urh.EndDate)
 }

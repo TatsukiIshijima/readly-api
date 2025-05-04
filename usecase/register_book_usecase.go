@@ -93,7 +93,7 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 		createHistoryArgs := repository.CreateReadingHistoryRequest{
 			UserID:    req.UserID,
 			BookID:    b.ID,
-			Status:    repository.NewReadingStatus[entity.ReadingStatus](req.Status),
+			Status:    req.Status,
 			StartDate: req.StartDate,
 			EndDate:   req.EndDate,
 		}
@@ -112,7 +112,7 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 			PublisherName: b.Publisher,
 			PublishDate:   b.PublishDate,
 			ISBN:          b.ISBN,
-			Status:        rh.Status.ToEntity(),
+			Status:        rh.Status,
 			StartDate:     rh.StartDate,
 			EndDate:       rh.EndDate,
 		}
@@ -128,7 +128,7 @@ func (u *RegisterBookUseCaseImpl) createAuthorIfNeed(ctx context.Context, author
 	if len(*author) == 0 {
 		return nil
 	}
-	_, err := u.bookRepo.CreateAuthor(ctx, *author)
+	_, err := u.bookRepo.CreateAuthor(ctx, repository.NewCreateAuthorRequest(*author))
 	if err != nil {
 		return u.checkDuplicateKeyError(err)
 	}
@@ -142,7 +142,7 @@ func (u *RegisterBookUseCaseImpl) createPublisherIfNeed(ctx context.Context, pub
 	if len(*publisher) == 0 {
 		return nil
 	}
-	_, err := u.bookRepo.CreatePublisher(ctx, *publisher)
+	_, err := u.bookRepo.CreatePublisher(ctx, repository.NewCreatePublisherRequest(*publisher))
 	if err != nil {
 		return u.checkDuplicateKeyError(err)
 	}
@@ -153,7 +153,7 @@ func (u *RegisterBookUseCaseImpl) createGenreIfNeed(ctx context.Context, genre s
 	if len(genre) == 0 {
 		return nil
 	}
-	_, err := u.bookRepo.CreateGenre(ctx, genre)
+	_, err := u.bookRepo.CreateGenre(ctx, repository.NewCreateGenreRequest(genre))
 	if err != nil {
 		return u.checkDuplicateKeyError(err)
 	}

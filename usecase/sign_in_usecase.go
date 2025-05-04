@@ -56,7 +56,7 @@ type SignInResponse struct {
 func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*SignInResponse, error) {
 	var res *SignInResponse
 	err := u.transactor.Exec(ctx, func() error {
-		user, err := u.userRepo.GetUserByEmail(ctx, req.Email)
+		user, err := u.userRepo.GetUserByEmail(ctx, repository.NewGetUserByEmailRequest(req.Email))
 		if err != nil {
 			return newError(BadRequest, NotFoundUserError, "user not found")
 		}

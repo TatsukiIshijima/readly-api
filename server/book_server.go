@@ -64,7 +64,7 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 		PublisherName: util.ToStringOrNil(req.GetPublisherName()),
 		PublishDate:   entity.NewDateEntityFromProto(req.GetPublishDate()),
 		ISBN:          util.ToStringOrNil(req.GetIsbn()),
-		Status:        b.toReadingStatusEntity(req.GetReadingStatus()),
+		Status:        entity.NewReadingStatusFromProto(req.GetReadingStatus()),
 		StartDate:     entity.NewDateEntityFromProto(req.GetStartDate()),
 		EndDate:       entity.NewDateEntityFromProto(req.GetEndDate()),
 	}
