@@ -2,15 +2,13 @@ package repository
 
 import (
 	"context"
-	"github.com/google/uuid"
 	sqlc "readly/db/sqlc"
-	"time"
 )
 
 type SessionRepository interface {
 	CreateSession(ctx context.Context, req CreateSessionRequest) error
-	GetSessionByID(ctx context.Context, req GetSessionByIDRequest) (*SessionResponse, error)
-	GetSessionByUserID(ctx context.Context, req GetSessionByUserIDRequest) ([]SessionResponse, error)
+	GetSessionByID(ctx context.Context, req GetSessionByIDRequest) (*GetSessionResponse, error)
+	GetSessionByUserID(ctx context.Context, req GetSessionByUserIDRequest) ([]GetSessionResponse, error)
 	DeleteSessionByUserID(ctx context.Context, req DeleteSessionByUserIDRequest) (*DeleteSessionByUserIDResponse, error)
 }
 
@@ -32,47 +30,22 @@ func (r *SessionRepositoryImpl) CreateSession(ctx context.Context, req CreateSes
 	return nil
 }
 
-type GetSessionByIDRequest struct {
-	ID uuid.UUID
-}
-
-type SessionResponse struct {
-	UserID       int64
-	RefreshToken string
-	ExpiredAt    time.Time
-	IsRevoked    bool
-}
-
-func (r *SessionRepositoryImpl) GetSessionByID(ctx context.Context, req GetSessionByIDRequest) (*SessionResponse, error) {
-	session, err := r.querier.GetSessionByID(ctx, req.ID)
+func (r *SessionRepositoryImpl) GetSessionByID(ctx context.Context, req GetSessionByIDRequest) (*GetSessionResponse, error) {
+	res, err := r.querier.GetSessionByID(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}
-	return &SessionResponse{
-		UserID:       session.UserID,
-		RefreshToken: session.RefreshToken,
-		ExpiredAt:    session.ExpiresAt,
-		IsRevoked:    session.Revoked,
-	}, nil
+	return newGetSessionResponseFromSQLC(res), nil
 }
 
-type GetSessionByUserIDRequest struct {
-	UserID int64
-}
-
-func (r *SessionRepositoryImpl) GetSessionByUserID(ctx context.Context, req GetSessionByUserIDRequest) ([]SessionResponse, error) {
+func (r *SessionRepositoryImpl) GetSessionByUserID(ctx context.Context, req GetSessionByUserIDRequest) ([]GetSessionResponse, error) {
 	sessions, err := r.querier.GetSessionByUserID(ctx, req.UserID)
 	if err != nil {
 		return nil, err
 	}
-	var res []SessionResponse
+	var res []GetSessionResponse
 	for _, session := range sessions {
-		res = append(res, SessionResponse{
-			UserID:       session.UserID,
-			RefreshToken: session.RefreshToken,
-			ExpiredAt:    session.ExpiresAt,
-			IsRevoked:    session.Revoked,
-		})
+		res = append(res, *newGetSessionResponseFromSQLC(session))
 	}
 	return res, nil
 }
