@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	sqlc "readly/db/sqlc"
 	"readly/entity"
 	"time"
@@ -340,56 +339,10 @@ func (r *ReadingHistoryRepositoryImpl) GetByUserAndStatus(ctx context.Context, r
 	return res, nil
 }
 
-type UpdateReadingHistoryRequest struct {
-	UserID    int64
-	BookID    int64
-	Status    ReadingStatus
-	StartDate *time.Time
-	EndDate   *time.Time
-}
-
-func (r UpdateReadingHistoryRequest) toParams() sqlc.UpdateReadingHistoryParams {
-	sd := sql.NullTime{Time: time.Time{}, Valid: false}
-	ed := sql.NullTime{Time: time.Time{}, Valid: false}
-	if r.StartDate != nil {
-		sd = sql.NullTime{Time: *r.StartDate, Valid: true}
-	}
-	if r.EndDate != nil {
-		ed = sql.NullTime{Time: *r.EndDate, Valid: true}
-	}
-	return sqlc.UpdateReadingHistoryParams{
-		UserID:    r.UserID,
-		BookID:    r.BookID,
-		Status:    r.Status.toSqlc(),
-		StartDate: sd,
-		EndDate:   ed,
-	}
-}
-
-type UpdateReadingHistoryResponse struct {
-	BookID    int64
-	Status    ReadingStatus
-	StartDate *time.Time
-	EndDate   *time.Time
-}
-
-func newUpdateReadingHistoryResponse(r sqlc.ReadingHistory) *UpdateReadingHistoryResponse {
-	bid := r.BookID
-	s := NewReadingStatus[sqlc.ReadingStatus](r.Status)
-	sd := nilTime(r.StartDate)
-	ed := nilTime(r.EndDate)
-	return &UpdateReadingHistoryResponse{
-		BookID:    bid,
-		Status:    s,
-		StartDate: sd,
-		EndDate:   ed,
-	}
-}
-
 func (r *ReadingHistoryRepositoryImpl) Update(ctx context.Context, req UpdateReadingHistoryRequest) (*UpdateReadingHistoryResponse, error) {
-	h, err := r.querier.UpdateReadingHistory(ctx, req.toParams())
+	h, err := r.querier.UpdateReadingHistory(ctx, req.toSQLC())
 	if err != nil {
 		return nil, err
 	}
-	return newUpdateReadingHistoryResponse(h), nil
+	return newUpdateReadingHistoryResponseFromSQLC(h), nil
 }
