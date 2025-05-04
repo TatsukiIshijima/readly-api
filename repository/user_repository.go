@@ -23,34 +23,12 @@ func NewUserRepository(q sqlc.Querier) UserRepository {
 	}
 }
 
-type CreateUserRequest struct {
-	Name     string
-	Email    string
-	Password string
-}
-
-type CreateUserResponse struct {
-	ID    int64
-	Name  string
-	Email string
-}
-
 func (r *UserRepositoryImpl) CreateUser(ctx context.Context, req CreateUserRequest) (*CreateUserResponse, error) {
-	args := sqlc.CreateUserParams{
-		Name:           req.Name,
-		Email:          req.Email,
-		HashedPassword: req.Password,
-	}
-	res, err := r.querier.CreateUser(ctx, args)
+	res, err := r.querier.CreateUser(ctx, req.toSQLC())
 	if err != nil {
 		return nil, err
 	}
-	u := &CreateUserResponse{
-		ID:    res.ID,
-		Name:  res.Name,
-		Email: res.Email,
-	}
-	return u, nil
+	return newCreateUserResponseFromSQLC(res), nil
 }
 
 func (r *UserRepositoryImpl) DeleteUser(ctx context.Context, id int64) error {
