@@ -93,13 +93,7 @@ func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb
 	if err != nil {
 		return nil, gRPCStatusError(err)
 	}
-	return &pb.SignUpResponse{
-		AccessToken:  result.AccessToken,
-		RefreshToken: result.RefreshToken,
-		UserId:       result.UserID,
-		Name:         result.Name,
-		Email:        result.Email,
-	}, nil
+	return result.ToProto(), nil
 }
 
 func (s *UserServerImpl) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
