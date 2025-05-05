@@ -9,7 +9,7 @@ import (
 )
 
 type RegisterBookUseCase interface {
-	RegisterBook(ctx context.Context, req RegisterBookRequest) (*entity.Book, error)
+	RegisterBook(ctx context.Context, req RegisterBookRequest) (*RegisterBookResponse, error)
 }
 
 type RegisterBookUseCaseImpl struct {
@@ -33,8 +33,8 @@ func NewRegisterBookUseCase(
 	}
 }
 
-func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req RegisterBookRequest) (*entity.Book, error) {
-	var res *entity.Book
+func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req RegisterBookRequest) (*RegisterBookResponse, error) {
+	var book *entity.Book
 	err := u.transactor.Exec(ctx, func() error {
 		err := u.createAuthorIfNeed(ctx, req.AuthorName)
 		if err != nil {
@@ -85,7 +85,7 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 		if err != nil {
 			return err
 		}
-		res = &entity.Book{
+		book = &entity.Book{
 			ID:            b.ID,
 			Title:         b.Title,
 			Genres:        req.Genres,
@@ -102,7 +102,7 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 		}
 		return nil
 	})
-	return res, handle(err)
+	return NewRegisterBookResponse(book), handle(err)
 }
 
 func (u *RegisterBookUseCaseImpl) createAuthorIfNeed(ctx context.Context, author *string) error {

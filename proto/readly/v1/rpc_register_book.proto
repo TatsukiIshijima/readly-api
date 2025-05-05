@@ -4,6 +4,7 @@ package readly.v1;
 
 option go_package = "readly/pb/readly/v1;pb";
 
+import "readly/v1/book.proto";
 import "readly/v1/date.proto";
 import "readly/v1/reading_status.proto";
 
@@ -20,4 +21,8 @@ message RegisterBookRequest {
   ReadingStatus reading_status = 10;
   optional Date start_date = 11;
   optional Date end_date = 12;
+}
+
+message RegisterBookResponse {
+  Book book = 1;
 }

@@ -55,12 +55,12 @@ func TestDeleteBook(t *testing.T) {
 					StartDate:     &startDate,
 					EndDate:       &endDate,
 				}
-				book, err := registerBookUseCase.RegisterBook(context.Background(), registerReq)
+				res, err := registerBookUseCase.RegisterBook(context.Background(), registerReq)
 				require.NoError(t, err)
 
 				return DeleteBookRequest{
 					UserID: signUpRes.UserID,
-					BookID: book.ID,
+					BookID: res.Book.ID,
 				}
 			},
 			check: func(t *testing.T, err error) {
