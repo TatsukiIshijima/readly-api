@@ -5,12 +5,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"readly/entity"
 	"readly/middleware"
 	"readly/pb/readly/v1"
 	"readly/service/auth"
 	"readly/usecase"
-	"readly/util"
 )
 
 type BookServerImpl struct {
@@ -32,19 +30,6 @@ func NewBookServer(
 	}
 }
 
-func (b *BookServerImpl) toReadingStatusEntity(status pb.ReadingStatus) entity.ReadingStatus {
-	switch status {
-	case pb.ReadingStatus_UNREAD:
-		return entity.Unread
-	case pb.ReadingStatus_READING:
-		return entity.Reading
-	case pb.ReadingStatus_DONE:
-		return entity.Done
-	default:
-		return entity.Unknown
-	}
-}
-
 func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookRequest) (*pb.Book, error) {
 	claims, err := middleware.Authenticate(ctx, b.maker)
 	if err != nil {
@@ -53,21 +38,7 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 
 	// TODO:バリデーション
 
-	args := usecase.RegisterBookRequest{
-		UserID:        claims.UserID,
-		Title:         req.GetTitle(),
-		Genres:        req.GetGenres(),
-		Description:   util.ToStringOrNil(req.GetDescription()),
-		CoverImageURL: util.ToStringOrNil(req.GetCoverImageUrl()),
-		URL:           util.ToStringOrNil(req.GetUrl()),
-		AuthorName:    util.ToStringOrNil(req.GetAuthorName()),
-		PublisherName: util.ToStringOrNil(req.GetPublisherName()),
-		PublishDate:   entity.NewDateEntityFromProto(req.GetPublishDate()),
-		ISBN:          util.ToStringOrNil(req.GetIsbn()),
-		Status:        entity.NewReadingStatusFromProto(req.GetReadingStatus()),
-		StartDate:     entity.NewDateEntityFromProto(req.GetStartDate()),
-		EndDate:       entity.NewDateEntityFromProto(req.GetEndDate()),
-	}
+	args := usecase.NewRegisterBookRequest(claims.UserID, req)
 	book, err := b.registerUseCase.RegisterBook(ctx, args)
 	if err != nil {
 		return nil, gRPCStatusError(err)
