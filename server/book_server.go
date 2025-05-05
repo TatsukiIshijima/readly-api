@@ -30,7 +30,7 @@ func NewBookServer(
 	}
 }
 
-func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookRequest) (*pb.Book, error) {
+func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookRequest) (*pb.RegisterBookResponse, error) {
 	claims, err := middleware.Authenticate(ctx, b.maker)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -39,25 +39,11 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 	// TODO:バリデーション
 
 	args := usecase.NewRegisterBookRequest(claims.UserID, req)
-	book, err := b.registerUseCase.RegisterBook(ctx, args)
+	res, err := b.registerUseCase.RegisterBook(ctx, args)
 	if err != nil {
 		return nil, gRPCStatusError(err)
 	}
-	return &pb.Book{
-		Id:            book.ID,
-		Title:         book.Title,
-		Genres:        book.Genres,
-		Description:   book.Description,
-		CoverImageUrl: book.CoverImageURL,
-		Url:           book.URL,
-		AuthorName:    book.AuthorName,
-		PublisherName: book.PublisherName,
-		PublishDate:   book.PublishDate.ToProto(),
-		Isbn:          book.ISBN,
-		ReadingStatus: pb.ReadingStatus(book.Status),
-		StartDate:     book.StartDate.ToProto(),
-		EndDate:       book.EndDate.ToProto(),
-	}, nil
+	return res.ToProto(), nil
 }
 
 func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*emptypb.Empty, error) {
