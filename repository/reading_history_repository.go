@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	sqlc "readly/db/sqlc"
 )
 
@@ -59,6 +61,9 @@ func (r *ReadingHistoryRepositoryImpl) GetByUser(ctx context.Context, req GetRea
 func (r *ReadingHistoryRepositoryImpl) GetByUserAndBook(ctx context.Context, req GetReadingHistoryByUserAndBookRequest) (*GetReadingHistoryByUserAndBookResponse, error) {
 	row, err := r.querier.GetReadingHistoryByUserAndBook(ctx, req.toSQLC())
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRows
+		}
 		return nil, err
 	}
 	return newGetReadingHistoryByUserAndBookResponseFromSQLC(row), nil
