@@ -65,10 +65,7 @@ func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookReque
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
-	args := usecase.DeleteBookRequest{
-		UserID: claims.UserID,
-		BookID: req.GetBookId(),
-	}
+	args := usecase.NewDeleteBookRequest(claims.UserID, req)
 	err = b.deleteUseCase.DeleteBook(ctx, args)
 	if err != nil {
 		return nil, gRPCStatusError(err)
