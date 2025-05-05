@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 	sqlc "readly/db/sqlc"
 )
 
@@ -142,6 +144,9 @@ func (r *BookRepositoryImpl) DeletePublisher(ctx context.Context, req DeletePubl
 func (r *BookRepositoryImpl) GetBookByID(ctx context.Context, req GetBookRequest) (*GetBookResponse, error) {
 	b, err := r.querier.GetBooksByID(ctx, req.ID)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRows
+		}
 		return nil, err
 	}
 	return newGetBookResponseFromSQLC(b), nil

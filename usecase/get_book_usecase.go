@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"readly/entity"
 	"readly/repository"
 )
@@ -28,6 +29,9 @@ func NewGetBookUseCase(
 func (g GetBookUseCaseImpl) GetBook(ctx context.Context, req GetBookRequest) (*GetBookResponse, error) {
 	res, err := g.bookRepo.GetBookByID(ctx, req.ToRepoRequest())
 	if err != nil {
+		if errors.Is(err, repository.ErrNoRows) {
+			return nil, newError(BadRequest, NotFoundBookError, "book not found")
+		}
 		return nil, handle(err)
 	}
 	rh, err := g.readingHistoryRepo.GetByUserAndBook(ctx, repository.GetReadingHistoryByUserAndBookRequest{
@@ -35,6 +39,9 @@ func (g GetBookUseCaseImpl) GetBook(ctx context.Context, req GetBookRequest) (*G
 		BookID: req.BookID,
 	})
 	if err != nil {
+		if errors.Is(err, repository.ErrNoRows) {
+			return nil, newError(BadRequest, NotFoundBookError, "book not found")
+		}
 		return nil, handle(err)
 	}
 
