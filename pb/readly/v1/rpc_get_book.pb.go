@@ -65,13 +65,59 @@ func (x *GetBookRequest) GetBookId() int64 {
 	return 0
 }
 
+type GetBookResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Book          *Book                  `protobuf:"bytes,1,opt,name=book,proto3" json:"book,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetBookResponse) Reset() {
+	*x = GetBookResponse{}
+	mi := &file_readly_v1_rpc_get_book_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetBookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetBookResponse) ProtoMessage() {}
+
+func (x *GetBookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_readly_v1_rpc_get_book_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetBookResponse.ProtoReflect.Descriptor instead.
+func (*GetBookResponse) Descriptor() ([]byte, []int) {
+	return file_readly_v1_rpc_get_book_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetBookResponse) GetBook() *Book {
+	if x != nil {
+		return x.Book
+	}
+	return nil
+}
+
 var File_readly_v1_rpc_get_book_proto protoreflect.FileDescriptor
 
 const file_readly_v1_rpc_get_book_proto_rawDesc = "" +
 	"\n" +
-	"\x1creadly/v1/rpc_get_book.proto\x12\treadly.v1\")\n" +
+	"\x1creadly/v1/rpc_get_book.proto\x12\treadly.v1\x1a\x14readly/v1/book.proto\")\n" +
 	"\x0eGetBookRequest\x12\x17\n" +
-	"\abook_id\x18\x01 \x01(\x03R\x06bookIdB}\n" +
+	"\abook_id\x18\x01 \x01(\x03R\x06bookId\"6\n" +
+	"\x0fGetBookResponse\x12#\n" +
+	"\x04book\x18\x01 \x01(\v2\x0f.readly.v1.BookR\x04bookB}\n" +
 	"\rcom.readly.v1B\x0fRpcGetBookProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
@@ -87,16 +133,19 @@ func file_readly_v1_rpc_get_book_proto_rawDescGZIP() []byte {
 	return file_readly_v1_rpc_get_book_proto_rawDescData
 }
 
-var file_readly_v1_rpc_get_book_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_readly_v1_rpc_get_book_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_readly_v1_rpc_get_book_proto_goTypes = []any{
-	(*GetBookRequest)(nil), // 0: readly.v1.GetBookRequest
+	(*GetBookRequest)(nil),  // 0: readly.v1.GetBookRequest
+	(*GetBookResponse)(nil), // 1: readly.v1.GetBookResponse
+	(*Book)(nil),            // 2: readly.v1.Book
 }
 var file_readly_v1_rpc_get_book_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: readly.v1.GetBookResponse.book:type_name -> readly.v1.Book
+	1, // [1:1] is the sub-list for method output_type
+	1, // [1:1] is the sub-list for method input_type
+	1, // [1:1] is the sub-list for extension type_name
+	1, // [1:1] is the sub-list for extension extendee
+	0, // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_readly_v1_rpc_get_book_proto_init() }
@@ -104,13 +153,14 @@ func file_readly_v1_rpc_get_book_proto_init() {
 	if File_readly_v1_rpc_get_book_proto != nil {
 		return
 	}
+	file_readly_v1_book_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_readly_v1_rpc_get_book_proto_rawDesc), len(file_readly_v1_rpc_get_book_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
