@@ -23,7 +23,7 @@ func TestRegisterBook(t *testing.T) {
 	testCases := []struct {
 		name  string
 		setup func(t *testing.T) RegisterBookRequest
-		check func(t *testing.T, req RegisterBookRequest, res *entity.Book, err error)
+		check func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error)
 	}{
 		{
 			name: "New unread book with required fields register success",
@@ -35,21 +35,21 @@ func TestRegisterBook(t *testing.T) {
 					Status: 0,
 				}
 			},
-			check: func(t *testing.T, req RegisterBookRequest, res *entity.Book, err error) {
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
 				require.NoError(t, err)
-				require.NotEmpty(t, res.ID)
-				require.Equal(t, req.Title, res.Title)
-				require.Equal(t, req.Genres, res.Genres)
-				require.Equal(t, req.Description, res.Description)
-				require.Equal(t, req.CoverImageURL, res.CoverImageURL)
-				require.Equal(t, req.URL, res.URL)
-				require.Equal(t, req.AuthorName, res.AuthorName)
-				require.Equal(t, req.PublisherName, res.PublisherName)
-				require.Equal(t, req.PublishDate, res.PublishDate)
-				require.Equal(t, req.ISBN, res.ISBN)
-				require.Equal(t, req.Status, res.Status)
-				require.True(t, isSameDate(req.StartDate, res.StartDate))
-				require.True(t, isSameDate(req.EndDate, res.EndDate))
+				require.NotEmpty(t, res.Book.ID)
+				require.Equal(t, req.Title, res.Book.Title)
+				require.Equal(t, req.Genres, res.Book.Genres)
+				require.Equal(t, req.Description, res.Book.Description)
+				require.Equal(t, req.CoverImageURL, res.Book.CoverImageURL)
+				require.Equal(t, req.URL, res.Book.URL)
+				require.Equal(t, req.AuthorName, res.Book.AuthorName)
+				require.Equal(t, req.PublisherName, res.Book.PublisherName)
+				require.Equal(t, req.PublishDate, res.Book.PublishDate)
+				require.Equal(t, req.ISBN, res.Book.ISBN)
+				require.Equal(t, req.Status, res.Book.Status)
+				require.True(t, isSameDate(req.StartDate, res.Book.StartDate))
+				require.True(t, isSameDate(req.EndDate, res.Book.EndDate))
 			},
 		},
 		{
@@ -82,21 +82,21 @@ func TestRegisterBook(t *testing.T) {
 					EndDate:       &endDate,
 				}
 			},
-			check: func(t *testing.T, req RegisterBookRequest, res *entity.Book, err error) {
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
 				require.NoError(t, err)
-				require.NotEmpty(t, res.ID)
-				require.Equal(t, req.Title, res.Title)
-				require.Equal(t, req.Genres, res.Genres)
-				require.Equal(t, req.Description, res.Description)
-				require.Equal(t, req.CoverImageURL, res.CoverImageURL)
-				require.Equal(t, req.URL, res.URL)
-				require.Equal(t, req.AuthorName, res.AuthorName)
-				require.Equal(t, req.PublisherName, res.PublisherName)
-				require.Equal(t, req.PublishDate, res.PublishDate)
-				require.Equal(t, req.ISBN, res.ISBN)
-				require.Equal(t, req.Status, res.Status)
-				require.True(t, isSameDate(req.StartDate, res.StartDate))
-				require.True(t, isSameDate(req.EndDate, res.EndDate))
+				require.NotEmpty(t, res.Book.ID)
+				require.Equal(t, req.Title, res.Book.Title)
+				require.Equal(t, req.Genres, res.Book.Genres)
+				require.Equal(t, req.Description, res.Book.Description)
+				require.Equal(t, req.CoverImageURL, res.Book.CoverImageURL)
+				require.Equal(t, req.URL, res.Book.URL)
+				require.Equal(t, req.AuthorName, res.Book.AuthorName)
+				require.Equal(t, req.PublisherName, res.Book.PublisherName)
+				require.Equal(t, req.PublishDate, res.Book.PublishDate)
+				require.Equal(t, req.ISBN, res.Book.ISBN)
+				require.Equal(t, req.Status, res.Book.Status)
+				require.True(t, isSameDate(req.StartDate, res.Book.StartDate))
+				require.True(t, isSameDate(req.EndDate, res.Book.EndDate))
 			},
 		},
 		{
@@ -120,21 +120,21 @@ func TestRegisterBook(t *testing.T) {
 					Status: 0,
 				}
 			},
-			check: func(t *testing.T, req RegisterBookRequest, res *entity.Book, err error) {
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
 				require.NoError(t, err)
-				require.NotEmpty(t, res.ID)
-				require.Equal(t, req.Title, res.Title)
-				require.Equal(t, req.Genres, res.Genres)
-				require.Equal(t, req.Description, res.Description)
-				require.Equal(t, req.CoverImageURL, res.CoverImageURL)
-				require.Equal(t, req.URL, res.URL)
-				require.Equal(t, req.AuthorName, res.AuthorName)
-				require.Equal(t, req.PublisherName, res.PublisherName)
-				require.Equal(t, req.PublishDate, res.PublishDate)
-				require.Equal(t, req.ISBN, res.ISBN)
-				require.Equal(t, req.Status, res.Status)
-				require.True(t, isSameDate(req.StartDate, res.StartDate))
-				require.True(t, isSameDate(req.EndDate, res.EndDate))
+				require.NotEmpty(t, res.Book.ID)
+				require.Equal(t, req.Title, res.Book.Title)
+				require.Equal(t, req.Genres, res.Book.Genres)
+				require.Equal(t, req.Description, res.Book.Description)
+				require.Equal(t, req.CoverImageURL, res.Book.CoverImageURL)
+				require.Equal(t, req.URL, res.Book.URL)
+				require.Equal(t, req.AuthorName, res.Book.AuthorName)
+				require.Equal(t, req.PublisherName, res.Book.PublisherName)
+				require.Equal(t, req.PublishDate, res.Book.PublishDate)
+				require.Equal(t, req.ISBN, res.Book.ISBN)
+				require.Equal(t, req.Status, res.Book.Status)
+				require.True(t, isSameDate(req.StartDate, res.Book.StartDate))
+				require.True(t, isSameDate(req.EndDate, res.Book.EndDate))
 			},
 		},
 		{
@@ -165,21 +165,21 @@ func TestRegisterBook(t *testing.T) {
 					StartDate:     &startDate,
 				}
 			},
-			check: func(t *testing.T, req RegisterBookRequest, res *entity.Book, err error) {
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
 				require.NoError(t, err)
-				require.NotEmpty(t, res.ID)
-				require.Equal(t, req.Title, res.Title)
-				require.Equal(t, req.Genres, res.Genres)
-				require.Equal(t, req.Description, res.Description)
-				require.Equal(t, req.CoverImageURL, res.CoverImageURL)
-				require.Equal(t, req.URL, res.URL)
-				require.Equal(t, req.AuthorName, res.AuthorName)
-				require.Equal(t, req.PublisherName, res.PublisherName)
-				require.Equal(t, req.PublishDate, res.PublishDate)
-				require.Equal(t, req.ISBN, res.ISBN)
-				require.Equal(t, req.Status, res.Status)
-				require.True(t, isSameDate(req.StartDate, res.StartDate))
-				require.True(t, isSameDate(req.EndDate, res.EndDate))
+				require.NotEmpty(t, res.Book.ID)
+				require.Equal(t, req.Title, res.Book.Title)
+				require.Equal(t, req.Genres, res.Book.Genres)
+				require.Equal(t, req.Description, res.Book.Description)
+				require.Equal(t, req.CoverImageURL, res.Book.CoverImageURL)
+				require.Equal(t, req.URL, res.Book.URL)
+				require.Equal(t, req.AuthorName, res.Book.AuthorName)
+				require.Equal(t, req.PublisherName, res.Book.PublisherName)
+				require.Equal(t, req.PublishDate, res.Book.PublishDate)
+				require.Equal(t, req.ISBN, res.Book.ISBN)
+				require.Equal(t, req.Status, res.Book.Status)
+				require.True(t, isSameDate(req.StartDate, res.Book.StartDate))
+				require.True(t, isSameDate(req.EndDate, res.Book.EndDate))
 			},
 		},
 	}

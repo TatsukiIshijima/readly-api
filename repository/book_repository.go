@@ -2,26 +2,22 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	sqlc "readly/db/sqlc"
-	"readly/entity"
-	"strings"
-	"time"
 )
 
 type BookRepository interface {
-	CreateAuthor(ctx context.Context, name string) (*string, error)
+	CreateAuthor(ctx context.Context, req CreateAuthorRequest) (*CreateAuthorResponse, error)
 	CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error)
 	CreateBookGenre(ctx context.Context, req CreateBookGenreRequest) (*CreateBookGenreResponse, error)
-	CreateGenre(ctx context.Context, name string) (*string, error)
-	CreatePublisher(ctx context.Context, name string) (*string, error)
-	DeleteAuthor(ctx context.Context, name string) error
-	DeleteBook(ctx context.Context, id int64) error
+	CreateGenre(ctx context.Context, req CreateGenreRequest) (*CreateGenreResponse, error)
+	CreatePublisher(ctx context.Context, req CreatePublisherRequest) (*CreatePublisherResponse, error)
+	DeleteAuthor(ctx context.Context, req DeleteAuthorRequest) error
+	DeleteBook(ctx context.Context, req DeleteBookRequest) error
 	DeleteBookGenre(ctx context.Context, req DeleteBookGenreRequest) error
-	DeleteGenre(ctx context.Context, name string) error
-	DeletePublisher(ctx context.Context, name string) error
-	GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error)
-	GetGenresByBookID(ctx context.Context, id int64) ([]string, error)
+	DeleteGenre(ctx context.Context, req DeleteGenreRequest) error
+	DeletePublisher(ctx context.Context, req DeletePublisherRequest) error
+	GetBookByID(ctx context.Context, req GetBookRequest) (*GetBookResponse, error)
+	GetGenresByBookID(ctx context.Context, request GetGenresByBookIDRequest) (*GetGenresByBookIDResponse, error)
 }
 
 type BookRepositoryImpl struct {
@@ -34,100 +30,21 @@ func NewBookRepository(q sqlc.Querier) BookRepository {
 	}
 }
 
-func (r *BookRepositoryImpl) CreateAuthor(ctx context.Context, name string) (*string, error) {
-	author, err := r.querier.CreateAuthor(ctx, name)
+func (r *BookRepositoryImpl) CreateAuthor(ctx context.Context, req CreateAuthorRequest) (*CreateAuthorResponse, error) {
+	res, err := r.querier.CreateAuthor(ctx, req.Name)
 	if err != nil {
 		return nil, err
 	}
-	return &author.Name, nil
-}
-
-type CreateBookRequest struct {
-	Title         string
-	Description   *string
-	CoverImageURL *string
-	URL           *string
-	Author        *string
-	Publisher     *string
-	PublishDate   *entity.Date
-	ISBN          *string
-}
-
-func (r CreateBookRequest) toParams() sqlc.CreateBookParams {
-	desc := sql.NullString{String: "", Valid: false}
-	coverImgURL := sql.NullString{String: "", Valid: false}
-	URL := sql.NullString{String: "", Valid: false}
-	a := sql.NullString{String: "", Valid: false}
-	p := sql.NullString{String: "", Valid: false}
-	pd := sql.NullTime{Time: time.Time{}, Valid: false}
-	ISBN := sql.NullString{String: "", Valid: false}
-	if r.Description != nil {
-		desc = sql.NullString{String: *r.Description, Valid: true}
-	}
-	if r.CoverImageURL != nil {
-		coverImgURL = sql.NullString{String: *r.CoverImageURL, Valid: true}
-	}
-	if r.URL != nil {
-		URL = sql.NullString{String: *r.URL, Valid: true}
-	}
-	if r.Author != nil {
-		a = sql.NullString{String: *r.Author, Valid: true}
-	}
-	if r.Publisher != nil {
-		p = sql.NullString{String: *r.Publisher, Valid: true}
-	}
-	if r.PublishDate != nil {
-		t := r.PublishDate.ToTime()
-		pd = sql.NullTime{Time: *t, Valid: true}
-	}
-	if r.ISBN != nil {
-		ISBN = sql.NullString{String: *r.ISBN, Valid: true}
-	}
-	return sqlc.CreateBookParams{
-		Title:         r.Title,
-		Description:   desc,
-		CoverImageUrl: coverImgURL,
-		Url:           URL,
-		AuthorName:    a,
-		PublisherName: p,
-		PublishedDate: pd,
-		Isbn:          ISBN,
-	}
-}
-
-type CreateBookResponse struct {
-	ID            int64
-	Title         string
-	Description   *string
-	CoverImageURL *string
-	URL           *string
-	Author        *string
-	Publisher     *string
-	PublishDate   *entity.Date
-	ISBN          *string
-}
-
-func newCreateResponse(b sqlc.Book) *CreateBookResponse {
-	return &CreateBookResponse{
-		ID:            b.ID,
-		Title:         b.Title,
-		Description:   nilString(b.Description),
-		CoverImageURL: nilString(b.CoverImageUrl),
-		URL:           nilString(b.Url),
-		Author:        nilString(b.AuthorName),
-		Publisher:     nilString(b.PublisherName),
-		PublishDate:   entity.NewDateEntityFromNullTime(b.PublishedDate),
-		ISBN:          nilString(b.Isbn),
-	}
+	return newCreateAuthorResponseFromSQLC(res), nil
 }
 
 func (r *BookRepositoryImpl) CreateBook(ctx context.Context, req CreateBookRequest) (*CreateBookResponse, error) {
-	p := req.toParams()
+	p := req.toSQLC()
 	b, err := r.querier.CreateBook(ctx, p)
 	if err != nil {
 		return nil, err
 	}
-	return newCreateResponse(b), nil
+	return newCreateBookResponseFromSQLC(b), nil
 }
 
 type CreateBookGenreRequest struct {
@@ -163,28 +80,28 @@ func (r *BookRepositoryImpl) CreateBookGenre(ctx context.Context, req CreateBook
 	return newCreateBookGenreResponse(b), nil
 }
 
-func (r *BookRepositoryImpl) CreateGenre(ctx context.Context, name string) (*string, error) {
-	g, err := r.querier.CreateGenre(ctx, name)
+func (r *BookRepositoryImpl) CreateGenre(ctx context.Context, req CreateGenreRequest) (*CreateGenreResponse, error) {
+	g, err := r.querier.CreateGenre(ctx, req.Name)
 	if err != nil {
 		return nil, err
 	}
-	return &g.Name, nil
+	return newCreateGenreResponseFromSQLC(g), nil
 }
 
-func (r *BookRepositoryImpl) CreatePublisher(ctx context.Context, name string) (*string, error) {
-	p, err := r.querier.CreatePublisher(ctx, name)
+func (r *BookRepositoryImpl) CreatePublisher(ctx context.Context, req CreatePublisherRequest) (*CreatePublisherResponse, error) {
+	p, err := r.querier.CreatePublisher(ctx, req.Name)
 	if err != nil {
 		return nil, err
 	}
-	return &p.Name, nil
+	return newCreatePublisherResponseFromSQLC(p), nil
 }
 
-func (r *BookRepositoryImpl) DeleteAuthor(ctx context.Context, name string) error {
-	return r.querier.DeleteAuthor(ctx, name)
+func (r *BookRepositoryImpl) DeleteAuthor(ctx context.Context, req DeleteAuthorRequest) error {
+	return r.querier.DeleteAuthor(ctx, req.Name)
 }
 
-func (r *BookRepositoryImpl) DeleteBook(ctx context.Context, id int64) error {
-	rowsAffected, err := r.querier.DeleteBook(ctx, id)
+func (r *BookRepositoryImpl) DeleteBook(ctx context.Context, req DeleteBookRequest) error {
+	rowsAffected, err := r.querier.DeleteBook(ctx, req.ID)
 	if err != nil {
 		return err
 	}
@@ -214,54 +131,26 @@ func (r *BookRepositoryImpl) DeleteBookGenre(ctx context.Context, req DeleteBook
 	return nil
 }
 
-func (r *BookRepositoryImpl) DeleteGenre(ctx context.Context, name string) error {
-	return r.querier.DeleteGenre(ctx, name)
+func (r *BookRepositoryImpl) DeleteGenre(ctx context.Context, req DeleteGenreRequest) error {
+	return r.querier.DeleteGenre(ctx, req.Name)
 }
 
-func (r *BookRepositoryImpl) DeletePublisher(ctx context.Context, name string) error {
-	return r.querier.DeletePublisher(ctx, name)
+func (r *BookRepositoryImpl) DeletePublisher(ctx context.Context, req DeletePublisherRequest) error {
+	return r.querier.DeletePublisher(ctx, req.Name)
 }
 
-type GetBookResponse struct {
-	ID            int64
-	Title         string
-	Genres        []string
-	Description   *string
-	CoverImageURL *string
-	URL           *string
-	AuthorName    *string
-	PublisherName *string
-	PublishDate   *time.Time
-	ISBN          *string
-}
-
-func newGetBookResponse(b sqlc.GetBooksByIDRow) *GetBookResponse {
-	return &GetBookResponse{
-		ID:            b.ID,
-		Title:         b.Title,
-		Genres:        strings.Split(string(b.Genres), ", "),
-		Description:   nilString(b.Description),
-		CoverImageURL: nilString(b.CoverImageUrl),
-		URL:           nilString(b.Url),
-		AuthorName:    nilString(b.AuthorName),
-		PublisherName: nilString(b.PublisherName),
-		PublishDate:   nilTime(b.PublishedDate),
-		ISBN:          nilString(b.Isbn),
-	}
-}
-
-func (r *BookRepositoryImpl) GetBookByID(ctx context.Context, id int64) (*GetBookResponse, error) {
-	b, err := r.querier.GetBooksByID(ctx, id)
+func (r *BookRepositoryImpl) GetBookByID(ctx context.Context, req GetBookRequest) (*GetBookResponse, error) {
+	b, err := r.querier.GetBooksByID(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}
-	return newGetBookResponse(b), nil
+	return newGetBookResponseFromSQLC(b), nil
 }
 
-func (r *BookRepositoryImpl) GetGenresByBookID(ctx context.Context, id int64) ([]string, error) {
-	g, err := r.querier.GetGenresByBookID(ctx, id)
+func (r *BookRepositoryImpl) GetGenresByBookID(ctx context.Context, req GetGenresByBookIDRequest) (*GetGenresByBookIDResponse, error) {
+	g, err := r.querier.GetGenresByBookID(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}
-	return g, err
+	return newGetGenresByBookIDResponse(g), err
 }

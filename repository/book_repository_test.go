@@ -9,19 +9,18 @@ import (
 	"testing"
 )
 
-func createRandomAuthor(t *testing.T) *string {
+func createRandomAuthor(t *testing.T) *CreateAuthorResponse {
 	name := testdata.RandomString(8)
-	a, err := bookRepo.CreateAuthor(context.Background(), name)
+	res, err := bookRepo.CreateAuthor(context.Background(), NewCreateAuthorRequest(name))
 	require.NoError(t, err)
-	return a
+	return res
 }
 
 func TestCreateAuthor(t *testing.T) {
 	a := createRandomAuthor(t)
-	ga, err := querier.GetAuthorByName(context.Background(), *a)
+	ga, err := querier.GetAuthorByName(context.Background(), a.Name)
 	require.NoError(t, err)
-
-	require.Equal(t, *a, ga.Name)
+	require.Equal(t, a.Name, ga.Name)
 }
 
 func createRandomBook(t *testing.T) *CreateBookResponse {
@@ -70,7 +69,7 @@ func TestCreateBookGenre(t *testing.T) {
 
 	req := CreateBookGenreRequest{
 		BookID:    b.ID,
-		GenreName: *g,
+		GenreName: g.Name,
 	}
 	res, err := bookRepo.CreateBookGenre(context.Background(), req)
 	require.NoError(t, err)
@@ -78,49 +77,49 @@ func TestCreateBookGenre(t *testing.T) {
 
 	gg, err := querier.GetGenresByBookID(context.Background(), b.ID)
 	require.NoError(t, err)
-	require.Equal(t, *g, gg[0])
+	require.Equal(t, g.Name, gg[0])
 }
 
-func createRandomGenre(t *testing.T) *string {
+func createRandomGenre(t *testing.T) *CreateGenreResponse {
 	name := testdata.RandomString(8)
-	g, err := bookRepo.CreateGenre(context.Background(), name)
+	res, err := bookRepo.CreateGenre(context.Background(), NewCreateGenreRequest(name))
 	require.NoError(t, err)
-	return g
+	return res
 }
 
 func TestCreateGenre(t *testing.T) {
 	g := createRandomGenre(t)
-	gg, err := querier.GetGenreByName(context.Background(), *g)
+	gg, err := querier.GetGenreByName(context.Background(), g.Name)
 	require.NoError(t, err)
-	require.Equal(t, *g, gg.Name)
+	require.Equal(t, g.Name, gg.Name)
 }
 
-func createRandomPublisher(t *testing.T) *string {
+func createRandomPublisher(t *testing.T) *CreatePublisherResponse {
 	name := testdata.RandomString(8)
-	p, err := bookRepo.CreatePublisher(context.Background(), name)
+	p, err := bookRepo.CreatePublisher(context.Background(), NewCreatePublisherRequest(name))
 	require.NoError(t, err)
 	return p
 }
 
 func TestCreatePublisher(t *testing.T) {
 	p := createRandomPublisher(t)
-	gp, err := querier.GetPublisherByName(context.Background(), *p)
+	gp, err := querier.GetPublisherByName(context.Background(), p.Name)
 	require.NoError(t, err)
-	require.Equal(t, *p, gp.Name)
+	require.Equal(t, p.Name, gp.Name)
 }
 
 func TestDeleteAuthor(t *testing.T) {
 	a := createRandomAuthor(t)
-	err := bookRepo.DeleteAuthor(context.Background(), *a)
+	err := bookRepo.DeleteAuthor(context.Background(), NewDeleteAuthorRequest(a.Name))
 	require.NoError(t, err)
 
-	_, err = querier.GetAuthorByName(context.Background(), *a)
+	_, err = querier.GetAuthorByName(context.Background(), a.Name)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
 func TestDeleteBook(t *testing.T) {
 	b := createRandomBook(t)
-	err := bookRepo.DeleteBook(context.Background(), b.ID)
+	err := bookRepo.DeleteBook(context.Background(), NewDeleteBookRequest(b.ID))
 	require.NoError(t, err)
 
 	_, err = querier.GetBooksByID(context.Background(), b.ID)
@@ -133,14 +132,14 @@ func TestDeleteBookGenre(t *testing.T) {
 
 	req := CreateBookGenreRequest{
 		BookID:    b.ID,
-		GenreName: *g,
+		GenreName: g.Name,
 	}
 	_, err := bookRepo.CreateBookGenre(context.Background(), req)
 	require.NoError(t, err)
 
 	err = bookRepo.DeleteBookGenre(context.Background(), DeleteBookGenreRequest{
 		BookID:    b.ID,
-		GenreName: *g,
+		GenreName: g.Name,
 	})
 	require.NoError(t, err)
 
@@ -151,10 +150,10 @@ func TestDeleteBookGenre(t *testing.T) {
 
 func TestDeleteGenre(t *testing.T) {
 	g := createRandomGenre(t)
-	err := bookRepo.DeleteGenre(context.Background(), *g)
+	err := bookRepo.DeleteGenre(context.Background(), NewDeleteGenreRequest(g.Name))
 	require.NoError(t, err)
 
-	_, err = querier.GetGenreByName(context.Background(), *g)
+	_, err = querier.GetGenreByName(context.Background(), g.Name)
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 

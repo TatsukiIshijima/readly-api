@@ -153,11 +153,55 @@ func (x *RegisterBookRequest) GetEndDate() *Date {
 	return nil
 }
 
+type RegisterBookResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Book          *Book                  `protobuf:"bytes,1,opt,name=book,proto3" json:"book,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterBookResponse) Reset() {
+	*x = RegisterBookResponse{}
+	mi := &file_readly_v1_rpc_register_book_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterBookResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterBookResponse) ProtoMessage() {}
+
+func (x *RegisterBookResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_readly_v1_rpc_register_book_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterBookResponse.ProtoReflect.Descriptor instead.
+func (*RegisterBookResponse) Descriptor() ([]byte, []int) {
+	return file_readly_v1_rpc_register_book_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *RegisterBookResponse) GetBook() *Book {
+	if x != nil {
+		return x.Book
+	}
+	return nil
+}
+
 var File_readly_v1_rpc_register_book_proto protoreflect.FileDescriptor
 
 const file_readly_v1_rpc_register_book_proto_rawDesc = "" +
 	"\n" +
-	"!readly/v1/rpc_register_book.proto\x12\treadly.v1\x1a\x14readly/v1/date.proto\x1a\x1ereadly/v1/reading_status.proto\"\xfe\x04\n" +
+	"!readly/v1/rpc_register_book.proto\x12\treadly.v1\x1a\x14readly/v1/book.proto\x1a\x14readly/v1/date.proto\x1a\x1ereadly/v1/reading_status.proto\"\xfe\x04\n" +
 	"\x13RegisterBookRequest\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x16\n" +
 	"\x06genres\x18\x02 \x03(\tR\x06genres\x12%\n" +
@@ -182,7 +226,9 @@ const file_readly_v1_rpc_register_book_proto_rawDesc = "" +
 	"\r_publish_dateB\a\n" +
 	"\x05_isbnB\r\n" +
 	"\v_start_dateB\v\n" +
-	"\t_end_dateB\x82\x01\n" +
+	"\t_end_date\";\n" +
+	"\x14RegisterBookResponse\x12#\n" +
+	"\x04book\x18\x01 \x01(\v2\x0f.readly.v1.BookR\x04bookB\x82\x01\n" +
 	"\rcom.readly.v1B\x14RpcRegisterBookProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
 	"Readly::V1b\x06proto3"
 
@@ -198,22 +244,25 @@ func file_readly_v1_rpc_register_book_proto_rawDescGZIP() []byte {
 	return file_readly_v1_rpc_register_book_proto_rawDescData
 }
 
-var file_readly_v1_rpc_register_book_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_readly_v1_rpc_register_book_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_readly_v1_rpc_register_book_proto_goTypes = []any{
-	(*RegisterBookRequest)(nil), // 0: readly.v1.RegisterBookRequest
-	(*Date)(nil),                // 1: readly.v1.Date
-	(ReadingStatus)(0),          // 2: readly.v1.ReadingStatus
+	(*RegisterBookRequest)(nil),  // 0: readly.v1.RegisterBookRequest
+	(*RegisterBookResponse)(nil), // 1: readly.v1.RegisterBookResponse
+	(*Date)(nil),                 // 2: readly.v1.Date
+	(ReadingStatus)(0),           // 3: readly.v1.ReadingStatus
+	(*Book)(nil),                 // 4: readly.v1.Book
 }
 var file_readly_v1_rpc_register_book_proto_depIdxs = []int32{
-	1, // 0: readly.v1.RegisterBookRequest.publish_date:type_name -> readly.v1.Date
-	2, // 1: readly.v1.RegisterBookRequest.reading_status:type_name -> readly.v1.ReadingStatus
-	1, // 2: readly.v1.RegisterBookRequest.start_date:type_name -> readly.v1.Date
-	1, // 3: readly.v1.RegisterBookRequest.end_date:type_name -> readly.v1.Date
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	2, // 0: readly.v1.RegisterBookRequest.publish_date:type_name -> readly.v1.Date
+	3, // 1: readly.v1.RegisterBookRequest.reading_status:type_name -> readly.v1.ReadingStatus
+	2, // 2: readly.v1.RegisterBookRequest.start_date:type_name -> readly.v1.Date
+	2, // 3: readly.v1.RegisterBookRequest.end_date:type_name -> readly.v1.Date
+	4, // 4: readly.v1.RegisterBookResponse.book:type_name -> readly.v1.Book
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_readly_v1_rpc_register_book_proto_init() }
@@ -221,6 +270,7 @@ func file_readly_v1_rpc_register_book_proto_init() {
 	if File_readly_v1_rpc_register_book_proto != nil {
 		return
 	}
+	file_readly_v1_book_proto_init()
 	file_readly_v1_date_proto_init()
 	file_readly_v1_reading_status_proto_init()
 	file_readly_v1_rpc_register_book_proto_msgTypes[0].OneofWrappers = []any{}
@@ -230,7 +280,7 @@ func file_readly_v1_rpc_register_book_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_readly_v1_rpc_register_book_proto_rawDesc), len(file_readly_v1_rpc_register_book_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
