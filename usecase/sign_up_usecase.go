@@ -38,14 +38,6 @@ func NewSignUpUseCase(
 	}
 }
 
-type SignUpRequest struct {
-	Name      string
-	Email     string
-	Password  string
-	IPAddress string
-	UserAgent string
-}
-
 type SignUpResponse struct {
 	AccessToken  string
 	RefreshToken string

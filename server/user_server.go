@@ -88,13 +88,7 @@ func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb
 	}
 
 	meta := newMetadataFrom(ctx)
-	args := usecase.SignUpRequest{
-		Name:      req.GetName(),
-		Email:     req.GetEmail(),
-		Password:  req.GetPassword(),
-		IPAddress: meta.IPAddress,
-		UserAgent: meta.UserAgent,
-	}
+	args := usecase.NewSignUpRequest(req, meta.IPAddress, meta.UserAgent)
 	result, err := s.signUpUseCase.SignUp(ctx, args)
 	if err != nil {
 		return nil, gRPCStatusError(err)
