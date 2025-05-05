@@ -2,8 +2,8 @@ package repository
 
 import (
 	sqlc "readly/db/sqlc"
+	"readly/entity"
 	"strings"
-	"time"
 )
 
 type GetBookResponse struct {
@@ -15,7 +15,7 @@ type GetBookResponse struct {
 	URL           *string
 	AuthorName    *string
 	PublisherName *string
-	PublishDate   *time.Time
+	PublishDate   *entity.Date
 	ISBN          *string
 }
 
@@ -29,7 +29,7 @@ func newGetBookResponseFromSQLC(row sqlc.GetBooksByIDRow) *GetBookResponse {
 		URL:           nilString(row.Url),
 		AuthorName:    nilString(row.AuthorName),
 		PublisherName: nilString(row.PublisherName),
-		PublishDate:   nilTime(row.PublishedDate),
+		PublishDate:   entity.NewDateEntityFromNullTime(row.PublishedDate),
 		ISBN:          nilString(row.Isbn),
 	}
 }

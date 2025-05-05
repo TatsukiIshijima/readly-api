@@ -25,17 +25,8 @@ func NewGetBookUseCase(
 	}
 }
 
-type GetBookRequest struct {
-	UserID int64
-	BookID int64
-}
-
-type GetBookResponse struct {
-	Book entity.Book
-}
-
 func (g GetBookUseCaseImpl) GetBook(ctx context.Context, req GetBookRequest) (*GetBookResponse, error) {
-	b, err := g.bookRepo.GetBookByID(ctx, req.BookID)
+	res, err := g.bookRepo.GetBookByID(ctx, req.ToRepoRequest())
 	if err != nil {
 		return nil, handle(err)
 	}
@@ -47,21 +38,21 @@ func (g GetBookUseCaseImpl) GetBook(ctx context.Context, req GetBookRequest) (*G
 		return nil, handle(err)
 	}
 
-	return &GetBookResponse{
-		Book: entity.Book{
-			ID:            b.ID,
-			Title:         b.Title,
-			Genres:        b.Genres,
-			Description:   b.Description,
-			CoverImageURL: b.CoverImageURL,
-			URL:           b.URL,
-			AuthorName:    b.AuthorName,
-			PublisherName: b.PublisherName,
-			PublishDate:   b.PublishDate,
-			ISBN:          b.ISBN,
-			Status:        rh.Status,
-			StartDate:     rh.StartDate,
-			EndDate:       rh.EndDate,
-		},
-	}, nil
+	book := entity.Book{
+		ID:            res.ID,
+		Title:         res.Title,
+		Genres:        res.Genres,
+		Description:   res.Description,
+		CoverImageURL: res.CoverImageURL,
+		URL:           res.URL,
+		AuthorName:    res.AuthorName,
+		PublisherName: res.PublisherName,
+		PublishDate:   res.PublishDate,
+		ISBN:          res.ISBN,
+		Status:        rh.Status,
+		StartDate:     rh.StartDate,
+		EndDate:       rh.EndDate,
+	}
+
+	return NewGetBookResponse(book), nil
 }
