@@ -104,7 +104,5 @@ func (s *UserServerImpl) RefreshToken(ctx context.Context, req *pb.RefreshTokenR
 		return nil, gRPCStatusError(err)
 	}
 
-	return &pb.RefreshTokenResponse{
-		AccessToken: result.AccessToken,
-	}, nil
+	return result.ToProto(), nil
 }
