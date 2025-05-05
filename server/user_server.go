@@ -97,9 +97,7 @@ func (s *UserServerImpl) SignUp(ctx context.Context, req *pb.SignUpRequest) (*pb
 }
 
 func (s *UserServerImpl) RefreshToken(ctx context.Context, req *pb.RefreshTokenRequest) (*pb.RefreshTokenResponse, error) {
-	args := usecase.RefreshAccessTokenRequest{
-		RefreshToken: req.RefreshToken,
-	}
+	args := usecase.NewRefreshAccessTokenRequest(req)
 
 	result, err := s.refreshTokenUseCase.Refresh(ctx, args)
 	if err != nil {

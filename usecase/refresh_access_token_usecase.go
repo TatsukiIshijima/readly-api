@@ -31,10 +31,6 @@ func NewRefreshAccessTokenUseCase(
 	}
 }
 
-type RefreshAccessTokenRequest struct {
-	RefreshToken string
-}
-
 type RefreshAccessTokenResponse struct {
 	AccessToken string
 }
