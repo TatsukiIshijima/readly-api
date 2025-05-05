@@ -31,11 +31,6 @@ func NewDeleteBookUseCase(
 	}
 }
 
-type DeleteBookRequest struct {
-	UserID int64
-	BookID int64
-}
-
 func (u *DeleteBookUseCaseImpl) DeleteBook(ctx context.Context, req DeleteBookRequest) error {
 	err := u.transactor.Exec(ctx, func() error {
 		deleteHistoryArgs := repository.DeleteReadingHistoryRequest{

@@ -33,22 +33,6 @@ func NewRegisterBookUseCase(
 	}
 }
 
-type RegisterBookRequest struct {
-	UserID        int64
-	Title         string
-	Genres        []string
-	Description   *string
-	CoverImageURL *string
-	URL           *string
-	AuthorName    *string
-	PublisherName *string
-	PublishDate   *entity.Date
-	ISBN          *string
-	Status        entity.ReadingStatus
-	StartDate     *entity.Date
-	EndDate       *entity.Date
-}
-
 func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req RegisterBookRequest) (*entity.Book, error) {
 	var res *entity.Book
 	err := u.transactor.Exec(ctx, func() error {

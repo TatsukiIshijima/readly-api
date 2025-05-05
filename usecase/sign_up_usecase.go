@@ -38,22 +38,6 @@ func NewSignUpUseCase(
 	}
 }
 
-type SignUpRequest struct {
-	Name      string
-	Email     string
-	Password  string
-	IPAddress string
-	UserAgent string
-}
-
-type SignUpResponse struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       int64
-	Name         string
-	Email        string
-}
-
 func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*SignUpResponse, error) {
 	var res *SignUpResponse
 	err := u.transactor.Exec(ctx, func() error {
@@ -100,13 +84,7 @@ func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*Sig
 			return err
 		}
 
-		res = &SignUpResponse{
-			AccessToken:  accessTokenPayload.Token,
-			RefreshToken: refreshTokenPayload.Token,
-			UserID:       user.ID,
-			Name:         user.Name,
-			Email:        user.Email,
-		}
+		res = NewSignUpResponse(accessTokenPayload.Token, refreshTokenPayload.Token, user)
 		return nil
 	})
 	return res, handle(err)

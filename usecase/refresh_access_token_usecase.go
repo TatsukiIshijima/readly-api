@@ -31,14 +31,6 @@ func NewRefreshAccessTokenUseCase(
 	}
 }
 
-type RefreshAccessTokenRequest struct {
-	RefreshToken string
-}
-
-type RefreshAccessTokenResponse struct {
-	AccessToken string
-}
-
 func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req RefreshAccessTokenRequest) (res *RefreshAccessTokenResponse, err error) {
 	defer func() {
 		if err != nil {
@@ -84,7 +76,5 @@ func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req Refresh
 		return nil, err
 	}
 
-	return &RefreshAccessTokenResponse{
-		AccessToken: accessTokenPayload.Token,
-	}, nil
+	return NewRefreshAccessTokenResponse(accessTokenPayload.Token), nil
 }
