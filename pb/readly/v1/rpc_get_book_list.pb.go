@@ -23,9 +23,8 @@ const (
 
 type GetBookListRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Limit         int32                  `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
-	Offset        int32                  `protobuf:"varint,3,opt,name=offset,proto3" json:"offset,omitempty"`
+	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
+	Offset        int32                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -58,13 +57,6 @@ func (x *GetBookListRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetBookListRequest.ProtoReflect.Descriptor instead.
 func (*GetBookListRequest) Descriptor() ([]byte, []int) {
 	return file_readly_v1_rpc_get_book_list_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *GetBookListRequest) GetUserId() int64 {
-	if x != nil {
-		return x.UserId
-	}
-	return 0
 }
 
 func (x *GetBookListRequest) GetLimit() int32 {
@@ -129,11 +121,10 @@ var File_readly_v1_rpc_get_book_list_proto protoreflect.FileDescriptor
 
 const file_readly_v1_rpc_get_book_list_proto_rawDesc = "" +
 	"\n" +
-	"!readly/v1/rpc_get_book_list.proto\x12\treadly.v1\x1a\x14readly/v1/book.proto\"[\n" +
-	"\x12GetBookListRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\x03R\x06userId\x12\x14\n" +
-	"\x05limit\x18\x02 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x03 \x01(\x05R\x06offset\"<\n" +
+	"!readly/v1/rpc_get_book_list.proto\x12\treadly.v1\x1a\x14readly/v1/book.proto\"B\n" +
+	"\x12GetBookListRequest\x12\x14\n" +
+	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
+	"\x06offset\x18\x02 \x01(\x05R\x06offset\"<\n" +
 	"\x13GetBookListResponse\x12%\n" +
 	"\x05books\x18\x01 \x03(\v2\x0f.readly.v1.BookR\x05booksB\x81\x01\n" +
 	"\rcom.readly.v1B\x13RpcGetBookListProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +

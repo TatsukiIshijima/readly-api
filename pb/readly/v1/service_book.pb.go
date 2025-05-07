@@ -26,10 +26,11 @@ var File_readly_v1_service_book_proto protoreflect.FileDescriptor
 
 const file_readly_v1_service_book_proto_rawDesc = "" +
 	"\n" +
-	"\x1creadly/v1/service_book.proto\x12\treadly.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1freadly/v1/rpc_delete_book.proto\x1a\x1creadly/v1/rpc_get_book.proto\x1a!readly/v1/rpc_register_book.proto2\xb4\x02\n" +
+	"\x1creadly/v1/service_book.proto\x12\treadly.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1freadly/v1/rpc_delete_book.proto\x1a\x1creadly/v1/rpc_get_book.proto\x1a!readly/v1/rpc_register_book.proto\x1a!readly/v1/rpc_get_book_list.proto2\x9a\x03\n" +
 	"\vBookService\x12e\n" +
 	"\fRegisterBook\x12\x1e.readly.v1.RegisterBookRequest\x1a\x1f.readly.v1.RegisterBookResponse\"\x14\x82\xd3\xe4\x93\x02\x0e:\x01*\"\t/v1/books\x12]\n" +
-	"\aGetBook\x12\x19.readly.v1.GetBookRequest\x1a\x1a.readly.v1.GetBookResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/books/{book_id}\x12_\n" +
+	"\aGetBook\x12\x19.readly.v1.GetBookRequest\x1a\x1a.readly.v1.GetBookResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/v1/books/{book_id}\x12d\n" +
+	"\vGetBookList\x12\x1d.readly.v1.GetBookListRequest\x1a\x1e.readly.v1.GetBookListResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/books/list\x12_\n" +
 	"\n" +
 	"DeleteBook\x12\x1c.readly.v1.DeleteBookRequest\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15*\x13/v1/books/{book_id}B~\n" +
 	"\rcom.readly.v1B\x10ServiceBookProtoP\x01Z\x16readly/pb/readly/v1;pb\xa2\x02\x03RXX\xaa\x02\tReadly.V1\xca\x02\tReadly\\V1\xe2\x02\x15Readly\\V1\\GPBMetadata\xea\x02\n" +
@@ -38,20 +39,24 @@ const file_readly_v1_service_book_proto_rawDesc = "" +
 var file_readly_v1_service_book_proto_goTypes = []any{
 	(*RegisterBookRequest)(nil),  // 0: readly.v1.RegisterBookRequest
 	(*GetBookRequest)(nil),       // 1: readly.v1.GetBookRequest
-	(*DeleteBookRequest)(nil),    // 2: readly.v1.DeleteBookRequest
-	(*RegisterBookResponse)(nil), // 3: readly.v1.RegisterBookResponse
-	(*GetBookResponse)(nil),      // 4: readly.v1.GetBookResponse
-	(*emptypb.Empty)(nil),        // 5: google.protobuf.Empty
+	(*GetBookListRequest)(nil),   // 2: readly.v1.GetBookListRequest
+	(*DeleteBookRequest)(nil),    // 3: readly.v1.DeleteBookRequest
+	(*RegisterBookResponse)(nil), // 4: readly.v1.RegisterBookResponse
+	(*GetBookResponse)(nil),      // 5: readly.v1.GetBookResponse
+	(*GetBookListResponse)(nil),  // 6: readly.v1.GetBookListResponse
+	(*emptypb.Empty)(nil),        // 7: google.protobuf.Empty
 }
 var file_readly_v1_service_book_proto_depIdxs = []int32{
 	0, // 0: readly.v1.BookService.RegisterBook:input_type -> readly.v1.RegisterBookRequest
 	1, // 1: readly.v1.BookService.GetBook:input_type -> readly.v1.GetBookRequest
-	2, // 2: readly.v1.BookService.DeleteBook:input_type -> readly.v1.DeleteBookRequest
-	3, // 3: readly.v1.BookService.RegisterBook:output_type -> readly.v1.RegisterBookResponse
-	4, // 4: readly.v1.BookService.GetBook:output_type -> readly.v1.GetBookResponse
-	5, // 5: readly.v1.BookService.DeleteBook:output_type -> google.protobuf.Empty
-	3, // [3:6] is the sub-list for method output_type
-	0, // [0:3] is the sub-list for method input_type
+	2, // 2: readly.v1.BookService.GetBookList:input_type -> readly.v1.GetBookListRequest
+	3, // 3: readly.v1.BookService.DeleteBook:input_type -> readly.v1.DeleteBookRequest
+	4, // 4: readly.v1.BookService.RegisterBook:output_type -> readly.v1.RegisterBookResponse
+	5, // 5: readly.v1.BookService.GetBook:output_type -> readly.v1.GetBookResponse
+	6, // 6: readly.v1.BookService.GetBookList:output_type -> readly.v1.GetBookListResponse
+	7, // 7: readly.v1.BookService.DeleteBook:output_type -> google.protobuf.Empty
+	4, // [4:8] is the sub-list for method output_type
+	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -65,6 +70,7 @@ func file_readly_v1_service_book_proto_init() {
 	file_readly_v1_rpc_delete_book_proto_init()
 	file_readly_v1_rpc_get_book_proto_init()
 	file_readly_v1_rpc_register_book_proto_init()
+	file_readly_v1_rpc_get_book_list_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
