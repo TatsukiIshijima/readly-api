@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package readly.v1;
+
+option go_package = "readly/pb/readly/v1;pb";
+
+import "readly/v1/book.proto";
+
+message GetBookListRequest {
+  int64 user_id = 1;
+  int32 limit = 2;
+  int32 offset = 3;
+}
+
+message GetBookListResponse {
+  repeated Book books = 1;
+}
