@@ -1,5 +1,7 @@
 package usecase
 
+import "readly/repository"
+
 type GetBookListRequest struct {
 	UserID int64
 	limit  int32
@@ -14,10 +16,10 @@ func NewGetBookListRequest(userID int64, limit, offset int32) GetBookListRequest
 	}
 }
 
-func (r GetBookListRequest) ToRepoRequest() GetBookListRequest {
-	return GetBookListRequest{
+func (r GetBookListRequest) ToRepoRequest() repository.GetReadingHistoryByUserRequest {
+	return repository.GetReadingHistoryByUserRequest{
 		UserID: r.UserID,
-		limit:  r.limit,
-		offset: r.offset,
+		Limit:  r.limit,
+		Offset: r.offset,
 	}
 }
