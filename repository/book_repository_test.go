@@ -157,6 +157,20 @@ func TestDeleteGenre(t *testing.T) {
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
+func TestUpdateBook(t *testing.T) {
+	b := createRandomBook(t)
+	newTitle := testdata.RandomString(8)
+	req := UpdateBookRequest{
+		BookID: b.ID,
+		Title:  newTitle,
+	}
+	res, err := bookRepo.UpdateBook(context.Background(), req)
+	require.NoError(t, err)
+	updatedBook, err := querier.GetBooksByID(context.Background(), res.BookID)
+	require.NoError(t, err)
+	require.Equal(t, newTitle, updatedBook.Title)
+}
+
 //func TestRegister(t *testing.T) {
 //	user, err := repository.createRandomUser()
 //	require.NoError(t, err)
