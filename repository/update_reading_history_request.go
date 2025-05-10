@@ -11,18 +11,20 @@ type UpdateReadingHistoryRequest struct {
 	UserID    int64
 	BookID    int64
 	Status    entity.ReadingStatus
-	StartDate *time.Time
-	EndDate   *time.Time
+	StartDate *entity.Date
+	EndDate   *entity.Date
 }
 
 func (r UpdateReadingHistoryRequest) toSQLC() sqlc.UpdateReadingHistoryParams {
 	sd := sql.NullTime{Time: time.Time{}, Valid: false}
 	ed := sql.NullTime{Time: time.Time{}, Valid: false}
 	if r.StartDate != nil {
-		sd = sql.NullTime{Time: *r.StartDate, Valid: true}
+		t := r.StartDate.ToTime()
+		sd = sql.NullTime{Time: *t, Valid: true}
 	}
 	if r.EndDate != nil {
-		ed = sql.NullTime{Time: *r.EndDate, Valid: true}
+		t := r.EndDate.ToTime()
+		ed = sql.NullTime{Time: *t, Valid: true}
 	}
 	return sqlc.UpdateReadingHistoryParams{
 		UserID:    r.UserID,
