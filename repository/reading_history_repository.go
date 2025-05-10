@@ -48,6 +48,9 @@ func (r *ReadingHistoryRepositoryImpl) Delete(ctx context.Context, req DeleteRea
 func (r *ReadingHistoryRepositoryImpl) GetByUser(ctx context.Context, req GetReadingHistoryByUserRequest) ([]GetReadingHistoryByUserResponse, error) {
 	rows, err := r.querier.GetReadingHistoryByUser(ctx, req.toSQLC())
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRows
+		}
 		return nil, err
 	}
 	res := make([]GetReadingHistoryByUserResponse, len(rows))
