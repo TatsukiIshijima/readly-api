@@ -1,12 +1,12 @@
 launchpostgres:
-	docker run --name postgres17.4 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:17.5-alpine
+	docker run --name postgres -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=secret -d postgres:17.5-alpine
 
 createdb:
-	docker exec -it postgres17.4 createdb --username=root --owner=root readly
-	docker exec -it postgres17.4 psql -U root -d readly -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+	docker exec -it postgres createdb --username=root --owner=root readly
+	docker exec -it postgres psql -U root -d readly -c "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
 
 dropdb:
-	docker exec -it postgres17.4 dropdb readly
+	docker exec -it postgres dropdb readly
 
 # dependency migrate CLI(https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
 migrateup:
