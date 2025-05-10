@@ -1,5 +1,5 @@
 # Build
-FROM golang:1.24.2-bullseye AS builder
+FROM golang:1.24.3-bullseye AS builder
 WORKDIR /app
 COPY . .
 # go buildでmain（実行ファイル）を作成
