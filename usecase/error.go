@@ -29,6 +29,7 @@ const (
 	// common
 	InternalServerError ErrorCode = 1000
 	InvalidTokenError   ErrorCode = 1001
+	InvalidRequestError ErrorCode = 1002
 
 	// user
 	EmailAlreadyRegisteredError ErrorCode = 2000

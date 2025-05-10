@@ -62,6 +62,22 @@ func TestGetBookList(t *testing.T) {
 				require.Equal(t, 0, len(res.Books))
 			},
 		},
+		{
+			name: "Get book list failure when invalid request.",
+			req: GetBookListRequest{
+				UserID: 0,
+				Limit:  -1,
+				Offset: -1,
+			},
+			check: func(t *testing.T, res *GetBookListResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

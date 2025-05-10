@@ -16,6 +16,16 @@ func NewGetBookListRequest(userID int64, limit, offset int32) GetBookListRequest
 	}
 }
 
+func (r GetBookListRequest) Validate() error {
+	if r.Limit < 0 {
+		return newError(BadRequest, InvalidRequestError, "limit must be greater than 0")
+	}
+	if r.Offset < 0 {
+		return newError(BadRequest, InvalidRequestError, "offset must be greater than 0")
+	}
+	return nil
+}
+
 func (r GetBookListRequest) ToRepoRequest() repository.GetReadingHistoryByUserRequest {
 	return repository.GetReadingHistoryByUserRequest{
 		UserID: r.UserID,

@@ -23,6 +23,9 @@ func NewGetBookListUseCase(
 }
 
 func (g GetBookListUseCaseImpl) GetBookList(ctx context.Context, req GetBookListRequest) (*GetBookListResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, handle(err)
+	}
 	res, err := g.readingHistoryRepo.GetByUser(ctx, req.ToRepoRequest())
 	if err != nil {
 		return nil, handle(err)
