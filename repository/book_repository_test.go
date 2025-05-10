@@ -235,7 +235,7 @@ func TestUpdateBook(t *testing.T) {
 //		require.Equal(t, result.Title, book.Title.String)
 //		require.Equal(t, result.Description, book.Description.String)
 //		require.Equal(t, result.CoverImageURL, book.CoverImageUrl.String)
-//		require.Equal(t, result.URL, book.Url.String)
+//		require.Equal(t, result.URL, book.URL.String)
 //		require.Equal(t, result.AuthorName, book.AuthorName)
 //		require.Equal(t, result.PublisherName, book.PublisherName)
 //		require.WithinDuration(t, result.PublishDate, book.PublishedDate.Time.UTC(), time.Second)

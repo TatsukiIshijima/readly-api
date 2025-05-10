@@ -12,7 +12,7 @@ type UpdateBookRequest struct {
 	Title         string
 	Description   *string
 	CoverImageURL *string
-	Url           *string
+	URL           *string
 	Author        *string
 	Publisher     *string
 	PublishedDate *entity.Date
@@ -33,8 +33,8 @@ func (r UpdateBookRequest) toSQLC() sqlc.UpdateBookParams {
 	if r.CoverImageURL != nil {
 		coverImgURL = sql.NullString{String: *r.CoverImageURL, Valid: true}
 	}
-	if r.Url != nil {
-		URL = sql.NullString{String: *r.Url, Valid: true}
+	if r.URL != nil {
+		URL = sql.NullString{String: *r.URL, Valid: true}
 	}
 	if r.Author != nil {
 		author = sql.NullString{String: *r.Author, Valid: true}
