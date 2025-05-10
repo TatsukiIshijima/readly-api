@@ -9,6 +9,7 @@ import "google/protobuf/empty.proto";
 import "readly/v1/rpc_delete_book.proto";
 import "readly/v1/rpc_get_book.proto";
 import "readly/v1/rpc_register_book.proto";
+import "readly/v1/rpc_get_book_list.proto";
 
 service BookService {
   rpc RegisterBook(RegisterBookRequest) returns (RegisterBookResponse) {
@@ -21,6 +22,12 @@ service BookService {
   rpc GetBook(GetBookRequest) returns (GetBookResponse) {
     option (google.api.http) = {
       get: "/v1/books/{book_id}"
+    };
+  }
+
+  rpc GetBookList(GetBookListRequest) returns (GetBookListResponse) {
+    option (google.api.http) = {
+      get: "/v1/books/list"
     };
   }
 
