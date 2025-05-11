@@ -61,6 +61,7 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 			return err
 		}
 		for _, genre := range req.Genres {
+			// FIXME:ジャンルは管理側で作成するよう変更（ユーザ側で作成はさせない）
 			err := u.createGenreIfNeed(ctx, genre)
 			if err != nil {
 				return err

@@ -23,6 +23,7 @@ type UpdateBookRequest struct {
 }
 
 func (r UpdateBookRequest) isValid() bool {
+	// TODO:バリデーション増やす
 	return len(r.Title) > 0
 }
 
