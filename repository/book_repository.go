@@ -164,6 +164,9 @@ func (r *BookRepositoryImpl) GetGenresByBookID(ctx context.Context, req GetGenre
 func (r *BookRepositoryImpl) UpdateBook(ctx context.Context, req UpdateBookRequest) (*UpdateBookResponse, error) {
 	b, err := r.querier.UpdateBook(ctx, req.toSQLC())
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRows
+		}
 		return nil, err
 	}
 	return newUpdateBookResponseFromSQLC(b), nil

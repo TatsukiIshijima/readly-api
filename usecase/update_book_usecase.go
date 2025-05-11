@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"readly/repository"
 	"readly/util"
 )
@@ -52,9 +53,15 @@ func (u UpdateBookUseCaseImpl) UpdateBook(ctx context.Context, request UpdateBoo
 }
 
 func (u UpdateBookUseCaseImpl) updateBook(ctx context.Context, req UpdateBookRequest) error {
+	if !req.isValid() {
+		return newError(BadRequest, InvalidRequestError, "validation error")
+	}
 	updateBookReq := req.toBookRepoRequest()
 	_, err := u.bookRepository.UpdateBook(ctx, updateBookReq)
 	if err != nil {
+		if errors.Is(err, repository.ErrNoRows) {
+			return newError(BadRequest, InvalidRequestError, "book not found")
+		}
 		return err
 	}
 	return nil
@@ -100,6 +107,9 @@ func (u UpdateBookUseCaseImpl) updateReadingHistory(ctx context.Context, req Upd
 	updateReadingHistoryReq := req.toReadingHistoryRepoRequest()
 	_, err := u.readingHistoryRepo.Update(ctx, updateReadingHistoryReq)
 	if err != nil {
+		if errors.Is(err, repository.ErrNoRows) {
+			return newError(BadRequest, InvalidRequestError, "user not found")
+		}
 		return err
 	}
 	return nil
