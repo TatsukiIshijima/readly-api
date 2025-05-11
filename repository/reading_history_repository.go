@@ -88,6 +88,9 @@ func (r *ReadingHistoryRepositoryImpl) GetByUserAndStatus(ctx context.Context, r
 func (r *ReadingHistoryRepositoryImpl) Update(ctx context.Context, req UpdateReadingHistoryRequest) (*UpdateReadingHistoryResponse, error) {
 	h, err := r.querier.UpdateReadingHistory(ctx, req.toSQLC())
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRows
+		}
 		return nil, err
 	}
 	return newUpdateReadingHistoryResponseFromSQLC(h), nil

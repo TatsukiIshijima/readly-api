@@ -157,6 +157,20 @@ func TestDeleteGenre(t *testing.T) {
 	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
+func TestUpdateBook(t *testing.T) {
+	b := createRandomBook(t)
+	newTitle := testdata.RandomString(8)
+	req := UpdateBookRequest{
+		BookID: b.ID,
+		Title:  newTitle,
+	}
+	res, err := bookRepo.UpdateBook(context.Background(), req)
+	require.NoError(t, err)
+	updatedBook, err := querier.GetBooksByID(context.Background(), res.BookID)
+	require.NoError(t, err)
+	require.Equal(t, newTitle, updatedBook.Title)
+}
+
 //func TestRegister(t *testing.T) {
 //	user, err := repository.createRandomUser()
 //	require.NoError(t, err)
@@ -221,7 +235,7 @@ func TestDeleteGenre(t *testing.T) {
 //		require.Equal(t, result.Title, book.Title.String)
 //		require.Equal(t, result.Description, book.Description.String)
 //		require.Equal(t, result.CoverImageURL, book.CoverImageUrl.String)
-//		require.Equal(t, result.URL, book.Url.String)
+//		require.Equal(t, result.URL, book.URL.String)
 //		require.Equal(t, result.AuthorName, book.AuthorName)
 //		require.Equal(t, result.PublisherName, book.PublisherName)
 //		require.WithinDuration(t, result.PublishDate, book.PublishedDate.Time.UTC(), time.Second)

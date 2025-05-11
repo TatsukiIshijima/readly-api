@@ -7,7 +7,6 @@ import (
 	sqlc "readly/db/sqlc"
 	"readly/entity"
 	"testing"
-	"time"
 )
 
 func createReadingHistory(t *testing.T, uid int64, bid int64) *CreateReadingHistoryResponse {
@@ -105,7 +104,7 @@ func TestGetByUserAndStatus(t *testing.T) {
 	rh1 := createReadingHistory(t, u.ID, b1.ID)
 	_ = createReadingHistory(t, u.ID, b2.ID)
 
-	now := time.Now().UTC()
+	now := entity.Now()
 	updateReq := UpdateReadingHistoryRequest{
 		UserID:    u.ID,
 		BookID:    b1.ID,
@@ -128,9 +127,9 @@ func TestGetByUserAndStatus(t *testing.T) {
 	require.Equal(t, rh1.BookID, grhs[0].BookID)
 	require.Equal(t, entity.Reading, grhs[0].Status)
 
-	require.Equal(t, int32(now.Year()), grhs[0].StartDate.Year)
-	require.Equal(t, int32(now.Month()), grhs[0].StartDate.Month)
-	require.Equal(t, int32(now.Day()), grhs[0].StartDate.Day)
+	require.Equal(t, now.Year, grhs[0].StartDate.Year)
+	require.Equal(t, now.Month, grhs[0].StartDate.Month)
+	require.Equal(t, now.Day, grhs[0].StartDate.Day)
 	require.Nil(t, grhs[0].EndDate)
 }
 
@@ -139,7 +138,7 @@ func TestUpdate(t *testing.T) {
 	b := createRandomBook(t)
 	rh := createReadingHistory(t, u.ID, b.ID)
 
-	now := time.Now().UTC()
+	now := entity.Now()
 	updateReq := UpdateReadingHistoryRequest{
 		UserID:    u.ID,
 		BookID:    b.ID,
@@ -152,8 +151,8 @@ func TestUpdate(t *testing.T) {
 
 	require.Equal(t, rh.BookID, urh.BookID)
 	require.Equal(t, entity.Reading, urh.Status)
-	require.Equal(t, int32(now.Year()), urh.StartDate.Year)
-	require.Equal(t, int32(now.Month()), urh.StartDate.Month)
-	require.Equal(t, int32(now.Day()), urh.StartDate.Day)
+	require.Equal(t, now.Year, urh.StartDate.Year)
+	require.Equal(t, now.Month, urh.StartDate.Month)
+	require.Equal(t, now.Day, urh.StartDate.Day)
 	require.Nil(t, urh.EndDate)
 }
