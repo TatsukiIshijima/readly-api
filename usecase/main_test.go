@@ -83,6 +83,12 @@ func newTestGetBookListUseCase(t *testing.T) GetBookListUseCase {
 	return NewGetBookListUseCase(readingHistoryRepo)
 }
 
+func newTestUpdateBookUseCase(t *testing.T) UpdateBookUseCase {
+	bookRepo := repository.NewBookRepository(querier)
+	readingHistoryRepo := repository.NewReadingHistoryRepository(querier)
+	return NewUpdateBookUseCase(tx, bookRepo, readingHistoryRepo)
+}
+
 func newTestRefreshAccessTokenUseCase(t *testing.T) RefreshAccessTokenUseCase {
 	sessionRepo := repository.NewSessionRepository(querier)
 	return NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
