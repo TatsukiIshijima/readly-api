@@ -45,6 +45,9 @@ func NewDateEntityFromNullTime(nt sql.NullTime) *Date {
 }
 
 func (d *Date) ToProto() *pb.Date {
+	if d == nil {
+		return nil
+	}
 	return &pb.Date{
 		Year:  d.Year,
 		Month: d.Month,
@@ -53,6 +56,9 @@ func (d *Date) ToProto() *pb.Date {
 }
 
 func (d *Date) ToTime() *time.Time {
+	if d == nil {
+		return nil
+	}
 	t := time.Date(int(d.Year), time.Month(d.Month), int(d.Day), 0, 0, 0, 0, time.UTC)
 	return &t
 }
