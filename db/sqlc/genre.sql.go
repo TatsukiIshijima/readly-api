@@ -33,29 +33,23 @@ func (q *Queries) DeleteGenre(ctx context.Context, name string) error {
 }
 
 const getAllGenres = `-- name: GetAllGenres :many
-SELECT name, created_at
-FROM genres LIMIT $1
-OFFSET $2
+SELECT name
+FROM genres
 `
 
-type GetAllGenresParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-func (q *Queries) GetAllGenres(ctx context.Context, arg GetAllGenresParams) ([]Genre, error) {
-	rows, err := q.db.QueryContext(ctx, getAllGenres, arg.Limit, arg.Offset)
+func (q *Queries) GetAllGenres(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getAllGenres)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []Genre{}
+	items := []string{}
 	for rows.Next() {
-		var i Genre
-		if err := rows.Scan(&i.Name, &i.CreatedAt); err != nil {
+		var name string
+		if err := rows.Scan(&name); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, name)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

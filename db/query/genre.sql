@@ -1,7 +1,6 @@
 -- name: GetAllGenres :many
-SELECT *
-FROM genres LIMIT $1
-OFFSET $2;
+SELECT name
+FROM genres;
 
 -- name: GetGenreByName :one
 SELECT *
