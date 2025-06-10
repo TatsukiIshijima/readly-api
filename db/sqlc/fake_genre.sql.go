@@ -37,9 +37,12 @@ func (q *FakeQuerier) DeleteGenre(_ context.Context, name string) error {
 	return nil
 }
 
-func (q *FakeQuerier) GetAllGenres(_ context.Context, arg GetAllGenresParams) ([]Genre, error) {
-	// TODO: Implement
-	return nil, nil
+func (q *FakeQuerier) GetAllGenres(_ context.Context) ([]string, error) {
+	genres := make([]string, len(genreTable.Columns))
+	for i, genre := range genreTable.Columns {
+		genres[i] = genre.Name
+	}
+	return genres, nil
 }
 
 func (q *FakeQuerier) GetGenreByName(_ context.Context, name string) (Genre, error) {
