@@ -19,6 +19,7 @@ type BookRepository interface {
 	DeleteGenre(ctx context.Context, req DeleteGenreRequest) error
 	DeletePublisher(ctx context.Context, req DeletePublisherRequest) error
 	GetBookByID(ctx context.Context, req GetBookRequest) (*GetBookResponse, error)
+	GetAllGenres(ctx context.Context) (*GetAllGenresResponse, error)
 	GetGenresByBookID(ctx context.Context, request GetGenresByBookIDRequest) (*GetGenresByBookIDResponse, error)
 	UpdateBook(ctx context.Context, req UpdateBookRequest) (*UpdateBookResponse, error)
 }
@@ -151,6 +152,14 @@ func (r *BookRepositoryImpl) GetBookByID(ctx context.Context, req GetBookRequest
 		return nil, err
 	}
 	return newGetBookResponseFromSQLC(b), nil
+}
+
+func (r *BookRepositoryImpl) GetAllGenres(ctx context.Context) (*GetAllGenresResponse, error) {
+	g, err := r.querier.GetAllGenres(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return newGetAllGenresResponse(g), nil
 }
 
 func (r *BookRepositoryImpl) GetGenresByBookID(ctx context.Context, req GetGenresByBookIDRequest) (*GetGenresByBookIDResponse, error) {

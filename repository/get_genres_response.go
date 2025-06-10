@@ -1,5 +1,15 @@
 package repository
 
+type GetAllGenresResponse struct {
+	Genres []string
+}
+
+func newGetAllGenresResponse(genres []string) *GetAllGenresResponse {
+	return &GetAllGenresResponse{
+		Genres: genres,
+	}
+}
+
 type GetGenresByBookIDResponse struct {
 	Genres []string
 }
