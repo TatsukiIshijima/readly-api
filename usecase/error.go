@@ -38,6 +38,7 @@ const (
 
 	// book
 	NotFoundBookError ErrorCode = 3000
+	InvalidGenreError ErrorCode = 3001
 )
 
 func newError(statusCode StatusCode, errorCode ErrorCode, message string) *Error {
