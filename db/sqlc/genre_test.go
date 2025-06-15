@@ -5,12 +5,13 @@ import (
 	"database/sql"
 	"github.com/stretchr/testify/require"
 	"math/rand/v2"
+	"readly/testdata"
 	"testing"
 	"time"
 )
 
 func createGenreIfNeed(t *testing.T) Genre {
-	genres := []string{"ミステリー", "ファンタジー", "SF", "自己啓発", "ビジネス", "科学"}
+	genres := testdata.GetGenres()
 	i := rand.IntN(len(genres))
 	genre := genres[i]
 

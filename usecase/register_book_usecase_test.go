@@ -31,7 +31,7 @@ func TestRegisterBook(t *testing.T) {
 				return RegisterBookRequest{
 					UserID: signUpRes.UserID,
 					Title:  testdata.RandomString(10),
-					Genres: []string{GetGenres()[0]},
+					Genres: []string{testdata.GetGenres()[0]},
 					Status: 0,
 				}
 			},
@@ -69,7 +69,7 @@ func TestRegisterBook(t *testing.T) {
 				return RegisterBookRequest{
 					UserID:        signUpRes.UserID,
 					Title:         testdata.RandomString(10),
-					Genres:        []string{GetGenres()[1]},
+					Genres:        []string{testdata.GetGenres()[1]},
 					Description:   &desc,
 					CoverImageURL: &coverImgURL,
 					URL:           &url,
@@ -109,7 +109,7 @@ func TestRegisterBook(t *testing.T) {
 				req := RegisterBookRequest{
 					UserID:        signUpRes.UserID,
 					Title:         testdata.RandomString(10),
-					Genres:        []string{GetGenres()[1]},
+					Genres:        []string{testdata.GetGenres()[1]},
 					AuthorName:    &author,
 					PublisherName: &publisher,
 					Status:        0,
@@ -120,7 +120,7 @@ func TestRegisterBook(t *testing.T) {
 				return RegisterBookRequest{
 					UserID:        signUpRes.UserID,
 					Title:         testdata.RandomString(10),
-					Genres:        []string{GetGenres()[2]},
+					Genres:        []string{testdata.GetGenres()[2]},
 					AuthorName:    &author,
 					PublisherName: &publisher,
 					Status:        1,

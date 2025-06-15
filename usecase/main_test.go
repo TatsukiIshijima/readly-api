@@ -10,6 +10,7 @@ import (
 	"readly/env"
 	"readly/repository"
 	"readly/service/auth"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -27,11 +28,6 @@ var config env.Config
 var querier sqlc.Querier
 var tx repository.Transactor
 var maker auth.TokenMaker
-var genres = []string{"ミステリー", "ファンタジー", "SF", "自己啓発", "ビジネス", "科学"}
-
-func GetGenres() []string {
-	return genres
-}
 
 func setupMain() {
 	c, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
@@ -55,7 +51,7 @@ func setupMain() {
 }
 
 func createGenresIfNeed() {
-	genres := GetGenres()
+	genres := testdata.GetGenres()
 	for _, genre := range genres {
 		_, err := querier.GetGenreByName(context.Background(), genre)
 		if err == nil {

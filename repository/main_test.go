@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	sqlc "readly/db/sqlc"
 	"readly/env"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -16,11 +17,6 @@ var querier sqlc.Querier
 var bookRepo BookRepository
 var userRepo UserRepository
 var readingHistoryRepo ReadingHistoryRepository
-var genres = []string{"ミステリー", "ファンタジー", "SF", "自己啓発", "ビジネス", "科学"}
-
-func GetGenres() []string {
-	return genres
-}
 
 func init() {
 	rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -44,7 +40,7 @@ func TestMain(m *testing.M) {
 }
 
 func createGenresIfNeed() {
-	genres := GetGenres()
+	genres := testdata.GetGenres()
 	for _, genre := range genres {
 		_, err := querier.GetGenreByName(context.Background(), genre)
 		if err == nil {

@@ -65,7 +65,7 @@ func TestCreateBook(t *testing.T) {
 
 func TestCreateBookGenre(t *testing.T) {
 	b := createRandomBook(t)
-	g := GetGenres()[0]
+	g := testdata.GetGenres()[0]
 
 	req := CreateBookGenreRequest{
 		BookID:    b.ID,
@@ -114,7 +114,7 @@ func TestDeleteBook(t *testing.T) {
 
 func TestDeleteBookGenre(t *testing.T) {
 	b := createRandomBook(t)
-	g := GetGenres()[0]
+	g := entity.GetGenres()[0]
 
 	req := CreateBookGenreRequest{
 		BookID:    b.ID,
