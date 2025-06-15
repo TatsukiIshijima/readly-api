@@ -20,7 +20,7 @@ sqlc:
 	sqlc generate
 
 test:
-	go test -v -cover ./... -tags test
+	go test -count=1 -v -cover ./... -tags test
 
 launchserver:
 	go run cmd/main.go
