@@ -142,12 +142,8 @@ func TestGetBookByID(t *testing.T) {
 		testdata.RandomString(10),
 		testdata.RandomString(13),
 	)
-	genre1 := createRandomGenre(t)
-	genre2 := createRandomGenre(t)
-	genre3 := createRandomGenre(t)
-	createRandomBookGenre(t, bookWithGenres, genre1)
-	createRandomBookGenre(t, bookWithGenres, genre2)
-	createRandomBookGenre(t, bookWithGenres, genre3)
+	genre := createGenreIfNeed(t)
+	createTestBookGenre(t, bookWithGenres, genre)
 
 	result, err := querier.GetBooksByID(context.Background(), bookWithEmptyGenres.ID)
 	require.NoError(t, err)
@@ -172,7 +168,7 @@ func TestGetBookByID(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result.ID)
 	require.Equal(t, bookWithGenres.Title, result.Title)
-	genres := []string{genre1.Name, genre2.Name, genre3.Name}
+	genres := []string{genre.Name}
 	sort.Strings(genres)
 	require.Equal(t, genres, strings.Split(string(result.Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result.Description)
@@ -202,12 +198,8 @@ func TestGetBooksByTitle(t *testing.T) {
 		testdata.RandomString(10),
 		testdata.RandomString(13),
 	)
-	genre1 := createRandomGenre(t)
-	genre2 := createRandomGenre(t)
-	genre3 := createRandomGenre(t)
-	createRandomBookGenre(t, bookWithGenres, genre1)
-	createRandomBookGenre(t, bookWithGenres, genre2)
-	createRandomBookGenre(t, bookWithGenres, genre3)
+	genre := createGenreIfNeed(t)
+	createTestBookGenre(t, bookWithGenres, genre)
 
 	result, err := querier.GetBooksByTitle(context.Background(), title)
 	require.NoError(t, err)
@@ -229,7 +221,7 @@ func TestGetBooksByTitle(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result[1].ID)
 	require.Equal(t, bookWithGenres.Title, result[1].Title)
-	genres := []string{genre1.Name, genre2.Name, genre3.Name}
+	genres := []string{genre.Name}
 	sort.Strings(genres)
 	require.Equal(t, genres, strings.Split(string(result[1].Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result[1].Description)
@@ -252,8 +244,8 @@ func TestGetBooksByISBN(t *testing.T) {
 		"",
 		ISBN,
 	)
-	genre := createRandomGenre(t)
-	createRandomBookGenre(t, book, genre)
+	genre := createGenreIfNeed(t)
+	createTestBookGenre(t, book, genre)
 
 	result, err := querier.GetBooksByISBN(
 		context.Background(),
@@ -298,10 +290,8 @@ func TestGetBooksByAuthor(t *testing.T) {
 		testdata.RandomString(10),
 		testdata.RandomString(13),
 	)
-	genre1 := createRandomGenre(t)
-	genre2 := createRandomGenre(t)
-	createRandomBookGenre(t, bookWithGenres, genre1)
-	createRandomBookGenre(t, bookWithGenres, genre2)
+	genre := createGenreIfNeed(t)
+	createTestBookGenre(t, bookWithGenres, genre)
 
 	result, err := querier.GetBooksByAuthor(
 		context.Background(),
@@ -329,7 +319,7 @@ func TestGetBooksByAuthor(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result[1].ID)
 	require.Equal(t, bookWithGenres.Title, result[1].Title)
-	genres := []string{genre1.Name, genre2.Name}
+	genres := []string{genre.Name}
 	sort.Strings(genres)
 	require.Equal(t, genres, strings.Split(string(result[1].Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result[1].Description)
@@ -359,10 +349,8 @@ func TestGetBooksByPublisher(t *testing.T) {
 		publisher,
 		testdata.RandomString(13),
 	)
-	genre1 := createRandomGenre(t)
-	genre2 := createRandomGenre(t)
-	createRandomBookGenre(t, bookWithGenres, genre1)
-	createRandomBookGenre(t, bookWithGenres, genre2)
+	genre := createGenreIfNeed(t)
+	createTestBookGenre(t, bookWithGenres, genre)
 
 	result, err := querier.GetBooksByPublisher(
 		context.Background(),
@@ -390,7 +378,7 @@ func TestGetBooksByPublisher(t *testing.T) {
 
 	require.Equal(t, bookWithGenres.ID, result[1].ID)
 	require.Equal(t, bookWithGenres.Title, result[1].Title)
-	genres := []string{genre1.Name, genre2.Name}
+	genres := []string{genre.Name}
 	sort.Strings(genres)
 	require.Equal(t, genres, strings.Split(string(result[1].Genres), ", "))
 	require.Equal(t, bookWithGenres.Description, result[1].Description)

@@ -21,8 +21,8 @@ func createRandomReadingHistory(t *testing.T, user User, genresLen int, status R
 	)
 	genres := make([]Genre, genresLen)
 	for i := 0; i < genresLen; i++ {
-		g := createRandomGenre(t)
-		createRandomBookGenre(t, b, g)
+		g := createGenreIfNeed(t)
+		createTestBookGenre(t, b, g)
 		genres[i] = g
 	}
 	y, m, d := time.Now().Date()

@@ -4,25 +4,28 @@ import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
-	"readly/testdata"
+	"math/rand/v2"
 	"testing"
 	"time"
 )
 
-func createRandomGenre(t *testing.T) Genre {
-	arg := testdata.RandomString(6)
-	genre, err := querier.CreateGenre(context.Background(), arg)
+func createGenreIfNeed(t *testing.T) Genre {
+	genres := []string{"ミステリー", "ファンタジー", "SF", "自己啓発", "ビジネス", "科学"}
+	i := rand.IntN(len(genres))
+	genre := genres[i]
+
+	g, err := querier.GetGenreByName(context.Background(), genre)
+	if err == nil {
+		return g
+	}
+	g, err = querier.CreateGenre(context.Background(), genre)
 	require.NoError(t, err)
 	require.NotEmpty(t, genre)
-	return genre
-}
-
-func TestCreateGenre(t *testing.T) {
-	createRandomGenre(t)
+	return g
 }
 
 func TestGetGenreByName(t *testing.T) {
-	genre1 := createRandomGenre(t)
+	genre1 := createGenreIfNeed(t)
 	genre2, err := querier.GetGenreByName(context.Background(), genre1.Name)
 	require.NoError(t, err)
 	require.NotEmpty(t, genre2)
@@ -31,8 +34,9 @@ func TestGetGenreByName(t *testing.T) {
 }
 
 func TestDeleteGenre(t *testing.T) {
-	genre1 := createRandomGenre(t)
-	err := querier.DeleteGenre(context.Background(), genre1.Name)
+	genre1, err := querier.CreateGenre(context.Background(), "テストジャンル")
+	require.NoError(t, err)
+	err = querier.DeleteGenre(context.Background(), genre1.Name)
 	require.NoError(t, err)
 
 	genre2, err := querier.GetGenreByName(context.Background(), genre1.Name)
@@ -46,12 +50,12 @@ func TestGetAllGenre(t *testing.T) {
 	require.NoError(t, err)
 
 	for i := 0; i < 4; i++ {
-		createRandomGenre(t)
+		createGenreIfNeed(t)
 	}
 
-	addedGenres, err := querier.GetAllGenres(context.Background())
+	allGenres, err := querier.GetAllGenres(context.Background())
 	require.NoError(t, err)
-	require.Len(t, addedGenres, len(genres)+4)
+	require.Len(t, allGenres, len(genres))
 
 	for _, genre := range genres {
 		require.NotEmpty(t, genre)
