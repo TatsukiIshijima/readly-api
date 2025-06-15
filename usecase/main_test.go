@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"log"
 	"math/rand"
 	"os"
@@ -26,6 +27,11 @@ var config env.Config
 var querier sqlc.Querier
 var tx repository.Transactor
 var maker auth.TokenMaker
+var genres = []string{"ミステリー", "ファンタジー", "SF", "自己啓発", "ビジネス", "科学"}
+
+func GetGenres() []string {
+	return genres
+}
 
 func setupMain() {
 	c, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
@@ -43,6 +49,22 @@ func setupMain() {
 	maker, err = auth.NewPasetoMaker(c.TokenSymmetricKey)
 	if err != nil {
 		log.Fatalf("cannot create token maker: %v", err)
+	}
+
+	createGenresIfNeed()
+}
+
+func createGenresIfNeed() {
+	genres := GetGenres()
+	for _, genre := range genres {
+		_, err := querier.GetGenreByName(context.Background(), genre)
+		if err == nil {
+			continue
+		}
+		_, err = querier.CreateGenre(context.Background(), genre)
+		if err != nil {
+			log.Fatalf("failed to create genre %s: %v", genre, err)
+		}
 	}
 }
 

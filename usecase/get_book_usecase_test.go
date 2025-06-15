@@ -23,7 +23,7 @@ func TestGetBook(t *testing.T) {
 	registerBookReq := RegisterBookRequest{
 		UserID: signUpRes.UserID,
 		Title:  testdata.RandomString(10),
-		Genres: []string{testdata.RandomString(6)},
+		Genres: []string{GetGenres()[0]},
 		Status: entity.Unread,
 	}
 	registerBookRes, err := registerBookUseCase.RegisterBook(context.Background(), registerBookReq)
