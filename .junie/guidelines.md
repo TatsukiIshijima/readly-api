@@ -83,5 +83,6 @@ Clean Architectureを採用しています。
     - 例：ある repository の関数を usecase で呼び出した場合は、usecase 側でエラーハンドリング
 - repository内で独自エラーが必要な場合は `repository/error.go` に追記してください。
 - usecaseで発生したエラーは、`usecase/error.go` に定義されたエラーを使用してください。
-- usecase 内で独自エラーが必要な場合は `repository/error.go` に新たなエラーコードを追記してください。
+-usecase 内で独自エラーが必要な場合は `repository/error.go` に新たなエラーコードを追記してください。
++usecase 内で独自エラーが必要な場合は `usecase/error.go` に新たなエラーコードを追記してください。
 - serverで発生したエラーは、`server/error.go` に定義された `gRPCStatusError` を用いて gRPCのステータスコードを返してください。
