@@ -10,6 +10,9 @@ type RegisterBookResponse struct {
 }
 
 func NewRegisterBookResponse(book *entity.Book) *RegisterBookResponse {
+	if book == nil {
+		return nil
+	}
 	return &RegisterBookResponse{
 		Book: *book,
 	}

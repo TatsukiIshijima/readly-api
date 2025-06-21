@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"log"
 	"math/rand"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"readly/env"
 	"readly/repository"
 	"readly/service/auth"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -43,6 +45,22 @@ func setupMain() {
 	maker, err = auth.NewPasetoMaker(c.TokenSymmetricKey)
 	if err != nil {
 		log.Fatalf("cannot create token maker: %v", err)
+	}
+
+	createGenresIfNeed()
+}
+
+func createGenresIfNeed() {
+	genres := testdata.GetGenres()
+	for _, genre := range genres {
+		_, err := querier.GetGenreByName(context.Background(), genre)
+		if err == nil {
+			continue
+		}
+		_, err = querier.CreateGenre(context.Background(), genre)
+		if err != nil {
+			log.Fatalf("failed to create genre %s: %v", genre, err)
+		}
 	}
 }
 

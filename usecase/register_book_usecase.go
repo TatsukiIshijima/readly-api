@@ -60,12 +60,13 @@ func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req Register
 		if err != nil {
 			return err
 		}
+
+		err = u.checkGenresRegistered(ctx, req.Genres)
+		if err != nil {
+			return err
+		}
+
 		for _, genre := range req.Genres {
-			// FIXME:ジャンルは管理側で作成するよう変更（ユーザ側で作成はさせない）
-			err := u.createGenreIfNeed(ctx, genre)
-			if err != nil {
-				return err
-			}
 			args := repository.CreateBookGenreRequest{
 				BookID:    b.ID,
 				GenreName: genre,
@@ -134,13 +135,22 @@ func (u *RegisterBookUseCaseImpl) createPublisherIfNeed(ctx context.Context, pub
 	return err
 }
 
-func (u *RegisterBookUseCaseImpl) createGenreIfNeed(ctx context.Context, genre string) error {
-	if len(genre) == 0 {
+func (u *RegisterBookUseCaseImpl) checkGenresRegistered(ctx context.Context, genres []string) error {
+	if len(genres) == 0 {
 		return nil
 	}
-	_, err := u.bookRepo.CreateGenre(ctx, repository.NewCreateGenreRequest(genre))
+	res, err := u.bookRepo.GetAllGenres(ctx)
 	if err != nil {
-		return u.checkDuplicateKeyError(err)
+		return newError(Internal, InternalServerError, "error getting all genres")
+	}
+	master := make(map[string]struct{})
+	for _, genre := range res.Genres {
+		master[genre] = struct{}{}
+	}
+	for _, genre := range genres {
+		if _, ok := master[genre]; !ok {
+			return newError(BadRequest, InvalidGenreError, "invalid genre: "+genre)
+		}
 	}
 	return nil
 }

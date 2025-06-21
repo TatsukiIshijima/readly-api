@@ -1,12 +1,14 @@
 package repository
 
 import (
+	"context"
 	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
 	sqlc "readly/db/sqlc"
 	"readly/env"
+	"readly/testdata"
 	"testing"
 	"time"
 )
@@ -31,5 +33,22 @@ func TestMain(m *testing.M) {
 	bookRepo = NewBookRepository(q)
 	userRepo = NewUserRepository(q)
 	readingHistoryRepo = NewReadingHistoryRepository(q)
+
+	createGenresIfNeed()
+
 	os.Exit(m.Run())
+}
+
+func createGenresIfNeed() {
+	genres := testdata.GetGenres()
+	for _, genre := range genres {
+		_, err := querier.GetGenreByName(context.Background(), genre)
+		if err == nil {
+			continue
+		}
+		_, err = querier.CreateGenre(context.Background(), genre)
+		if err != nil {
+			log.Fatalf("failed to create genre %s: %v", genre, err)
+		}
+	}
 }

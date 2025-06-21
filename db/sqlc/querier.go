@@ -29,7 +29,7 @@ type Querier interface {
 	DeleteSessionByUserID(ctx context.Context, arg DeleteSessionByUserIDParams) (int64, error)
 	DeleteUser(ctx context.Context, id int64) error
 	GetAllAuthors(ctx context.Context, arg GetAllAuthorsParams) ([]Author, error)
-	GetAllGenres(ctx context.Context, arg GetAllGenresParams) ([]Genre, error)
+	GetAllGenres(ctx context.Context) ([]string, error)
 	GetAllPublishers(ctx context.Context, arg GetAllPublishersParams) ([]Publisher, error)
 	GetAllUsers(ctx context.Context, arg GetAllUsersParams) ([]User, error)
 	GetAuthorByName(ctx context.Context, name string) (Author, error)

@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"readly/controller"
 	sqlc "readly/db/sqlc"
+	"readly/entity"
 	"readly/env"
 	"readly/middleware"
 	"readly/pb/readly/v1"
@@ -43,11 +44,15 @@ func main() {
 		log.Fatal("cannot start server:", err)
 	}
 
+	createGenresUseCase := usecase.NewCreateGenresUseCase(t, bookRepo)
 	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
 	signUpUseCase := usecase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepo)
 	signInUseCase := usecase.NewSignInUseCase(config, maker, t, sessionRepo, userRepo)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+
+	// Register genres at application startup
+	registerGenres(createGenresUseCase)
 
 	// メインルーチンでgRPC Serverの起動しているとそこでブロックしてしまい、
 	//HTTP Gatewayの起動ができないため、別のルーチンで起動する
@@ -139,6 +144,23 @@ func runGRPCServer(
 	if err != nil {
 		log.Fatalf("cannot start server: %v", err)
 	}
+}
+
+// registerGenres registers predefined genres in the database
+func registerGenres(createGenresUseCase usecase.CreateGenresUseCase) {
+	// Get the list of genres from entity
+	genreNames := entity.GetGenres()
+
+	// Create a request with the genre names
+	request := usecase.NewCreateGenresRequest(genreNames)
+
+	// Call the use case to register the genres
+	err := createGenresUseCase.CreateGenres(context.Background(), request)
+	if err != nil {
+		log.Fatal("failed to register genres:", err)
+	}
+
+	log.Println("Successfully registered genres")
 }
 
 func runGatewayServer(

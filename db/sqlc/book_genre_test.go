@@ -3,16 +3,18 @@ package db
 import (
 	"context"
 	"github.com/stretchr/testify/require"
+	"log"
 	"readly/testdata"
 	"testing"
 )
 
-func createRandomBookGenre(t *testing.T, book Book, genre Genre) {
+func createTestBookGenre(t *testing.T, book Book, genre Genre) {
 	arg := CreateBookGenreParams{
 		BookID:    book.ID,
 		GenreName: genre.Name,
 	}
 	bookGenre, err := querier.CreateBookGenre(context.Background(), arg)
+	log.Printf("create book genre: %+v", bookGenre)
 	require.NoError(t, err)
 	require.NotEmpty(t, bookGenre)
 	require.NotZero(t, bookGenre.BookID)
@@ -29,8 +31,8 @@ func TestCreateBookGenre(t *testing.T) {
 		"",
 		testdata.RandomString(13),
 	)
-	genre := createRandomGenre(t)
-	createRandomBookGenre(t, book, genre)
+	genre := createGenreIfNeed(t)
+	createTestBookGenre(t, book, genre)
 }
 
 func TestDeleteBookGenre(t *testing.T) {
@@ -41,20 +43,27 @@ func TestDeleteBookGenre(t *testing.T) {
 		"",
 		testdata.RandomString(13),
 	)
-	genre1 := createRandomGenre(t)
-	genre2 := createRandomGenre(t)
-	genre3 := createRandomGenre(t)
-	createRandomBookGenre(t, book, genre1)
-	createRandomBookGenre(t, book, genre2)
-	createRandomBookGenre(t, book, genre3)
+	createRandomGenre := func() Genre {
+		genre, err := querier.CreateGenre(context.Background(), testdata.RandomString(6))
+		require.NoError(t, err)
+		require.NotEmpty(t, genre)
+		return genre
+	}
+	deleteGenre := func(genre Genre) {
+		err := querier.DeleteGenre(context.Background(), genre.Name)
+		require.NoError(t, err)
+	}
+
+	genre := createRandomGenre()
+	createTestBookGenre(t, book, genre)
 
 	genres, err := querier.GetGenresByBookID(context.Background(), book.ID)
 	require.NoError(t, err)
-	require.Len(t, genres, 3)
+	require.Len(t, genres, 1)
 
 	deleteArgs := DeleteBookGenreParams{
 		BookID:    book.ID,
-		GenreName: genre1.Name,
+		GenreName: genre.Name,
 	}
 	rowsAffected, err := querier.DeleteBookGenre(context.Background(), deleteArgs)
 	require.NoError(t, err)
@@ -62,5 +71,7 @@ func TestDeleteBookGenre(t *testing.T) {
 
 	genres, err = querier.GetGenresByBookID(context.Background(), book.ID)
 	require.NoError(t, err)
-	require.Len(t, genres, 2)
+	require.Len(t, genres, 0)
+
+	deleteGenre(genre)
 }

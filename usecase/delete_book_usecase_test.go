@@ -43,7 +43,7 @@ func TestDeleteBook(t *testing.T) {
 				registerReq := RegisterBookRequest{
 					UserID:        signUpRes.UserID,
 					Title:         testdata.RandomString(10),
-					Genres:        []string{testdata.RandomString(6)},
+					Genres:        []string{testdata.GetGenres()[0]},
 					Description:   &desc,
 					CoverImageURL: &coverImgURL,
 					URL:           &url,

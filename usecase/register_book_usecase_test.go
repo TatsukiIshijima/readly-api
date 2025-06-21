@@ -31,7 +31,7 @@ func TestRegisterBook(t *testing.T) {
 				return RegisterBookRequest{
 					UserID: signUpRes.UserID,
 					Title:  testdata.RandomString(10),
-					Genres: []string{testdata.RandomString(6)},
+					Genres: []string{testdata.GetGenres()[0]},
 					Status: 0,
 				}
 			},
@@ -69,7 +69,7 @@ func TestRegisterBook(t *testing.T) {
 				return RegisterBookRequest{
 					UserID:        signUpRes.UserID,
 					Title:         testdata.RandomString(10),
-					Genres:        []string{testdata.RandomString(6)},
+					Genres:        []string{testdata.GetGenres()[1]},
 					Description:   &desc,
 					CoverImageURL: &coverImgURL,
 					URL:           &url,
@@ -100,44 +100,6 @@ func TestRegisterBook(t *testing.T) {
 			},
 		},
 		{
-			name: "New unread book register success when genres are already exist.",
-			setup: func(t *testing.T) RegisterBookRequest {
-				genre := testdata.RandomString(6)
-
-				req := RegisterBookRequest{
-					UserID: signUpRes.UserID,
-					Title:  testdata.RandomString(10),
-					Genres: []string{genre},
-					Status: 0,
-				}
-				_, err := registerBookUseCase.RegisterBook(context.Background(), req)
-				require.NoError(t, err)
-
-				return RegisterBookRequest{
-					UserID: signUpRes.UserID,
-					Title:  testdata.RandomString(10),
-					Genres: []string{genre},
-					Status: 0,
-				}
-			},
-			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
-				require.NoError(t, err)
-				require.NotEmpty(t, res.Book.ID)
-				require.Equal(t, req.Title, res.Book.Title)
-				require.Equal(t, req.Genres, res.Book.Genres)
-				require.Equal(t, req.Description, res.Book.Description)
-				require.Equal(t, req.CoverImageURL, res.Book.CoverImageURL)
-				require.Equal(t, req.URL, res.Book.URL)
-				require.Equal(t, req.AuthorName, res.Book.AuthorName)
-				require.Equal(t, req.PublisherName, res.Book.PublisherName)
-				require.Equal(t, req.PublishDate, res.Book.PublishDate)
-				require.Equal(t, req.ISBN, res.Book.ISBN)
-				require.Equal(t, req.Status, res.Book.Status)
-				require.True(t, isSameDate(req.StartDate, res.Book.StartDate))
-				require.True(t, isSameDate(req.EndDate, res.Book.EndDate))
-			},
-		},
-		{
 			name: "New reading book with author & publisher register success when author & publisher are already exist.",
 			setup: func(t *testing.T) RegisterBookRequest {
 				author := testdata.RandomString(10)
@@ -147,7 +109,7 @@ func TestRegisterBook(t *testing.T) {
 				req := RegisterBookRequest{
 					UserID:        signUpRes.UserID,
 					Title:         testdata.RandomString(10),
-					Genres:        []string{testdata.RandomString(6)},
+					Genres:        []string{testdata.GetGenres()[1]},
 					AuthorName:    &author,
 					PublisherName: &publisher,
 					Status:        0,
@@ -158,7 +120,7 @@ func TestRegisterBook(t *testing.T) {
 				return RegisterBookRequest{
 					UserID:        signUpRes.UserID,
 					Title:         testdata.RandomString(10),
-					Genres:        []string{testdata.RandomString(6)},
+					Genres:        []string{testdata.GetGenres()[2]},
 					AuthorName:    &author,
 					PublisherName: &publisher,
 					Status:        1,
@@ -180,6 +142,24 @@ func TestRegisterBook(t *testing.T) {
 				require.Equal(t, req.Status, res.Book.Status)
 				require.True(t, isSameDate(req.StartDate, res.Book.StartDate))
 				require.True(t, isSameDate(req.EndDate, res.Book.EndDate))
+			},
+		},
+		{
+			name: "New unread book register failed when genres are not exist.",
+			setup: func(t *testing.T) RegisterBookRequest {
+				return RegisterBookRequest{
+					UserID: signUpRes.UserID,
+					Title:  testdata.RandomString(10),
+					Genres: []string{testdata.RandomString(6)},
+					Status: 0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidGenreError)
 			},
 		},
 	}

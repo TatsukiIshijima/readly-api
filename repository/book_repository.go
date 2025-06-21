@@ -16,10 +16,11 @@ type BookRepository interface {
 	DeleteAuthor(ctx context.Context, req DeleteAuthorRequest) error
 	DeleteBook(ctx context.Context, req DeleteBookRequest) error
 	DeleteBookGenre(ctx context.Context, req DeleteBookGenreRequest) error
-	DeleteGenre(ctx context.Context, req DeleteGenreRequest) error
 	DeletePublisher(ctx context.Context, req DeletePublisherRequest) error
 	GetBookByID(ctx context.Context, req GetBookRequest) (*GetBookResponse, error)
+	GetAllGenres(ctx context.Context) (*GetAllGenresResponse, error)
 	GetGenresByBookID(ctx context.Context, request GetGenresByBookIDRequest) (*GetGenresByBookIDResponse, error)
+	GetGenre(ctx context.Context, req GetGenreRequest) (*GetGenreResponse, error)
 	UpdateBook(ctx context.Context, req UpdateBookRequest) (*UpdateBookResponse, error)
 }
 
@@ -134,10 +135,6 @@ func (r *BookRepositoryImpl) DeleteBookGenre(ctx context.Context, req DeleteBook
 	return nil
 }
 
-func (r *BookRepositoryImpl) DeleteGenre(ctx context.Context, req DeleteGenreRequest) error {
-	return r.querier.DeleteGenre(ctx, req.Name)
-}
-
 func (r *BookRepositoryImpl) DeletePublisher(ctx context.Context, req DeletePublisherRequest) error {
 	return r.querier.DeletePublisher(ctx, req.Name)
 }
@@ -153,12 +150,31 @@ func (r *BookRepositoryImpl) GetBookByID(ctx context.Context, req GetBookRequest
 	return newGetBookResponseFromSQLC(b), nil
 }
 
+func (r *BookRepositoryImpl) GetAllGenres(ctx context.Context) (*GetAllGenresResponse, error) {
+	g, err := r.querier.GetAllGenres(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return newGetAllGenresResponse(g), nil
+}
+
 func (r *BookRepositoryImpl) GetGenresByBookID(ctx context.Context, req GetGenresByBookIDRequest) (*GetGenresByBookIDResponse, error) {
 	g, err := r.querier.GetGenresByBookID(ctx, req.ID)
 	if err != nil {
 		return nil, err
 	}
 	return newGetGenresByBookIDResponse(g), err
+}
+
+func (r *BookRepositoryImpl) GetGenre(ctx context.Context, req GetGenreRequest) (*GetGenreResponse, error) {
+	g, err := r.querier.GetGenreByName(ctx, req.Name)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRows
+		}
+		return nil, err
+	}
+	return newGetGenreResponseFromSQLC(g), nil
 }
 
 func (r *BookRepositoryImpl) UpdateBook(ctx context.Context, req UpdateBookRequest) (*UpdateBookResponse, error) {

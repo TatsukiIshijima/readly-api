@@ -65,11 +65,11 @@ func TestCreateBook(t *testing.T) {
 
 func TestCreateBookGenre(t *testing.T) {
 	b := createRandomBook(t)
-	g := createRandomGenre(t)
+	g := testdata.GetGenres()[0]
 
 	req := CreateBookGenreRequest{
 		BookID:    b.ID,
-		GenreName: g.Name,
+		GenreName: g,
 	}
 	res, err := bookRepo.CreateBookGenre(context.Background(), req)
 	require.NoError(t, err)
@@ -77,21 +77,7 @@ func TestCreateBookGenre(t *testing.T) {
 
 	gg, err := querier.GetGenresByBookID(context.Background(), b.ID)
 	require.NoError(t, err)
-	require.Equal(t, g.Name, gg[0])
-}
-
-func createRandomGenre(t *testing.T) *CreateGenreResponse {
-	name := testdata.RandomString(8)
-	res, err := bookRepo.CreateGenre(context.Background(), NewCreateGenreRequest(name))
-	require.NoError(t, err)
-	return res
-}
-
-func TestCreateGenre(t *testing.T) {
-	g := createRandomGenre(t)
-	gg, err := querier.GetGenreByName(context.Background(), g.Name)
-	require.NoError(t, err)
-	require.Equal(t, g.Name, gg.Name)
+	require.Equal(t, g, gg[0])
 }
 
 func createRandomPublisher(t *testing.T) *CreatePublisherResponse {
@@ -128,33 +114,24 @@ func TestDeleteBook(t *testing.T) {
 
 func TestDeleteBookGenre(t *testing.T) {
 	b := createRandomBook(t)
-	g := createRandomGenre(t)
+	g := entity.GetGenres()[0]
 
 	req := CreateBookGenreRequest{
 		BookID:    b.ID,
-		GenreName: g.Name,
+		GenreName: g,
 	}
 	_, err := bookRepo.CreateBookGenre(context.Background(), req)
 	require.NoError(t, err)
 
 	err = bookRepo.DeleteBookGenre(context.Background(), DeleteBookGenreRequest{
 		BookID:    b.ID,
-		GenreName: g.Name,
+		GenreName: g,
 	})
 	require.NoError(t, err)
 
 	gg, err := querier.GetGenresByBookID(context.Background(), b.ID)
 	require.NoError(t, err)
 	require.Empty(t, gg)
-}
-
-func TestDeleteGenre(t *testing.T) {
-	g := createRandomGenre(t)
-	err := bookRepo.DeleteGenre(context.Background(), NewDeleteGenreRequest(g.Name))
-	require.NoError(t, err)
-
-	_, err = querier.GetGenreByName(context.Background(), g.Name)
-	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
 func TestUpdateBook(t *testing.T) {
