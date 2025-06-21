@@ -50,15 +50,14 @@ func TestGetAllGenre(t *testing.T) {
 	genres, err := querier.GetAllGenres(context.Background())
 	require.NoError(t, err)
 
-	for i := 0; i < 4; i++ {
-		createGenreIfNeed(t)
-	}
+	randGenre := testdata.RandomString(6)
+	_, err = querier.CreateGenre(context.Background(), randGenre)
+	require.NoError(t, err)
 
 	allGenres, err := querier.GetAllGenres(context.Background())
 	require.NoError(t, err)
-	require.Len(t, allGenres, len(genres))
+	require.Len(t, allGenres, len(genres)+1)
 
-	for _, genre := range genres {
-		require.NotEmpty(t, genre)
-	}
+	err = querier.DeleteGenre(context.Background(), randGenre)
+	require.NoError(t, err)
 }
