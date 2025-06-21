@@ -19,7 +19,7 @@ Go
 | [crypt](https://github.com/golang/crypto)                      | 暗号化                    |
 | [go-genproto](https://github.com/googleapis/go-genproto)       |                        |
 | [grpc-go](https://github.com/grpc/grpc-go)                     | gRPC                   |
-| [protobuf]()                                                   | Protocol Buffers       |
+| [protobuf](https://github.com/protocolbuffers/protobuf)        | Protocol Buffers       |
 
 Go、及び各種ライブラリのバージョンについては `go.mod` を参照してください。
 
