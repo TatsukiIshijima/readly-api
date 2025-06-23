@@ -6,6 +6,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"path/filepath"
+	"readly/pb/readly/v1"
 	"readly/usecase"
 )
 
@@ -25,6 +26,7 @@ func NewImageServer(uploadImgUseCase usecase.UploadImgUseCase) ImageServer {
 
 func (s *ImageServerImpl) Upload(ctx *gin.Context) {
 	// TODO: エラーハンドルをcontroller/error.goに合わせる
+	// TODO:ファイルチェック
 	fileHeader, err := ctx.FormFile("file")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})
@@ -59,6 +61,9 @@ func (s *ImageServerImpl) Upload(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload image"})
 		return
 	}
-	// TODO:レスポンスの型を作る
-	ctx.JSON(http.StatusOK, gin.H{"path": res.Path})
+
+	response := &pb.UploadImageResponse{
+		Path: res.Path,
+	}
+	ctx.JSON(http.StatusOK, response)
 }
