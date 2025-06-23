@@ -26,7 +26,6 @@ func NewImageServer(uploadImgUseCase usecase.UploadImgUseCase) ImageServer {
 
 func (s *ImageServerImpl) Upload(ctx *gin.Context) {
 	// TODO: エラーハンドルをcontroller/error.goに合わせる
-	// TODO:ファイルチェック
 	fileHeader, err := ctx.FormFile("file")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})

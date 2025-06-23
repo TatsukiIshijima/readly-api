@@ -7,6 +7,7 @@ import (
 
 func Setup(
 	authMiddleware gin.HandlerFunc,
+	imageValidationMiddleware gin.HandlerFunc,
 	imageServer server.ImageServer,
 ) *gin.Engine {
 	router := gin.Default()
@@ -15,8 +16,9 @@ func Setup(
 	{
 		v1 := root.Group("v1")
 		{
-			//v1.POST("/image/upload", imageServer.Upload).Use(authMiddleware)
-			v1.POST("/image/upload", imageServer.Upload)
+			imgGroup := v1.Group("")
+			imgGroup.Use(authMiddleware, imageValidationMiddleware)
+			imgGroup.POST("/image/upload", imageServer.Upload)
 		}
 	}
 	return router
