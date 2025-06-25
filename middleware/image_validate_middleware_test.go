@@ -160,6 +160,13 @@ func TestValidateImageUpload(t *testing.T) {
 
 			// Add middleware and test handler
 			router.POST("/test", ValidateImageUpload(), func(ctx *gin.Context) {
+				// For valid images, check if validatedImageData is set in context
+				if tc.wantCode == http.StatusOK {
+					validatedData, exists := ctx.Get(ValidatedImageDataKey)
+					require.True(t, exists, "validatedImageData should be set in context")
+					require.NotNil(t, validatedData, "validatedImageData should not be nil")
+					require.IsType(t, []byte{}, validatedData, "validatedImageData should be of type []byte")
+				}
 				ctx.Status(http.StatusOK)
 			})
 

@@ -21,6 +21,9 @@ const (
 	imageExtJPEG  = ".jpg"
 	imageExtJPEG2 = ".jpeg"
 	imageExtPNG   = ".png"
+
+	// Context key for validated image data
+	ValidatedImageDataKey = "validatedImageData"
 )
 
 // ValidateImageUpload is a middleware that validates image uploads
@@ -78,12 +81,8 @@ func ValidateImageUpload() gin.HandlerFunc {
 			return
 		}
 
-		// Reset file for next middleware/handler
-		_, err = file.Seek(0, io.SeekStart)
-		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(errors.New("failed to reset file")))
-			return
-		}
+		// Store validated image data in context for next handler
+		ctx.Set(ValidatedImageDataKey, data)
 
 		// Continue to next middleware/handler
 		ctx.Next()

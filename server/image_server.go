@@ -2,10 +2,9 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"path/filepath"
+	"readly/middleware"
 	"readly/pb/readly/v1"
 	"readly/usecase"
 )
@@ -32,22 +31,16 @@ func (s *ImageServerImpl) Upload(ctx *gin.Context) {
 		return
 	}
 
-	file, err := fileHeader.Open()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to open file"})
+	// Get validated image data from context
+	validatedData, exists := ctx.Get(middleware.ValidatedImageDataKey)
+	if !exists {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Validated image data not found in context"})
 		return
 	}
-	defer func(file multipart.File) {
-		err := file.Close()
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to close file"})
-			return
-		}
-	}(file)
 
-	data, err := io.ReadAll(file)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
+	data, ok := validatedData.([]byte)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid image data type in context"})
 		return
 	}
 
