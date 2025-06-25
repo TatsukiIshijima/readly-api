@@ -11,14 +11,13 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
-	"readly/controller"
 	sqlc "readly/db/sqlc"
 	"readly/entity"
 	"readly/env"
 	"readly/middleware"
 	"readly/pb/readly/v1"
 	"readly/repository"
-	"readly/router"
+	router "readly/router"
 	"readly/server"
 	"readly/service/auth"
 	"readly/usecase"
@@ -38,6 +37,7 @@ func main() {
 	userRepo := repository.NewUserRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
 	sessionRepo := repository.NewSessionRepository(q)
+	imageRepo := repository.NewImageRepository()
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
@@ -50,6 +50,7 @@ func main() {
 	signUpUseCase := usecase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepo)
 	signInUseCase := usecase.NewSignInUseCase(config, maker, t, sessionRepo, userRepo)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+	uploadImgUseCase := usecase.NewUploadImgUseCase(config, imageRepo)
 
 	// Register genres at application startup
 	registerGenres(createGenresUseCase)
@@ -64,6 +65,7 @@ func main() {
 		signUpUseCase,
 		signInUseCase,
 		refreshTokenUseCase,
+		uploadImgUseCase,
 	)
 
 	//runGinServer(
@@ -87,25 +89,25 @@ func main() {
 	)
 }
 
-func runGinServer(
-	config env.Config,
-	maker auth.TokenMaker,
-	registerBookUseCase usecase.RegisterBookUseCase,
-	deleteBookUseCase usecase.DeleteBookUseCase,
-	signUpUseCase usecase.SignUpUseCase,
-	signInUseCase usecase.SignInUseCase,
-	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
-) {
-	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
-	userController := controller.NewUserController(config, maker, signUpUseCase, signInUseCase, refreshTokenUseCase)
-
-	r := router.Setup(middleware.Authorize(maker), bookController, userController)
-	err := r.Run(config.HTTPServerAddress)
-
-	if err != nil {
-		log.Fatal("cannot start server:", err)
-	}
-}
+//func runGinServer(
+//	config env.Config,
+//	maker auth.TokenMaker,
+//	registerBookUseCase usecase.RegisterBookUseCase,
+//	deleteBookUseCase usecase.DeleteBookUseCase,
+//	signUpUseCase usecase.SignUpUseCase,
+//	signInUseCase usecase.SignInUseCase,
+//	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
+//) {
+//	bookController := controller.NewBookController(registerBookUseCase, deleteBookUseCase)
+//	userController := controller.NewUserController(config, maker, signUpUseCase, signInUseCase, refreshTokenUseCase)
+//
+//	r := router.Setup(middleware.Authorize(maker), bookController, userController)
+//	err := r.Run(config.HTTPServerAddress)
+//
+//	if err != nil {
+//		log.Fatal("cannot start server:", err)
+//	}
+//}
 
 func runGRPCServer(
 	config env.Config,
@@ -171,6 +173,7 @@ func runGatewayServer(
 	signUpUseCase usecase.SignUpUseCase,
 	signInUseCase usecase.SignInUseCase,
 	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
+	uploadImgUseCase usecase.UploadImgUseCase,
 ) {
 	userServer := server.NewUserServer(
 		config,
@@ -184,6 +187,7 @@ func runGatewayServer(
 		registerBookUseCase,
 		deleteBookUseCase,
 	)
+	imageServer := server.NewImageServer(uploadImgUseCase)
 
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
@@ -212,6 +216,10 @@ func runGatewayServer(
 	httpMux := http.NewServeMux()
 	// HTTPリクエストをgRPCのリクエストに変換するするためにgrpcMuxにルーティングする
 	httpMux.Handle("/", grpcMux)
+
+	// REST APIのルーティング（画像アップロードAPIはgRPC未対応のため）
+	r := router.Setup(middleware.Authorize(maker), middleware.ValidateImageUpload(), imageServer)
+	httpMux.Handle("/v1/image/upload", r)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
 	if err != nil {
