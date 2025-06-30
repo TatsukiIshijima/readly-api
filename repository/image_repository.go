@@ -24,11 +24,11 @@ type SaveRequest struct {
 func (r *ImageRepositoryImpl) Save(req SaveRequest) error {
 	savePath := filepath.Join(req.Dst, req.FileName)
 
-	if err := os.MkdirAll(req.Dst, os.ModePerm); err != nil {
+	if err := os.MkdirAll(req.Dst, 0755); err != nil {
 		return err
 	}
 
-	if err := os.WriteFile(savePath, req.Data, os.ModePerm); err != nil {
+	if err := os.WriteFile(savePath, req.Data, 0644); err != nil {
 		return err
 	}
 	return nil
