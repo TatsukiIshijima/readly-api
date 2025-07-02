@@ -3,7 +3,7 @@ package usecase
 import (
 	"context"
 	"golang.org/x/crypto/bcrypt"
-	"readly/env"
+	"readly/configs"
 	"readly/repository"
 	"readly/service/auth"
 )
@@ -15,7 +15,7 @@ type SignInUseCase interface {
 }
 
 type SignInUseCaseImpl struct {
-	config      env.Config
+	config      configs.Config
 	maker       auth.TokenMaker
 	transactor  repository.Transactor
 	sessionRepo repository.SessionRepository
@@ -23,7 +23,7 @@ type SignInUseCaseImpl struct {
 }
 
 func NewSignInUseCase(
-	config env.Config,
+	config configs.Config,
 	maker auth.TokenMaker,
 	transactor repository.Transactor,
 	sessionRepo repository.SessionRepository,

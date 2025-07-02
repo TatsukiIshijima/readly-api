@@ -7,7 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
-	"readly/env"
+	"readly/configs"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -20,7 +20,7 @@ func init() {
 }
 
 func TestMain(m *testing.M) {
-	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
+	config, err := configs.Load(filepath.Join(configs.ProjectRoot(), "/configs/env"))
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}

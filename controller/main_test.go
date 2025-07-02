@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"readly/configs"
 	sqlc "readly/db/sqlc"
-	"readly/env"
 	"readly/repository"
 	"readly/service/auth"
 	"readly/testdata"
@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 }
 
 func setupControllers(t *testing.T) (BookController, UserController) {
-	config := env.Config{
+	config := configs.Config{
 		TokenSymmetricKey:    testdata.RandomString(32),
 		AccessTokenDuration:  time.Minute,
 		RefreshTokenDuration: time.Hour,

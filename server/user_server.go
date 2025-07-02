@@ -4,7 +4,7 @@ import (
 	"context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"readly/env"
+	"readly/configs"
 	"readly/pb/readly/v1"
 	"readly/service/auth"
 	"readly/usecase"
@@ -13,7 +13,7 @@ import (
 
 type UserServerImpl struct {
 	pb.UnimplementedUserServiceServer
-	config              env.Config
+	config              configs.Config
 	maker               auth.TokenMaker
 	signUpUseCase       usecase.SignUpUseCase
 	signInUseCase       usecase.SignInUseCase
@@ -21,7 +21,7 @@ type UserServerImpl struct {
 }
 
 func NewUserServer(
-	config env.Config,
+	config configs.Config,
 	maker auth.TokenMaker,
 	signUpUseCase usecase.SignUpUseCase,
 	signInUseCase usecase.SignInUseCase,

@@ -4,8 +4,8 @@ package server
 
 import (
 	"github.com/stretchr/testify/require"
+	"readly/configs"
 	sqlc "readly/db/sqlc"
-	"readly/env"
 	"readly/repository"
 	"readly/service/auth"
 	"readly/testdata"
@@ -15,7 +15,7 @@ import (
 )
 
 func NewTestBookServer(t *testing.T) *BookServerImpl {
-	config := env.Config{
+	config := configs.Config{
 		TokenSymmetricKey:    testdata.RandomString(32),
 		AccessTokenDuration:  time.Minute,
 		RefreshTokenDuration: time.Hour,
