@@ -14,6 +14,9 @@ import (
 	"readly/configs"
 	sqlc "readly/db/sqlc"
 	"readly/entity"
+	imageRepo "readly/image/repository"
+	imageServer "readly/image/server"
+	imageUseCase "readly/image/usecase"
 	"readly/middleware/auth"
 	"readly/middleware/image"
 	"readly/pb/readly/v1"
@@ -37,7 +40,7 @@ func main() {
 	userRepo := repository.NewUserRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
 	sessionRepo := repository.NewSessionRepository(q)
-	imageRepo := repository.NewImageRepository()
+	imgRepo := imageRepo.NewImageRepository()
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	if err != nil {
@@ -50,7 +53,7 @@ func main() {
 	signUpUseCase := usecase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepo)
 	signInUseCase := usecase.NewSignInUseCase(config, maker, t, sessionRepo, userRepo)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
-	uploadImgUseCase := usecase.NewUploadImgUseCase(config, imageRepo)
+	uploadImgUseCase := imageUseCase.NewUploadImgUseCase(config, imgRepo)
 
 	// Register genres at application startup
 	registerGenres(createGenresUseCase)
@@ -173,7 +176,7 @@ func runGatewayServer(
 	signUpUseCase usecase.SignUpUseCase,
 	signInUseCase usecase.SignInUseCase,
 	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
-	uploadImgUseCase usecase.UploadImgUseCase,
+	uploadImgUseCase imageUseCase.UploadImgUseCase,
 ) {
 	userServer := server.NewUserServer(
 		config,
@@ -187,7 +190,7 @@ func runGatewayServer(
 		registerBookUseCase,
 		deleteBookUseCase,
 	)
-	imageServer := server.NewImageServer(uploadImgUseCase)
+	imgServer := imageServer.NewImageServer(uploadImgUseCase)
 
 	jsonOption := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
@@ -218,7 +221,7 @@ func runGatewayServer(
 	httpMux.Handle("/", grpcMux)
 
 	// REST APIのルーティング（画像アップロードAPIはgRPC未対応のため）
-	r := router.Setup(auth.AuthenticateHTTP(maker), image.ValidateImageUpload(), imageServer)
+	r := router.Setup(auth.AuthenticateHTTP(maker), image.ValidateImageUpload(), imgServer)
 	httpMux.Handle("/v1/image/upload", r)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
