@@ -23,7 +23,7 @@ test:
 	go test -count=1 -v -cover ./... -tags test
 
 launchserver:
-	go run cmd/main.go
+	go run main.go
 
 # dependencies
 # Buf CLI(https://buf.build/docs/)

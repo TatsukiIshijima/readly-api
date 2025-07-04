@@ -1,4 +1,4 @@
-package middleware
+package auth
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/metadata"
 	"net/http"
-	"readly/service/auth"
 	"strings"
 )
 
@@ -17,11 +16,11 @@ const (
 	AuthorizationClaimKey   = "authorization_claim"
 )
 
-func Authorize(maker auth.TokenMaker) gin.HandlerFunc {
+func AuthenticateHTTP(maker TokenMaker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 		if authorizationHeader == "" {
-			err := errors.New("authorization header is not provided")
+			err := errors.New("missing authorization header")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
@@ -41,7 +40,8 @@ func Authorize(maker auth.TokenMaker) gin.HandlerFunc {
 		accessToken := fields[1]
 		claims, err := maker.Verify(accessToken)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
+			wrappedErr := fmt.Errorf("invalid access token: %s", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(wrappedErr))
 			return
 		}
 
@@ -50,12 +50,11 @@ func Authorize(maker auth.TokenMaker) gin.HandlerFunc {
 	}
 }
 
-// FIXME: この関数はcontroller/error.goにもあるので共通化したい
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
 
-func Authenticate(ctx context.Context, maker auth.TokenMaker) (*auth.Claims, error) {
+func AuthenticateGRPC(ctx context.Context, maker TokenMaker) (*Claims, error) {
 	meta, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("missing metadata")

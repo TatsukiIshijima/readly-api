@@ -3,7 +3,7 @@ FROM golang:1.24.4-bullseye AS builder
 WORKDIR /app
 COPY . .
 # go buildでmain（実行ファイル）を作成
-RUN go build -o main ./cmd && \
+RUN go build -o main . && \
     # マイグレーションのためにgolang-migrate（実行ファイル）をダウンロード
     curl -L https://github.com/golang-migrate/migrate/releases/download/v4.18.1/migrate.linux-amd64.tar.gz | tar xvz
 

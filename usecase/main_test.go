@@ -6,10 +6,10 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"readly/configs"
 	sqlc "readly/db/sqlc"
-	"readly/env"
+	"readly/middleware/auth"
 	"readly/repository"
-	"readly/service/auth"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -24,13 +24,13 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-var config env.Config
+var config configs.Config
 var querier sqlc.Querier
 var tx repository.Transactor
 var maker auth.TokenMaker
 
 func setupMain() {
-	c, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
+	c, err := configs.Load(filepath.Join(configs.ProjectRoot(), "/configs/env"))
 	if err != nil {
 		log.Fatalf("cannot load config: %v", err)
 	}

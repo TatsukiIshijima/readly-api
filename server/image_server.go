@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
-	"readly/middleware"
+	"readly/middleware/image"
 	"readly/pb/readly/v1"
 	"readly/usecase"
 )
@@ -24,7 +24,6 @@ func NewImageServer(uploadImgUseCase usecase.UploadImgUseCase) ImageServer {
 }
 
 func (s *ImageServerImpl) Upload(ctx *gin.Context) {
-	// TODO: エラーハンドルをcontroller/error.goに合わせる
 	fileHeader, err := ctx.FormFile("file")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "File is required"})
@@ -32,7 +31,7 @@ func (s *ImageServerImpl) Upload(ctx *gin.Context) {
 	}
 
 	// Get validated image data from context
-	validatedData, exists := ctx.Get(middleware.ValidatedImageDataKey)
+	validatedData, exists := ctx.Get(image.ValidatedImageDataKey)
 	if !exists {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Validated image data not found in context"})
 		return

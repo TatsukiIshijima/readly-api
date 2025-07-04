@@ -11,20 +11,20 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
+	"readly/configs"
 	sqlc "readly/db/sqlc"
 	"readly/entity"
-	"readly/env"
-	"readly/middleware"
+	"readly/middleware/auth"
+	"readly/middleware/image"
 	"readly/pb/readly/v1"
 	"readly/repository"
 	router "readly/router"
 	"readly/server"
-	"readly/service/auth"
 	"readly/usecase"
 )
 
 func main() {
-	config, err := env.Load(filepath.Join(env.ProjectRoot(), "/env"))
+	config, err := configs.Load(filepath.Join(configs.ProjectRoot(), "/configs/env"))
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
@@ -90,7 +90,7 @@ func main() {
 }
 
 //func runGinServer(
-//	config env.Config,
+//	config configs.Config,
 //	maker auth.TokenMaker,
 //	registerBookUseCase usecase.RegisterBookUseCase,
 //	deleteBookUseCase usecase.DeleteBookUseCase,
@@ -110,7 +110,7 @@ func main() {
 //}
 
 func runGRPCServer(
-	config env.Config,
+	config configs.Config,
 	maker auth.TokenMaker,
 	registerBookUseCase usecase.RegisterBookUseCase,
 	deleteBookUseCase usecase.DeleteBookUseCase,
@@ -166,7 +166,7 @@ func registerGenres(createGenresUseCase usecase.CreateGenresUseCase) {
 }
 
 func runGatewayServer(
-	config env.Config,
+	config configs.Config,
 	maker auth.TokenMaker,
 	registerBookUseCase usecase.RegisterBookUseCase,
 	deleteBookUseCase usecase.DeleteBookUseCase,
@@ -218,7 +218,7 @@ func runGatewayServer(
 	httpMux.Handle("/", grpcMux)
 
 	// REST APIのルーティング（画像アップロードAPIはgRPC未対応のため）
-	r := router.Setup(middleware.Authorize(maker), middleware.ValidateImageUpload(), imageServer)
+	r := router.Setup(auth.AuthenticateHTTP(maker), image.ValidateImageUpload(), imageServer)
 	httpMux.Handle("/v1/image/upload", r)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)

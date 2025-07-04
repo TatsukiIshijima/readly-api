@@ -8,11 +8,11 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"readly/configs"
 	sqlc "readly/db/sqlc"
-	"readly/env"
+	"readly/middleware/auth"
 	"readly/pb/readly/v1"
 	"readly/repository"
-	"readly/service/auth"
 	"readly/testdata"
 	"readly/usecase"
 	"testing"
@@ -20,7 +20,7 @@ import (
 )
 
 func NewTestUserServer(t *testing.T) *UserServerImpl {
-	config := env.Config{
+	config := configs.Config{
 		TokenSymmetricKey:    testdata.RandomString(32),
 		AccessTokenDuration:  time.Minute,
 		RefreshTokenDuration: time.Hour,

@@ -1,7 +1,6 @@
-package middleware
+package image
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
 	"io"
 	"net/http"
@@ -32,20 +31,20 @@ func ValidateImageUpload() gin.HandlerFunc {
 		// Get file from request
 		fileHeader, err := ctx.FormFile("file")
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(errors.New("file is required")))
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "file is required"})
 			return
 		}
 
 		// Check file size
 		if fileHeader.Size > maxFileSize {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(errors.New("file size exceeds the limit of 5MB")))
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "file size exceeds the limit of 5MB"})
 			return
 		}
 
 		// Open file
 		file, err := fileHeader.Open()
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(errors.New("failed to open file")))
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to open file"})
 			return
 		}
 		defer file.Close()
@@ -53,7 +52,7 @@ func ValidateImageUpload() gin.HandlerFunc {
 		// Read file data
 		data, err := io.ReadAll(file)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusInternalServerError, errorResponse(errors.New("failed to read file")))
+			ctx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "failed to read file"})
 			return
 		}
 
@@ -62,7 +61,7 @@ func ValidateImageUpload() gin.HandlerFunc {
 
 		// Check if extension is valid
 		if !isValidImageExtension(ext) {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(errors.New("invalid image file extension")))
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "invalid image file extension"})
 			return
 		}
 
@@ -71,13 +70,13 @@ func ValidateImageUpload() gin.HandlerFunc {
 
 		// Check if file is an image
 		if !isImageMimeType(mimeType) {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(errors.New("file is not a valid image")))
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "file is not a valid image"})
 			return
 		}
 
 		// Check if extension matches content type
 		if !isExtensionMatchingMimeType(ext, mimeType) {
-			ctx.AbortWithStatusJSON(http.StatusBadRequest, errorResponse(errors.New("file extension does not match image content")))
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "file extension does not match image content"})
 			return
 		}
 

@@ -5,9 +5,9 @@ import (
 	"errors"
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
-	"readly/env"
+	"readly/configs"
+	"readly/middleware/auth"
 	"readly/repository"
-	"readly/service/auth"
 )
 
 type SignUpUseCase interface {
@@ -15,7 +15,7 @@ type SignUpUseCase interface {
 }
 
 type SignUpUseCaseImpl struct {
-	config      env.Config
+	config      configs.Config
 	maker       auth.TokenMaker
 	transactor  repository.Transactor
 	sessionRepo repository.SessionRepository
@@ -23,7 +23,7 @@ type SignUpUseCaseImpl struct {
 }
 
 func NewSignUpUseCase(
-	config env.Config,
+	config configs.Config,
 	maker auth.TokenMaker,
 	transactor repository.Transactor,
 	sessionRepo repository.SessionRepository,

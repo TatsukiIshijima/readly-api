@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 	"github.com/google/uuid"
-	"readly/env"
+	"readly/configs"
+	"readly/middleware/auth"
 	"readly/repository"
-	"readly/service/auth"
 	"time"
 )
 
@@ -14,13 +14,13 @@ type RefreshAccessTokenUseCase interface {
 }
 
 type RefreshAccessTokenUseCaseImpl struct {
-	config      env.Config
+	config      configs.Config
 	marker      auth.TokenMaker
 	sessionRepo repository.SessionRepository
 }
 
 func NewRefreshAccessTokenUseCase(
-	config env.Config,
+	config configs.Config,
 	maker auth.TokenMaker,
 	sessionRepo repository.SessionRepository,
 ) RefreshAccessTokenUseCase {

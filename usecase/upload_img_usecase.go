@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"path/filepath"
-	"readly/env"
+	"readly/configs"
 	"readly/repository"
 )
 
@@ -13,12 +13,12 @@ type UploadImgUseCase interface {
 }
 
 type UploadImgUseCaseImpl struct {
-	config  env.Config
+	config  configs.Config
 	imgRepo repository.ImageRepository
 }
 
 func NewUploadImgUseCase(
-	config env.Config,
+	config configs.Config,
 	imgRepo repository.ImageRepository,
 ) UploadImgUseCase {
 	return &UploadImgUseCaseImpl{
@@ -53,7 +53,7 @@ func (u *UploadImgUseCaseImpl) Upload(req UploadRequest) (*UploadImgResponse, er
 		return nil, newError(BadRequest, InvalidRequestError, err.Error())
 	}
 
-	dst := filepath.Join(env.ProjectRoot(), ".storage/cover_img")
+	dst := filepath.Join(configs.ProjectRoot(), ".storage/cover_img")
 	fileName := uuid.NewString() + req.Ext
 	saveReq := repository.SaveRequest{
 		Dst:      dst,
