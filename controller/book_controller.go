@@ -4,8 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"readly/entity"
-	"readly/middleware"
-	"readly/service/auth"
+	"readly/middleware/auth"
 	"readly/usecase"
 )
 
@@ -51,7 +50,7 @@ func (bc *BookControllerImpl) Register(ctx *gin.Context) {
 		return
 	}
 
-	claims := ctx.MustGet(middleware.AuthorizationClaimKey).(*auth.Claims)
+	claims := ctx.MustGet(auth.AuthorizationClaimKey).(*auth.Claims)
 
 	args := usecase.RegisterBookRequest{
 		UserID:        claims.UserID,
@@ -89,7 +88,7 @@ func (bc *BookControllerImpl) Delete(ctx *gin.Context) {
 		return
 	}
 
-	claims := ctx.MustGet(middleware.AuthorizationClaimKey).(*auth.Claims)
+	claims := ctx.MustGet(auth.AuthorizationClaimKey).(*auth.Claims)
 
 	args := usecase.DeleteBookRequest{
 		UserID: claims.UserID,

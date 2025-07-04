@@ -5,8 +5,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"readly/configs"
+	"readly/middleware/auth"
 	"readly/pb/readly/v1"
-	"readly/service/auth"
 	"readly/usecase"
 	"readly/util"
 )

@@ -4,8 +4,8 @@ import (
 	"context"
 	"golang.org/x/crypto/bcrypt"
 	"readly/configs"
+	"readly/middleware/auth"
 	"readly/repository"
-	"readly/service/auth"
 )
 
 const maxSaveToken = 5

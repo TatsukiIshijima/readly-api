@@ -26,6 +26,11 @@ const (
 	ValidatedImageDataKey = "validatedImageData"
 )
 
+// errorResponse creates a standard error response format
+func errorResponse(err error) gin.H {
+	return gin.H{"error": err.Error()}
+}
+
 // ValidateImageUpload is a middleware that validates image uploads
 func ValidateImageUpload() gin.HandlerFunc {
 	return func(ctx *gin.Context) {

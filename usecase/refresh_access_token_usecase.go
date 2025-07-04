@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"readly/configs"
-	"readly/repository"
-	"readly/service/auth"
+	"readly/middleware/auth"
+	"readl
 	"time"
 )
 

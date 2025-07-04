@@ -6,8 +6,8 @@ import (
 	"github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
 	"readly/configs"
+	"readly/middleware/auth"
 	"readly/repository"
-	"readly/service/auth"
 )
 
 type SignUpUseCase interface {

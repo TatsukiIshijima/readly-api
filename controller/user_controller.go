@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"readly/configs"
-	"readly/service/auth"
+	"readly/middleware/auth"
 	"readly/usecase"
 )
 

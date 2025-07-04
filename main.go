@@ -15,11 +15,11 @@ import (
 	sqlc "readly/db/sqlc"
 	"readly/entity"
 	"readly/middleware"
+	"readly/middleware/auth"
 	"readly/pb/readly/v1"
 	"readly/repository"
 	router "readly/router"
 	"readly/server"
-	"readly/service/auth"
 	"readly/usecase"
 )
 
@@ -218,7 +218,7 @@ func runGatewayServer(
 	httpMux.Handle("/", grpcMux)
 
 	// REST APIのルーティング（画像アップロードAPIはgRPC未対応のため）
-	r := router.Setup(middleware.Authorize(maker), middleware.ValidateImageUpload(), imageServer)
+	r := router.Setup(auth.Authorize(maker), middleware.ValidateImageUpload(), imageServer)
 	httpMux.Handle("/v1/image/upload", r)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
