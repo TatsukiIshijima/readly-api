@@ -15,7 +15,6 @@ import (
 
 var querier sqlc.Querier
 var bookRepo BookRepository
-var userRepo UserRepository
 var readingHistoryRepo ReadingHistoryRepository
 
 func init() {
@@ -31,7 +30,6 @@ func TestMain(m *testing.M) {
 	_, q := a.Connect(config.DBDriver, config.DBSource)
 	querier = q
 	bookRepo = NewBookRepository(q)
-	userRepo = NewUserRepository(q)
 	readingHistoryRepo = NewReadingHistoryRepository(q)
 
 	createGenresIfNeed()
