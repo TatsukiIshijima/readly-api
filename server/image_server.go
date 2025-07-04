@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
-	"readly/middleware"
+	"readly/middleware/image"
 	"readly/pb/readly/v1"
 	"readly/usecase"
 )
@@ -32,7 +32,7 @@ func (s *ImageServerImpl) Upload(ctx *gin.Context) {
 	}
 
 	// Get validated image data from context
-	validatedData, exists := ctx.Get(middleware.ValidatedImageDataKey)
+	validatedData, exists := ctx.Get(image.ValidatedImageDataKey)
 	if !exists {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Validated image data not found in context"})
 		return
