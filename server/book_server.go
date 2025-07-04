@@ -6,7 +6,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"readly/middleware/auth"
-	"readly/pb/readl
+	"readly/pb/readly/v1"
 	"readly/usecase"
 )
 
@@ -30,7 +30,7 @@ func NewBookServer(
 }
 
 func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookRequest) (*pb.RegisterBookResponse, error) {
-	claims, err := auth.Authenticate(ctx, b.maker)
+	claims, err := auth.AuthenticateGRPC(ctx, b.maker)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
@@ -46,7 +46,7 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 }
 
 func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*emptypb.Empty, error) {
-	claims, err := auth.Authenticate(ctx, b.maker)
+	claims, err := auth.AuthenticateGRPC(ctx, b.maker)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}

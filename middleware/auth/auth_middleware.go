@@ -16,7 +16,7 @@ const (
 	AuthorizationClaimKey   = "authorization_claim"
 )
 
-func Authorize(maker TokenMaker) gin.HandlerFunc {
+func AuthenticateHTTP(maker TokenMaker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 		if authorizationHeader == "" {
@@ -54,7 +54,7 @@ func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
 
-func Authenticate(ctx context.Context, maker TokenMaker) (*Claims, error) {
+func AuthenticateGRPC(ctx context.Context, maker TokenMaker) (*Claims, error) {
 	meta, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, fmt.Errorf("missing metadata")

@@ -26,7 +26,7 @@ func setAuthorizationHeader(
 	req.Header.Set(authorizationHeaderKey, authorizationHeader)
 }
 
-func TestAuthorize(t *testing.T) {
+func TestAuthenticateHTTP(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	testCases := []struct {
 		name  string
@@ -86,7 +86,7 @@ func TestAuthorize(t *testing.T) {
 			maker, err := NewPasetoMaker(testdata.RandomString(32))
 			require.NoError(t, err)
 
-			router.GET("/test", Authorize(maker), func(ctx *gin.Context) {
+			router.GET("/test", AuthenticateHTTP(maker), func(ctx *gin.Context) {
 				ctx.JSON(http.StatusOK, gin.H{})
 			})
 

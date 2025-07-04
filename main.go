@@ -218,7 +218,7 @@ func runGatewayServer(
 	httpMux.Handle("/", grpcMux)
 
 	// REST APIのルーティング（画像アップロードAPIはgRPC未対応のため）
-	r := router.Setup(auth.Authorize(maker), middleware.ValidateImageUpload(), imageServer)
+	r := router.Setup(auth.AuthenticateHTTP(maker), middleware.ValidateImageUpload(), imageServer)
 	httpMux.Handle("/v1/image/upload", r)
 
 	listener, err := net.Listen("tcp", config.HTTPServerAddress)
