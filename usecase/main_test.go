@@ -11,6 +11,8 @@ import (
 	"readly/middleware/auth"
 	"readly/repository"
 	"readly/testdata"
+	userRepo "readly/user/repository"
+	userUseCase "readly/user/usecase"
 	"testing"
 	"time"
 )
@@ -64,30 +66,30 @@ func createGenresIfNeed() {
 	}
 }
 
-func newTestSignInUseCase(t *testing.T) SignInUseCase {
-	userRepo := repository.NewUserRepository(querier)
+func newTestSignInUseCase(t *testing.T) userUseCase.SignInUseCase {
+	userRepository := userRepo.NewUserRepository(querier)
 	sessionRepo := repository.NewSessionRepository(querier)
-	return NewSignInUseCase(config, maker, tx, sessionRepo, userRepo)
+	return userUseCase.NewSignInUseCase(config, maker, tx, sessionRepo, userRepository)
 }
 
-func newTestSignUpUseCase(t *testing.T) SignUpUseCase {
-	userRepo := repository.NewUserRepository(querier)
+func newTestSignUpUseCase(t *testing.T) userUseCase.SignUpUseCase {
+	userRepository := userRepo.NewUserRepository(querier)
 	sessionRepo := repository.NewSessionRepository(querier)
-	return NewSignUpUseCase(config, maker, tx, sessionRepo, userRepo)
+	return userUseCase.NewSignUpUseCase(config, maker, tx, sessionRepo, userRepository)
 }
 
 func newTestRegisterBookUseCase(t *testing.T) RegisterBookUseCase {
-	userRepo := repository.NewUserRepository(querier)
+	userRepository := userRepo.NewUserRepository(querier)
 	bookRepo := repository.NewBookRepository(querier)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(querier)
-	return NewRegisterBookUseCase(tx, bookRepo, readingHistoryRepo, userRepo)
+	return NewRegisterBookUseCase(tx, bookRepo, readingHistoryRepo, userRepository)
 }
 
 func newTestDeleteBookUseCase(t *testing.T) DeleteBookUseCase {
-	userRepo := repository.NewUserRepository(querier)
+	userRepository := userRepo.NewUserRepository(querier)
 	bookRepo := repository.NewBookRepository(querier)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(querier)
-	return NewDeleteBookUseCase(tx, bookRepo, readingHistoryRepo, userRepo)
+	return NewDeleteBookUseCase(tx, bookRepo, readingHistoryRepo, userRepository)
 }
 
 func newTestGetBookUseCase(t *testing.T) GetBookUseCase {
@@ -107,7 +109,7 @@ func newTestUpdateBookUseCase(t *testing.T) UpdateBookUseCase {
 	return NewUpdateBookUseCase(tx, bookRepo, readingHistoryRepo)
 }
 
-func newTestRefreshAccessTokenUseCase(t *testing.T) RefreshAccessTokenUseCase {
+func newTestRefreshAccessTokenUseCase(t *testing.T) userUseCase.RefreshAccessTokenUseCase {
 	sessionRepo := repository.NewSessionRepository(querier)
-	return NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+	return userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 }

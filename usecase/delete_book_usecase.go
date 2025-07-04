@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"readly/repository"
+	userRepo "readly/user/repository"
 )
 
 type DeleteBookUseCase interface {
@@ -14,14 +15,14 @@ type DeleteBookUseCaseImpl struct {
 	transactor         repository.Transactor
 	bookRepo           repository.BookRepository
 	readingHistoryRepo repository.ReadingHistoryRepository
-	userRepo           repository.UserRepository
+	userRepo           userRepo.UserRepository
 }
 
 func NewDeleteBookUseCase(
 	transactor repository.Transactor,
 	bookRepo repository.BookRepository,
 	readingHistoryRepo repository.ReadingHistoryRepository,
-	userRepo repository.UserRepository,
+	userRepo userRepo.UserRepository,
 ) DeleteBookUseCase {
 	return &DeleteBookUseCaseImpl{
 		transactor:         transactor,

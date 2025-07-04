@@ -8,6 +8,7 @@ import (
 	"readly/configs"
 	"readly/middleware/auth"
 	"readly/repository"
+	userRepo "readly/user/repository"
 )
 
 type SignUpUseCase interface {
@@ -19,7 +20,7 @@ type SignUpUseCaseImpl struct {
 	maker       auth.TokenMaker
 	transactor  repository.Transactor
 	sessionRepo repository.SessionRepository
-	userRepo    repository.UserRepository
+	userRepo    userRepo.UserRepository
 }
 
 func NewSignUpUseCase(
@@ -27,7 +28,7 @@ func NewSignUpUseCase(
 	maker auth.TokenMaker,
 	transactor repository.Transactor,
 	sessionRepo repository.SessionRepository,
-	userRepo repository.UserRepository,
+	userRepo userRepo.UserRepository,
 ) SignUpUseCase {
 	return &SignUpUseCaseImpl{
 		config:      config,
@@ -46,7 +47,7 @@ func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*Sig
 			return err
 		}
 
-		user, err := u.userRepo.CreateUser(ctx, repository.CreateUserRequest{
+		user, err := u.userRepo.CreateUser(ctx, userRepo.CreateUserRequest{
 			Name:     req.Name,
 			Email:    req.Email,
 			Password: hashedPassword,

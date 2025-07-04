@@ -2,10 +2,10 @@ package usecase
 
 import (
 	pb "readly/pb/readly/v1"
-	"readly/repository"
+	"readly/user/repository"
 )
 
-type SignUpResponse struct {
+type SignInResponse struct {
 	AccessToken  string
 	RefreshToken string
 	UserID       int64
@@ -13,8 +13,8 @@ type SignUpResponse struct {
 	Email        string
 }
 
-func NewSignUpResponse(accessToken, refreshToken string, userRes *repository.CreateUserResponse) *SignUpResponse {
-	return &SignUpResponse{
+func NewSignInResponse(accessToken, refreshToken string, userRes *repository.GetUserResponse) *SignInResponse {
+	return &SignInResponse{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		UserID:       userRes.ID,
@@ -23,8 +23,8 @@ func NewSignUpResponse(accessToken, refreshToken string, userRes *repository.Cre
 	}
 }
 
-func (r *SignUpResponse) ToProto() *pb.SignUpResponse {
-	return &pb.SignUpResponse{
+func (r *SignInResponse) ToProto() *pb.SignInResponse {
+	return &pb.SignInResponse{
 		AccessToken:  r.AccessToken,
 		RefreshToken: r.RefreshToken,
 		UserId:       r.UserID,
