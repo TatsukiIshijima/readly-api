@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
-	"readly/server"
+	"readly/image/server"
 )
 
 func Setup(

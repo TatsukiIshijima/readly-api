@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
+	"readly/image/usecase"
 	"readly/middleware/image"
 	"readly/pb/readly/v1"
-	"readly/usecase"
 )
 
 type ImageServer interface {

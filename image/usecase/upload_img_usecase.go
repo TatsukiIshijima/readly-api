@@ -5,7 +5,7 @@ import (
 	"github.com/google/uuid"
 	"path/filepath"
 	"readly/configs"
-	"readly/repository"
+	"readly/image/repository"
 )
 
 type UploadImgUseCase interface {
