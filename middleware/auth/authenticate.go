@@ -20,7 +20,7 @@ func AuthenticateHTTP(maker TokenMaker) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		authorizationHeader := ctx.GetHeader(authorizationHeaderKey)
 		if authorizationHeader == "" {
-			err := errors.New("authorization header is not provided")
+			err := errors.New("missing authorization header")
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
 			return
 		}
@@ -40,7 +40,8 @@ func AuthenticateHTTP(maker TokenMaker) gin.HandlerFunc {
 		accessToken := fields[1]
 		claims, err := maker.Verify(accessToken)
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(err))
+			wrappedErr := fmt.Errorf("invalid access token: %s", err)
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, errorResponse(wrappedErr))
 			return
 		}
 
@@ -49,7 +50,6 @@ func AuthenticateHTTP(maker TokenMaker) gin.HandlerFunc {
 	}
 }
 
-// FIXME: この関数はcontroller/error.goにもあるので共通化したい
 func errorResponse(err error) gin.H {
 	return gin.H{"error": err.Error()}
 }
