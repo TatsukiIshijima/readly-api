@@ -1,7 +1,8 @@
+//go:build test
+
 package usecase
 
 import (
-	"context"
 	"log"
 	"math/rand"
 	"os"
@@ -10,7 +11,6 @@ import (
 	sqlc "readly/db/sqlc"
 	"readly/middleware/auth"
 	"readly/repository"
-	"readly/testdata"
 	userRepo "readly/user/repository"
 	"testing"
 	"time"
@@ -39,8 +39,8 @@ func setupMain() {
 	}
 	config = c
 
-	a := &sqlc.Adapter{}
-	db, q := a.Connect(c.DBDriver, c.DBSource)
+	fa := sqlc.FakeAdapter{}
+	db, q := fa.Connect(c.DBDriver, c.DBSource)
 	querier = q
 
 	tx = repository.New(db)
@@ -52,22 +52,6 @@ func setupMain() {
 
 	userRepository = userRepo.NewUserRepository(querier)
 	sessionRepo = repository.NewSessionRepository(querier)
-
-	createGenresIfNeed()
-}
-
-func createGenresIfNeed() {
-	genres := testdata.GetGenres()
-	for _, genre := range genres {
-		_, err := querier.GetGenreByName(context.Background(), genre)
-		if err == nil {
-			continue
-		}
-		_, err = querier.CreateGenre(context.Background(), genre)
-		if err != nil {
-			log.Fatalf("failed to create genre %s: %v", genre, err)
-		}
-	}
 }
 
 func newTestSignInUseCase(t *testing.T) SignInUseCase {
