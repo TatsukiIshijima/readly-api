@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"github.com/stretchr/testify/require"
-	"readly/book/domain"
 	"readly/testdata"
 	"testing"
 )
@@ -24,23 +23,25 @@ func TestCreateAuthor(t *testing.T) {
 }
 
 func TestCreateBook(t *testing.T) {
-	b, err := bookRepo.CreateBook(context.Background(), CreateBookRequest{
+	createBook, err := bookRepo.CreateBook(context.Background(), CreateBookRequest{
 		Title: testdata.RandomString(10),
 	})
 	require.NoError(t, err)
 
-	gb, err := querier.GetBooksByID(context.Background(), b.ID)
+	getBook, err := bookRepo.GetBookByID(context.Background(), GetBookRequest{
+		ID: createBook.ID,
+	})
 	require.NoError(t, err)
 
-	require.Equal(t, b.ID, gb.ID)
-	require.Equal(t, b.Title, gb.Title)
-	require.Equal(t, *b.Description, gb.Description.String)
-	require.Equal(t, *b.CoverImageURL, gb.CoverImageUrl.String)
-	require.Equal(t, *b.URL, gb.Url.String)
-	require.Equal(t, sql.NullString{}, gb.AuthorName)
-	require.Equal(t, sql.NullString{}, gb.PublisherName)
-	require.Equal(t, *b.PublishDate, *domain.NewDateEntityFromNullTime(gb.PublishedDate))
-	require.Equal(t, *b.ISBN, gb.Isbn.String)
+	require.Equal(t, createBook.ID, getBook.ID)
+	require.Equal(t, createBook.Title, getBook.Title)
+	require.Equal(t, createBook.Description, getBook.Description)
+	require.Equal(t, createBook.CoverImageURL, getBook.CoverImageURL)
+	require.Equal(t, createBook.URL, getBook.URL)
+	require.Equal(t, createBook.Author, getBook.AuthorName)
+	require.Equal(t, createBook.Publisher, getBook.PublisherName)
+	require.Equal(t, createBook.PublishDate, getBook.PublishDate)
+	require.Equal(t, createBook.ISBN, getBook.ISBN)
 }
 
 func TestCreateBookGenre(t *testing.T) {

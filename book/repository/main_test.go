@@ -1,12 +1,13 @@
-//go:build test
-
 package repository
 
 import (
 	"context"
 	"github.com/stretchr/testify/require"
+	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
+	"readly/configs"
 	sqlc "readly/db/sqlc"
 	"readly/testdata"
 	"testing"
@@ -27,8 +28,13 @@ var readingHistoryRepo ReadingHistoryRepository
 var querier sqlc.Querier
 
 func setupMain() {
-	fa := sqlc.FakeAdapter{}
-	_, q := fa.Connect("", "")
+	config, err := configs.Load(filepath.Join(configs.ProjectRoot(), "/configs/env"))
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
+	a := sqlc.Adapter{}
+	_, q := a.Connect(config.DBDriver, config.DBSource)
 	querier = q
 	bookRepo = NewBookRepository(q)
 	readingHistoryRepo = NewReadingHistoryRepository(q)
