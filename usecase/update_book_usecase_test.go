@@ -9,20 +9,14 @@ import (
 )
 
 func TestUpdateBook(t *testing.T) {
-	signUpUseCase := newTestSignUpUseCase(t)
 	registerBookUseCase := newTestRegisterBookUseCase(t)
 	getBookUseCase := newTestGetBookUseCase(t)
 	updateBookUseCase := newTestUpdateBookUseCase(t)
 
-	signUpReq := SignUpRequest{
-		Name:     testdata.RandomString(10),
-		Email:    testdata.RandomEmail(),
-		Password: testdata.RandomString(16),
-	}
-	signUpRes, err := signUpUseCase.SignUp(context.Background(), signUpReq)
-	require.NoError(t, err)
+	user := createRandomUser(t)
+
 	registerReq := RegisterBookRequest{
-		UserID: signUpRes.UserID,
+		UserID: user.ID,
 		Title:  testdata.RandomString(10),
 		Genres: []string{testdata.GetGenres()[0]},
 		Status: entity.Unread,
@@ -39,7 +33,7 @@ func TestUpdateBook(t *testing.T) {
 			name: "Update book success",
 			setup: func(t *testing.T) UpdateBookRequest {
 				return UpdateBookRequest{
-					UserID:        signUpRes.UserID,
+					UserID:        user.ID,
 					BookID:        registerBookRes.Book.ID,
 					Title:         "SampleTitle",
 					Genres:        registerBookRes.Book.Genres,
@@ -59,7 +53,7 @@ func TestUpdateBook(t *testing.T) {
 				require.NoError(t, err)
 				require.NotNil(t, res)
 				getBookReq := GetBookRequest{
-					UserID: signUpRes.UserID,
+					UserID: user.ID,
 					BookID: res.BookID,
 				}
 				getBookRes, e := getBookUseCase.GetBook(context.Background(), getBookReq)
@@ -84,7 +78,7 @@ func TestUpdateBook(t *testing.T) {
 			name: "Update book failure when not registered book",
 			setup: func(t *testing.T) UpdateBookRequest {
 				return UpdateBookRequest{
-					UserID:        signUpRes.UserID,
+					UserID:        user.ID,
 					BookID:        99999999,
 					Title:         "SampleTitle",
 					Genres:        registerBookRes.Book.Genres,

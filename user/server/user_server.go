@@ -7,7 +7,7 @@ import (
 	"readly/configs"
 	"readly/middleware/auth"
 	"readly/pb/readly/v1"
-	"readly/usecase"
+	"readly/user/usecase"
 	"readly/util"
 )
 

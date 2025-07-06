@@ -6,6 +6,7 @@ import (
 	"readly/configs"
 	"readly/middleware/auth"
 	"readly/repository"
+	userRepo "readly/user/repository"
 )
 
 const maxSaveToken = 5
@@ -19,7 +20,7 @@ type SignInUseCaseImpl struct {
 	maker       auth.TokenMaker
 	transactor  repository.Transactor
 	sessionRepo repository.SessionRepository
-	userRepo    repository.UserRepository
+	userRepo    userRepo.UserRepository
 }
 
 func NewSignInUseCase(
@@ -27,7 +28,7 @@ func NewSignInUseCase(
 	maker auth.TokenMaker,
 	transactor repository.Transactor,
 	sessionRepo repository.SessionRepository,
-	userRepo repository.UserRepository,
+	userRepo userRepo.UserRepository,
 ) SignInUseCase {
 	return &SignInUseCaseImpl{
 		config:      config,
@@ -41,7 +42,7 @@ func NewSignInUseCase(
 func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*SignInResponse, error) {
 	var res *SignInResponse
 	err := u.transactor.Exec(ctx, func() error {
-		user, err := u.userRepo.GetUserByEmail(ctx, repository.NewGetUserByEmailRequest(req.Email))
+		user, err := u.userRepo.GetUserByEmail(ctx, userRepo.NewGetUserByEmailRequest(req.Email))
 		if err != nil {
 			return newError(BadRequest, NotFoundUserError, "user not found")
 		}

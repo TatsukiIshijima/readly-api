@@ -9,17 +9,10 @@ import (
 )
 
 func TestDeleteBook(t *testing.T) {
-	signUpUseCase := newTestSignUpUseCase(t)
 	registerBookUseCase := newTestRegisterBookUseCase(t)
 	deleteBookUseCase := newTestDeleteBookUseCase(t)
 
-	signUpReq := SignUpRequest{
-		Name:     testdata.RandomString(10),
-		Email:    testdata.RandomEmail(),
-		Password: testdata.RandomString(16),
-	}
-	signUpRes, err := signUpUseCase.SignUp(context.Background(), signUpReq)
-	require.NoError(t, err)
+	user := createRandomUser(t)
 
 	testCases := []struct {
 		name  string
@@ -35,13 +28,12 @@ func TestDeleteBook(t *testing.T) {
 				author := testdata.RandomString(10)
 				publisher := testdata.RandomString(10)
 				publishDate := entity.Date{Year: 2018, Month: 12, Day: 31}
-				require.NoError(t, err)
 				ISBN := testdata.RandomString(13)
 				startDate := entity.Date{Year: 2018, Month: 12, Day: 31}
 				endDate := entity.Date{Year: 2019, Month: 1, Day: 30}
 
 				registerReq := RegisterBookRequest{
-					UserID:        signUpRes.UserID,
+					UserID:        user.ID,
 					Title:         testdata.RandomString(10),
 					Genres:        []string{testdata.GetGenres()[0]},
 					Description:   &desc,
@@ -59,7 +51,7 @@ func TestDeleteBook(t *testing.T) {
 				require.NoError(t, err)
 
 				return DeleteBookRequest{
-					UserID: signUpRes.UserID,
+					UserID: user.ID,
 					BookID: res.Book.ID,
 				}
 			},
@@ -71,7 +63,7 @@ func TestDeleteBook(t *testing.T) {
 			name: "Delete not exist book failed",
 			setup: func(t *testing.T) DeleteBookRequest {
 				return DeleteBookRequest{
-					UserID: signUpRes.UserID,
+					UserID: user.ID,
 					BookID: 0,
 				}
 			},

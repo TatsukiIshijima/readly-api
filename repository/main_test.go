@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/stretchr/testify/require"
 	"log"
 	"math/rand"
 	"os"
@@ -15,7 +16,6 @@ import (
 
 var querier sqlc.Querier
 var bookRepo BookRepository
-var userRepo UserRepository
 var readingHistoryRepo ReadingHistoryRepository
 
 func init() {
@@ -31,7 +31,6 @@ func TestMain(m *testing.M) {
 	_, q := a.Connect(config.DBDriver, config.DBSource)
 	querier = q
 	bookRepo = NewBookRepository(q)
-	userRepo = NewUserRepository(q)
 	readingHistoryRepo = NewReadingHistoryRepository(q)
 
 	createGenresIfNeed()
@@ -51,4 +50,21 @@ func createGenresIfNeed() {
 			log.Fatalf("failed to create genre %s: %v", genre, err)
 		}
 	}
+}
+
+func createRandomUser(t *testing.T) sqlc.User {
+	password := testdata.RandomString(16)
+	hashedPassword, err := testdata.HashPassword(password)
+	require.NoError(t, err)
+	require.NotEmpty(t, hashedPassword)
+
+	arg := sqlc.CreateUserParams{
+		Name:           testdata.RandomString(12),
+		Email:          testdata.RandomEmail(),
+		HashedPassword: hashedPassword,
+	}
+	user, err := querier.CreateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user)
+	return user
 }

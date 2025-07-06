@@ -14,20 +14,17 @@ type DeleteBookUseCaseImpl struct {
 	transactor         repository.Transactor
 	bookRepo           repository.BookRepository
 	readingHistoryRepo repository.ReadingHistoryRepository
-	userRepo           repository.UserRepository
 }
 
 func NewDeleteBookUseCase(
 	transactor repository.Transactor,
 	bookRepo repository.BookRepository,
 	readingHistoryRepo repository.ReadingHistoryRepository,
-	userRepo repository.UserRepository,
 ) DeleteBookUseCase {
 	return &DeleteBookUseCaseImpl{
 		transactor:         transactor,
 		bookRepo:           bookRepo,
 		readingHistoryRepo: readingHistoryRepo,
-		userRepo:           userRepo,
 	}
 }
 

@@ -16,20 +16,17 @@ type RegisterBookUseCaseImpl struct {
 	transactor         repository.Transactor
 	bookRepo           repository.BookRepository
 	readingHistoryRepo repository.ReadingHistoryRepository
-	userRepo           repository.UserRepository
 }
 
 func NewRegisterBookUseCase(
 	transactor repository.Transactor,
 	bookRepo repository.BookRepository,
 	readingHistoryRepo repository.ReadingHistoryRepository,
-	userRepo repository.UserRepository,
 ) RegisterBookUseCase {
 	return &RegisterBookUseCaseImpl{
 		transactor:         transactor,
 		bookRepo:           bookRepo,
 		readingHistoryRepo: readingHistoryRepo,
-		userRepo:           userRepo,
 	}
 }
 

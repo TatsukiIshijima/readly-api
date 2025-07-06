@@ -14,7 +14,8 @@ import (
 	"readly/pb/readly/v1"
 	"readly/repository"
 	"readly/testdata"
-	"readly/usecase"
+	userRepo "readly/user/repository"
+	"readly/user/usecase"
 	"testing"
 	"time"
 )
@@ -25,18 +26,19 @@ func NewTestUserServer(t *testing.T) *UserServerImpl {
 		AccessTokenDuration:  time.Minute,
 		RefreshTokenDuration: time.Hour,
 	}
+	// TODO:本物のDBを使うよう変更
 	fa := sqlc.FakeAdapter{}
 	db, q := fa.Connect("", "")
 	transaction := repository.New(db)
 
-	userRepo := repository.NewUserRepository(q)
+	userRepository := userRepo.NewUserRepository(q)
 	sessionRepo := repository.NewSessionRepository(q)
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	require.NoError(t, err)
 
-	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transaction, sessionRepo, userRepo)
-	signInUseCase := usecase.NewSignInUseCase(config, maker, transaction, sessionRepo, userRepo)
+	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transaction, sessionRepo, userRepository)
+	signInUseCase := usecase.NewSignInUseCase(config, maker, transaction, sessionRepo, userRepository)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 
 	return NewUserServer(

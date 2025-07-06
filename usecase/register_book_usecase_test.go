@@ -9,16 +9,9 @@ import (
 )
 
 func TestRegisterBook(t *testing.T) {
-	signUpUseCase := newTestSignUpUseCase(t)
 	registerBookUseCase := newTestRegisterBookUseCase(t)
 
-	signUpReq := SignUpRequest{
-		Name:     testdata.RandomString(10),
-		Email:    testdata.RandomEmail(),
-		Password: testdata.RandomString(16),
-	}
-	signUpRes, err := signUpUseCase.SignUp(context.Background(), signUpReq)
-	require.NoError(t, err)
+	user := createRandomUser(t)
 
 	testCases := []struct {
 		name  string
@@ -29,7 +22,7 @@ func TestRegisterBook(t *testing.T) {
 			name: "New unread book with required fields register success",
 			setup: func(t *testing.T) RegisterBookRequest {
 				return RegisterBookRequest{
-					UserID: signUpRes.UserID,
+					UserID: user.ID,
 					Title:  testdata.RandomString(10),
 					Genres: []string{testdata.GetGenres()[0]},
 					Status: 0,
@@ -61,13 +54,12 @@ func TestRegisterBook(t *testing.T) {
 				author := testdata.RandomString(10)
 				publisher := testdata.RandomString(10)
 				publishDate := entity.Date{Year: 2018, Month: 12, Day: 31}
-				require.NoError(t, err)
 				ISBN := testdata.RandomString(13)
 				startDate := entity.Date{Year: 2018, Month: 12, Day: 31}
 				endDate := entity.Date{Year: 2019, Month: 1, Day: 30}
 
 				return RegisterBookRequest{
-					UserID:        signUpRes.UserID,
+					UserID:        user.ID,
 					Title:         testdata.RandomString(10),
 					Genres:        []string{testdata.GetGenres()[1]},
 					Description:   &desc,
@@ -107,7 +99,7 @@ func TestRegisterBook(t *testing.T) {
 				startDate := entity.Now()
 
 				req := RegisterBookRequest{
-					UserID:        signUpRes.UserID,
+					UserID:        user.ID,
 					Title:         testdata.RandomString(10),
 					Genres:        []string{testdata.GetGenres()[1]},
 					AuthorName:    &author,
@@ -118,7 +110,7 @@ func TestRegisterBook(t *testing.T) {
 				require.NoError(t, err)
 
 				return RegisterBookRequest{
-					UserID:        signUpRes.UserID,
+					UserID:        user.ID,
 					Title:         testdata.RandomString(10),
 					Genres:        []string{testdata.GetGenres()[2]},
 					AuthorName:    &author,
@@ -148,7 +140,7 @@ func TestRegisterBook(t *testing.T) {
 			name: "New unread book register failed when genres are not exist.",
 			setup: func(t *testing.T) RegisterBookRequest {
 				return RegisterBookRequest{
-					UserID: signUpRes.UserID,
+					UserID: user.ID,
 					Title:  testdata.RandomString(10),
 					Genres: []string{testdata.RandomString(6)},
 					Status: 0,

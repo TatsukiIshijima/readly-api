@@ -24,6 +24,9 @@ import (
 	router "readly/router"
 	"readly/server"
 	"readly/usecase"
+	userRepo "readly/user/repository"
+	userServer "readly/user/server"
+	userUseCase "readly/user/usecase"
 )
 
 func main() {
@@ -37,7 +40,7 @@ func main() {
 	t := repository.New(db)
 
 	bookRepo := repository.NewBookRepository(q)
-	userRepo := repository.NewUserRepository(q)
+	userRepository := userRepo.NewUserRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
 	sessionRepo := repository.NewSessionRepository(q)
 	imgRepo := imageRepo.NewImageRepository()
@@ -48,11 +51,11 @@ func main() {
 	}
 
 	createGenresUseCase := usecase.NewCreateGenresUseCase(t, bookRepo)
-	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
-	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepo)
-	signUpUseCase := usecase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepo)
-	signInUseCase := usecase.NewSignInUseCase(config, maker, t, sessionRepo, userRepo)
-	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo)
+	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo)
+	signUpUseCase := userUseCase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepository)
+	signInUseCase := userUseCase.NewSignInUseCase(config, maker, t, sessionRepo, userRepository)
+	refreshTokenUseCase := userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 	uploadImgUseCase := imageUseCase.NewUploadImgUseCase(config, imgRepo)
 
 	// Register genres at application startup
@@ -117,13 +120,13 @@ func runGRPCServer(
 	maker auth.TokenMaker,
 	registerBookUseCase usecase.RegisterBookUseCase,
 	deleteBookUseCase usecase.DeleteBookUseCase,
-	signUpUseCase usecase.SignUpUseCase,
-	signInUseCase usecase.SignInUseCase,
-	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
+	signUpUseCase userUseCase.SignUpUseCase,
+	signInUseCase userUseCase.SignInUseCase,
+	refreshTokenUseCase userUseCase.RefreshAccessTokenUseCase,
 ) {
 	grpcServer := grpc.NewServer()
 
-	userServer := server.NewUserServer(
+	userSrv := userServer.NewUserServer(
 		config,
 		maker,
 		signUpUseCase,
@@ -135,7 +138,7 @@ func runGRPCServer(
 		registerBookUseCase,
 		deleteBookUseCase,
 	)
-	pb.RegisterUserServiceServer(grpcServer, userServer)
+	pb.RegisterUserServiceServer(grpcServer, userSrv)
 	pb.RegisterBookServiceServer(grpcServer, bookServer)
 	reflection.Register(grpcServer)
 
@@ -173,12 +176,12 @@ func runGatewayServer(
 	maker auth.TokenMaker,
 	registerBookUseCase usecase.RegisterBookUseCase,
 	deleteBookUseCase usecase.DeleteBookUseCase,
-	signUpUseCase usecase.SignUpUseCase,
-	signInUseCase usecase.SignInUseCase,
-	refreshTokenUseCase usecase.RefreshAccessTokenUseCase,
+	signUpUseCase userUseCase.SignUpUseCase,
+	signInUseCase userUseCase.SignInUseCase,
+	refreshTokenUseCase userUseCase.RefreshAccessTokenUseCase,
 	uploadImgUseCase imageUseCase.UploadImgUseCase,
 ) {
-	userServer := server.NewUserServer(
+	userSrv := userServer.NewUserServer(
 		config,
 		maker,
 		signUpUseCase,
@@ -206,7 +209,7 @@ func runGatewayServer(
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	err := pb.RegisterUserServiceHandlerServer(ctx, grpcMux, userServer)
+	err := pb.RegisterUserServiceHandlerServer(ctx, grpcMux, userSrv)
 	if err != nil {
 		log.Fatalf("cannot register handle server: %v", err)
 	}

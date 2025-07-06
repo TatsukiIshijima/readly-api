@@ -1,3 +1,5 @@
+//go:build test
+
 package repository
 
 import (
@@ -27,11 +29,11 @@ func createRandomUser(t *testing.T) *CreateUserResponse {
 }
 
 func TestCreateUser(t *testing.T) {
-	user := createRandomUser(t)
-	gu, err := querier.GetUserByID(context.Background(), user.ID)
+	createUser := createRandomUser(t)
+	getUser, err := userRepo.GetUserByID(context.Background(), GetUserByIDRequest{createUser.ID})
 	require.NoError(t, err)
 
-	require.Equal(t, user.ID, gu.ID)
-	require.Equal(t, user.Name, gu.Name)
-	require.Equal(t, user.Email, gu.Email)
+	require.Equal(t, createUser.ID, getUser.ID)
+	require.Equal(t, createUser.Name, getUser.Name)
+	require.Equal(t, createUser.Email, getUser.Email)
 }

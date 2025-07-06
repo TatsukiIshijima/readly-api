@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"github.com/stretchr/testify/require"
 	"log"
 	"math/rand"
 	"os"
@@ -64,30 +65,16 @@ func createGenresIfNeed() {
 	}
 }
 
-func newTestSignInUseCase(t *testing.T) SignInUseCase {
-	userRepo := repository.NewUserRepository(querier)
-	sessionRepo := repository.NewSessionRepository(querier)
-	return NewSignInUseCase(config, maker, tx, sessionRepo, userRepo)
-}
-
-func newTestSignUpUseCase(t *testing.T) SignUpUseCase {
-	userRepo := repository.NewUserRepository(querier)
-	sessionRepo := repository.NewSessionRepository(querier)
-	return NewSignUpUseCase(config, maker, tx, sessionRepo, userRepo)
-}
-
 func newTestRegisterBookUseCase(t *testing.T) RegisterBookUseCase {
-	userRepo := repository.NewUserRepository(querier)
 	bookRepo := repository.NewBookRepository(querier)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(querier)
-	return NewRegisterBookUseCase(tx, bookRepo, readingHistoryRepo, userRepo)
+	return NewRegisterBookUseCase(tx, bookRepo, readingHistoryRepo)
 }
 
 func newTestDeleteBookUseCase(t *testing.T) DeleteBookUseCase {
-	userRepo := repository.NewUserRepository(querier)
 	bookRepo := repository.NewBookRepository(querier)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(querier)
-	return NewDeleteBookUseCase(tx, bookRepo, readingHistoryRepo, userRepo)
+	return NewDeleteBookUseCase(tx, bookRepo, readingHistoryRepo)
 }
 
 func newTestGetBookUseCase(t *testing.T) GetBookUseCase {
@@ -107,7 +94,19 @@ func newTestUpdateBookUseCase(t *testing.T) UpdateBookUseCase {
 	return NewUpdateBookUseCase(tx, bookRepo, readingHistoryRepo)
 }
 
-func newTestRefreshAccessTokenUseCase(t *testing.T) RefreshAccessTokenUseCase {
-	sessionRepo := repository.NewSessionRepository(querier)
-	return NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+func createRandomUser(t *testing.T) sqlc.User {
+	password := testdata.RandomString(16)
+	hashedPassword, err := testdata.HashPassword(password)
+	require.NoError(t, err)
+	require.NotEmpty(t, hashedPassword)
+
+	arg := sqlc.CreateUserParams{
+		Name:           testdata.RandomString(12),
+		Email:          testdata.RandomEmail(),
+		HashedPassword: hashedPassword,
+	}
+	user, err := querier.CreateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user)
+	return user
 }
