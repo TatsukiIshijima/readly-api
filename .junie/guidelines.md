@@ -23,7 +23,9 @@ Go
 
 Go、及び各種ライブラリのバージョンについては `go.mod` を参照してください。
 
-# プロジェクト構成
+# ディレクトリ構成
+readly-apiのディレクトリ構成は [katzien/app-structure-examples](https://github.com/katzien/app-structure-examples)を参考にしています。
+原則インデントレベルを2としています。
 
 ```
 .
@@ -32,23 +34,29 @@ Go、及び各種ライブラリのバージョンについては `go.mod` を�
 ├── db/                      // DB操作関連/
 │   ├── migration/           // マイグレーション操作のSQLクエリ
 │   ├── query/               // CRUD操作のSQLクエリ
-│   └── sqlc/                // sqlcによりSQLクエリから自動生成されたGoコード
-├── entity/                  // ドメインモデル
-├── env/                     // 環境変数
-├── middleware/              // ミドルウェア
+│   ├── sqlc/                // sqlcによりSQLクエリから自動生成されたGoコード
+│   └── transaction/         // トランザクション管理 
+├── configs/                 // 設定関連
+│   └── env/                 // 環境変数
+├── features/                // 機能ごとのディレクトリ
+│   ├── book/                // 書籍管理機能
+│   │   ├── domain/          // ドメインモデル
+│   │   ├── repository/      // リポジトリ。DBやAPIへのアクセスの隠蔽。及びデータのキャッシュなどを行う
+│   │   ├── server/          // HTTP/gRPCサーバーのエントリーポイントとハンドラ実装
+│   │   └── usecase/         // ロジック・主要な処理を行う
+│   ├── image/               // 画像アップロード機能
+│   ├── user/                // ユーザ管理機能
+├── middleware/              // ミドルウェア。各機能で共通で使用するものもここに定義
+│   ├── auth/                // 認証ミドルウェア
+│   └── image/               // 画像バリデーションミドルウェア
 ├── pb/                      // protoc-gen-goによりprotoファイルから自動生成されたGoコード/
 │   └── readly/
 │       └── v1/
 ├── proto/                   // protoファイル/
 │   └── readly/
 │       └── v1/
-├── repository/              // リポジトリ。DBやAPIへのアクセスの隠蔽。及びデータのキャッシュなどを行う。
-├── server/                  // gRPCサーバーのエントリーポイントとハンドラ実装
-├── service/                 // 共通ロジック。各UseCaseで用いられる処理を行う。
-│   └── auth/                // 認証
 ├── testdata/                // テストデータ
 ├── tools/                   // ツール
-├── usecase/                 // ビジネスロジック。主要な処理を行う。 
 └── util/                    // 非常に小さい単位の共通処理
 ```
 
@@ -60,7 +68,7 @@ Clean Architectureを採用しています。
 
 - DB操作を行う場所です。SQLクエリは `db/query` に記述し、`db/sqlc` により自動生成されたコードを使用します。
 
-## entity
+## domain
 
 - ドメインモデルを定義する場所です。protoへの変換などもここに記述します。
 
@@ -75,7 +83,7 @@ Clean Architectureを採用しています。
 
 ## usecase
 
-- ビジネスロジックを定義する場所です。
+- ロジックを定義する場所です。
 
 # エラーハンドリング
 
@@ -86,3 +94,7 @@ Clean Architectureを採用しています。
 -usecase 内で独自エラーが必要な場合は `repository/error.go` に新たなエラーコードを追記してください。
 +usecase 内で独自エラーが必要な場合は `usecase/error.go` に新たなエラーコードを追記してください。
 - serverで発生したエラーは、`server/error.go` に定義された `gRPCStatusError` を用いて gRPCのステータスコードを返してください。
+
+# テスト
+- 同じ機能(Feature)内のテストはFakeを推奨します。他 Feature の機能が必要なテストの場合、その機能はMockを使用してください。
+- ServerのテストはIntegration Testとして本物のDBを使用してください。
