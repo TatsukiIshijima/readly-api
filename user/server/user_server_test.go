@@ -26,6 +26,7 @@ func NewTestUserServer(t *testing.T) *UserServerImpl {
 		AccessTokenDuration:  time.Minute,
 		RefreshTokenDuration: time.Hour,
 	}
+	// TODO:本物のDBを使うよう変更
 	fa := sqlc.FakeAdapter{}
 	db, q := fa.Connect("", "")
 	transaction := repository.New(db)
