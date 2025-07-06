@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"github.com/stretchr/testify/require"
 	"log"
 	"math/rand"
 	"os"
@@ -11,8 +12,6 @@ import (
 	"readly/middleware/auth"
 	"readly/repository"
 	"readly/testdata"
-	userRepo "readly/user/repository"
-	userUseCase "readly/user/usecase"
 	"testing"
 	"time"
 )
@@ -66,30 +65,16 @@ func createGenresIfNeed() {
 	}
 }
 
-func newTestSignInUseCase(t *testing.T) userUseCase.SignInUseCase {
-	userRepository := userRepo.NewUserRepository(querier)
-	sessionRepo := repository.NewSessionRepository(querier)
-	return userUseCase.NewSignInUseCase(config, maker, tx, sessionRepo, userRepository)
-}
-
-func newTestSignUpUseCase(t *testing.T) userUseCase.SignUpUseCase {
-	userRepository := userRepo.NewUserRepository(querier)
-	sessionRepo := repository.NewSessionRepository(querier)
-	return userUseCase.NewSignUpUseCase(config, maker, tx, sessionRepo, userRepository)
-}
-
 func newTestRegisterBookUseCase(t *testing.T) RegisterBookUseCase {
-	userRepository := userRepo.NewUserRepository(querier)
 	bookRepo := repository.NewBookRepository(querier)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(querier)
-	return NewRegisterBookUseCase(tx, bookRepo, readingHistoryRepo, userRepository)
+	return NewRegisterBookUseCase(tx, bookRepo, readingHistoryRepo)
 }
 
 func newTestDeleteBookUseCase(t *testing.T) DeleteBookUseCase {
-	userRepository := userRepo.NewUserRepository(querier)
 	bookRepo := repository.NewBookRepository(querier)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(querier)
-	return NewDeleteBookUseCase(tx, bookRepo, readingHistoryRepo, userRepository)
+	return NewDeleteBookUseCase(tx, bookRepo, readingHistoryRepo)
 }
 
 func newTestGetBookUseCase(t *testing.T) GetBookUseCase {
@@ -109,7 +94,19 @@ func newTestUpdateBookUseCase(t *testing.T) UpdateBookUseCase {
 	return NewUpdateBookUseCase(tx, bookRepo, readingHistoryRepo)
 }
 
-func newTestRefreshAccessTokenUseCase(t *testing.T) userUseCase.RefreshAccessTokenUseCase {
-	sessionRepo := repository.NewSessionRepository(querier)
-	return userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+func createRandomUser(t *testing.T) sqlc.User {
+	password := testdata.RandomString(16)
+	hashedPassword, err := testdata.HashPassword(password)
+	require.NoError(t, err)
+	require.NotEmpty(t, hashedPassword)
+
+	arg := sqlc.CreateUserParams{
+		Name:           testdata.RandomString(12),
+		Email:          testdata.RandomEmail(),
+		HashedPassword: hashedPassword,
+	}
+	user, err := querier.CreateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user)
+	return user
 }

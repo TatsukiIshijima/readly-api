@@ -9,19 +9,13 @@ import (
 )
 
 func TestGetBook(t *testing.T) {
-	signUpUseCase := newTestSignUpUseCase(t)
 	registerBookUseCase := newTestRegisterBookUseCase(t)
 	getBookUseCase := newTestGetBookUseCase(t)
 
-	signUpReq := SignUpRequest{
-		Name:     testdata.RandomString(10),
-		Email:    testdata.RandomEmail(),
-		Password: testdata.RandomString(16),
-	}
-	signUpRes, err := signUpUseCase.SignUp(context.Background(), signUpReq)
-	require.NoError(t, err)
+	user := createRandomUser(t)
+
 	registerBookReq := RegisterBookRequest{
-		UserID: signUpRes.UserID,
+		UserID: user.ID,
 		Title:  testdata.RandomString(10),
 		Genres: []string{testdata.GetGenres()[0]},
 		Status: entity.Unread,
@@ -37,7 +31,7 @@ func TestGetBook(t *testing.T) {
 		{
 			name: "Get book by ID success when book is exists.",
 			req: GetBookRequest{
-				UserID: signUpRes.UserID,
+				UserID: user.ID,
 				BookID: registerBookRes.Book.ID,
 			},
 			check: func(t *testing.T, res *GetBookResponse, err error) {
@@ -51,7 +45,7 @@ func TestGetBook(t *testing.T) {
 		{
 			name: "Get book by ID failure when book is not exists.",
 			req: GetBookRequest{
-				UserID: signUpRes.UserID,
+				UserID: user.ID,
 				BookID: 0,
 			},
 			check: func(t *testing.T, res *GetBookResponse, err error) {

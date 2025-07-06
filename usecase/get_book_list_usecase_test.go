@@ -9,20 +9,14 @@ import (
 )
 
 func TestGetBookList(t *testing.T) {
-	signUpUseCase := newTestSignUpUseCase(t)
 	registerBookUseCase := newTestRegisterBookUseCase(t)
 	getBookListUseCase := newTestGetBookListUseCase(t)
 
-	signUpReq := SignUpRequest{
-		Name:     testdata.RandomString(10),
-		Email:    testdata.RandomEmail(),
-		Password: testdata.RandomString(16),
-	}
-	signUpRes, err := signUpUseCase.SignUp(context.Background(), signUpReq)
-	require.NoError(t, err)
+	user := createRandomUser(t)
+
 	for i := 0; i < 5; i++ {
 		registerBookReq := RegisterBookRequest{
-			UserID: signUpRes.UserID,
+			UserID: user.ID,
 			Title:  testdata.RandomString(10),
 			Genres: []string{testdata.GetGenres()[i]},
 			Status: entity.Unread,
@@ -39,7 +33,7 @@ func TestGetBookList(t *testing.T) {
 		{
 			name: "Get book list success when user has books.",
 			req: GetBookListRequest{
-				UserID: signUpRes.UserID,
+				UserID: user.ID,
 				Limit:  10,
 				Offset: 0,
 			},

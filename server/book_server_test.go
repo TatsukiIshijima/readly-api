@@ -10,7 +10,6 @@ import (
 	"readly/repository"
 	"readly/testdata"
 	"readly/usecase"
-	userRepo "readly/user/repository"
 	"testing"
 	"time"
 )
@@ -25,15 +24,14 @@ func NewTestBookServer(t *testing.T) *BookServerImpl {
 	db, q := fa.Connect("", "")
 	transaction := repository.New(db)
 
-	userRepository := userRepo.NewUserRepository(q)
 	bookRepo := repository.NewBookRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	require.NoError(t, err)
 
-	registerBookUseCase := usecase.NewRegisterBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepository)
-	deleteBookUseCase := usecase.NewDeleteBookUseCase(transaction, bookRepo, readingHistoryRepo, userRepository)
+	registerBookUseCase := usecase.NewRegisterBookUseCase(transaction, bookRepo, readingHistoryRepo)
+	deleteBookUseCase := usecase.NewDeleteBookUseCase(transaction, bookRepo, readingHistoryRepo)
 
 	return NewBookServer(
 		maker,
