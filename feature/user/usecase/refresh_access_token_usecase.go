@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/google/uuid"
 	"readly/configs"
+	sessionRepo "readly/feature/user/repository"
 	"readly/middleware/auth"
-	"readly/repository"
 	"time"
 )
 
@@ -16,13 +16,13 @@ type RefreshAccessTokenUseCase interface {
 type RefreshAccessTokenUseCaseImpl struct {
 	config      configs.Config
 	marker      auth.TokenMaker
-	sessionRepo repository.SessionRepository
+	sessionRepo sessionRepo.SessionRepository
 }
 
 func NewRefreshAccessTokenUseCase(
 	config configs.Config,
 	maker auth.TokenMaker,
-	sessionRepo repository.SessionRepository,
+	sessionRepo sessionRepo.SessionRepository,
 ) RefreshAccessTokenUseCase {
 	return &RefreshAccessTokenUseCaseImpl{
 		config:      config,
@@ -47,7 +47,7 @@ func (u *RefreshAccessTokenUseCaseImpl) Refresh(ctx context.Context, req Refresh
 		return nil, err
 	}
 
-	getSessionReq := repository.GetSessionByIDRequest{
+	getSessionReq := sessionRepo.GetSessionByIDRequest{
 		ID: id,
 	}
 	session, err := u.sessionRepo.GetSessionByID(ctx, getSessionReq)

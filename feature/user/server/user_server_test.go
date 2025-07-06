@@ -11,11 +11,11 @@ import (
 	"readly/configs"
 	sqlc "readly/db/sqlc"
 	"readly/db/transaction"
+	sessionRepo "readly/feature/user/repository"
 	userRepo "readly/feature/user/repository"
 	"readly/feature/user/usecase"
 	"readly/middleware/auth"
 	"readly/pb/readly/v1"
-	"readly/repository"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -33,14 +33,14 @@ func NewTestUserServer(t *testing.T) *UserServerImpl {
 	transactor := transaction.New(db)
 
 	userRepository := userRepo.NewUserRepository(q)
-	sessionRepo := repository.NewSessionRepository(q)
+	sessionRepository := sessionRepo.NewSessionRepository(q)
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	require.NoError(t, err)
 
-	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transactor, sessionRepo, userRepository)
-	signInUseCase := usecase.NewSignInUseCase(config, maker, transactor, sessionRepo, userRepository)
-	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transactor, sessionRepository, userRepository)
+	signInUseCase := usecase.NewSignInUseCase(config, maker, transactor, sessionRepository, userRepository)
+	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepository)
 
 	return NewUserServer(
 		config,

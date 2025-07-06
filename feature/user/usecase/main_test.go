@@ -10,9 +10,9 @@ import (
 	"readly/configs"
 	sqlc "readly/db/sqlc"
 	"readly/db/transaction"
+	sessionRepo "readly/feature/user/repository"
 	userRepo "readly/feature/user/repository"
 	"readly/middleware/auth"
-	"readly/repository"
 	"testing"
 	"time"
 )
@@ -31,7 +31,7 @@ var querier sqlc.Querier
 var tx transaction.Transactor
 var maker auth.TokenMaker
 var userRepository userRepo.UserRepository
-var sessionRepo repository.SessionRepository
+var sessionRepository sessionRepo.SessionRepository
 
 func setupMain() {
 	c, err := configs.Load(filepath.Join(configs.ProjectRoot(), "/configs/env"))
@@ -52,17 +52,17 @@ func setupMain() {
 	}
 
 	userRepository = userRepo.NewUserRepository(querier)
-	sessionRepo = repository.NewSessionRepository(querier)
+	sessionRepository = sessionRepo.NewSessionRepository(querier)
 }
 
 func newTestSignInUseCase(t *testing.T) SignInUseCase {
-	return NewSignInUseCase(config, maker, tx, sessionRepo, userRepository)
+	return NewSignInUseCase(config, maker, tx, sessionRepository, userRepository)
 }
 
 func newTestSignUpUseCase(t *testing.T) SignUpUseCase {
-	return NewSignUpUseCase(config, maker, tx, sessionRepo, userRepository)
+	return NewSignUpUseCase(config, maker, tx, sessionRepository, userRepository)
 }
 
 func newTestRefreshAccessTokenUseCase(t *testing.T) RefreshAccessTokenUseCase {
-	return NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+	return NewRefreshAccessTokenUseCase(config, maker, sessionRepository)
 }

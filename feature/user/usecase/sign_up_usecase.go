@@ -7,9 +7,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"readly/configs"
 	"readly/db/transaction"
+	sessionRepo "readly/feature/user/repository"
 	userRepo "readly/feature/user/repository"
 	"readly/middleware/auth"
-	"readly/repository"
 )
 
 type SignUpUseCase interface {
@@ -20,7 +20,7 @@ type SignUpUseCaseImpl struct {
 	config      configs.Config
 	maker       auth.TokenMaker
 	transactor  transaction.Transactor
-	sessionRepo repository.SessionRepository
+	sessionRepo sessionRepo.SessionRepository
 	userRepo    userRepo.UserRepository
 }
 
@@ -28,7 +28,7 @@ func NewSignUpUseCase(
 	config configs.Config,
 	maker auth.TokenMaker,
 	transactor transaction.Transactor,
-	sessionRepo repository.SessionRepository,
+	sessionRepo sessionRepo.SessionRepository,
 	userRepo userRepo.UserRepository,
 ) SignUpUseCase {
 	return &SignUpUseCaseImpl{
@@ -73,7 +73,7 @@ func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*Sig
 			return err
 		}
 
-		sessionReq := repository.CreateSessionRequest{
+		sessionReq := sessionRepo.CreateSessionRequest{
 			ID:           refreshTokenPayload.ID,
 			UserID:       user.ID,
 			RefreshToken: refreshTokenPayload.Token,

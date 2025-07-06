@@ -5,9 +5,9 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"readly/configs"
 	"readly/db/transaction"
+	sessionRepo "readly/feature/user/repository"
 	userRepo "readly/feature/user/repository"
 	"readly/middleware/auth"
-	"readly/repository"
 )
 
 const maxSaveToken = 5
@@ -20,7 +20,7 @@ type SignInUseCaseImpl struct {
 	config      configs.Config
 	maker       auth.TokenMaker
 	transactor  transaction.Transactor
-	sessionRepo repository.SessionRepository
+	sessionRepo sessionRepo.SessionRepository
 	userRepo    userRepo.UserRepository
 }
 
@@ -28,7 +28,7 @@ func NewSignInUseCase(
 	config configs.Config,
 	maker auth.TokenMaker,
 	transactor transaction.Transactor,
-	sessionRepo repository.SessionRepository,
+	sessionRepo sessionRepo.SessionRepository,
 	userRepo userRepo.UserRepository,
 ) SignInUseCase {
 	return &SignInUseCaseImpl{
@@ -68,7 +68,7 @@ func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*Sig
 			return err
 		}
 
-		sessionReq := repository.CreateSessionRequest{
+		sessionReq := sessionRepo.CreateSessionRequest{
 			ID:           refreshTokenPayload.ID,
 			UserID:       user.ID,
 			RefreshToken: refreshTokenPayload.Token,
@@ -91,7 +91,7 @@ func (u *SignInUseCaseImpl) checkPasswordHash(password, hash string) error {
 }
 
 func (u *SignInUseCaseImpl) cleanSessions(ctx context.Context, userID int64) error {
-	getReq := repository.GetSessionByUserIDRequest{
+	getReq := sessionRepo.GetSessionByUserIDRequest{
 		UserID: userID,
 	}
 	sessions, err := u.sessionRepo.GetSessionByUserID(ctx, getReq)
@@ -103,7 +103,7 @@ func (u *SignInUseCaseImpl) cleanSessions(ctx context.Context, userID int64) err
 		return nil
 	}
 	sessionToDeleteLimit := sessionsCount - maxSaveToken + 1
-	deleteReq := repository.DeleteSessionByUserIDRequest{
+	deleteReq := sessionRepo.DeleteSessionByUserIDRequest{
 		UserID: userID,
 		Limit:  int32(sessionToDeleteLimit),
 	}
