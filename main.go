@@ -51,8 +51,8 @@ func main() {
 	}
 
 	createGenresUseCase := usecase.NewCreateGenresUseCase(t, bookRepo)
-	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo, userRepository)
-	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo, userRepository)
+	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo)
+	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo)
 	signUpUseCase := userUseCase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepository)
 	signInUseCase := userUseCase.NewSignInUseCase(config, maker, t, sessionRepo, userRepository)
 	refreshTokenUseCase := userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
