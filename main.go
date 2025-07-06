@@ -11,24 +11,24 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
-	bookDomain "readly/book/domain"
-	bookRepo "readly/book/repository"
-	bookServer "readly/book/server"
-	bookUseCase "readly/book/usecase"
 	"readly/configs"
 	sqlc "readly/db/sqlc"
 	"readly/db/transaction"
-	imageRepo "readly/image/repository"
-	imageServer "readly/image/server"
-	imageUseCase "readly/image/usecase"
+	bookDomain "readly/feature/book/domain"
+	bookRepo "readly/feature/book/repository"
+	bookServer "readly/feature/book/server"
+	bookUseCase "readly/feature/book/usecase"
+	imageRepo "readly/feature/image/repository"
+	imageServer "readly/feature/image/server"
+	imageUseCase "readly/feature/image/usecase"
+	sessionRepo "readly/feature/user/repository"
+	userRepo "readly/feature/user/repository"
+	userServer "readly/feature/user/server"
+	userUseCase "readly/feature/user/usecase"
 	"readly/middleware/auth"
 	"readly/middleware/image"
 	"readly/pb/readly/v1"
-	"readly/repository"
 	router "readly/router"
-	userRepo "readly/user/repository"
-	userServer "readly/user/server"
-	userUseCase "readly/user/usecase"
 )
 
 func main() {
@@ -44,7 +44,7 @@ func main() {
 	bookRepository := bookRepo.NewBookRepository(q)
 	userRepository := userRepo.NewUserRepository(q)
 	readingHistoryRepository := bookRepo.NewReadingHistoryRepository(q)
-	sessionRepo := repository.NewSessionRepository(q)
+	sessionRepository := sessionRepo.NewSessionRepository(q)
 	imgRepo := imageRepo.NewImageRepository()
 
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
@@ -55,9 +55,9 @@ func main() {
 	createGenresUseCase := bookUseCase.NewCreateGenresUseCase(t, bookRepository)
 	registerBookUseCase := bookUseCase.NewRegisterBookUseCase(t, bookRepository, readingHistoryRepository)
 	deleteBookUseCase := bookUseCase.NewDeleteBookUseCase(t, bookRepository, readingHistoryRepository)
-	signUpUseCase := userUseCase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepository)
-	signInUseCase := userUseCase.NewSignInUseCase(config, maker, t, sessionRepo, userRepository)
-	refreshTokenUseCase := userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
+	signUpUseCase := userUseCase.NewSignUpUseCase(config, maker, t, sessionRepository, userRepository)
+	signInUseCase := userUseCase.NewSignInUseCase(config, maker, t, sessionRepository, userRepository)
+	refreshTokenUseCase := userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepository)
 	uploadImgUseCase := imageUseCase.NewUploadImgUseCase(config, imgRepo)
 
 	// Register genres at application startup
