@@ -38,6 +38,8 @@ func setupMain() {
 	querier = q
 	bookRepo = NewBookRepository(q)
 	readingHistoryRepo = NewReadingHistoryRepository(q)
+
+	createGenresIfNeed()
 }
 
 func createRandomUser(t *testing.T) sqlc.User {
@@ -65,4 +67,18 @@ func createRandomBook(t *testing.T) sqlc.Book {
 	require.NoError(t, err)
 	require.NotEmpty(t, book)
 	return book
+}
+
+func createGenresIfNeed() {
+	genres := testdata.GetGenres()
+	for _, genre := range genres {
+		_, err := querier.GetGenreByName(context.Background(), genre)
+		if err == nil {
+			continue
+		}
+		_, err = querier.CreateGenre(context.Background(), genre)
+		if err != nil {
+			log.Fatalf("failed to create genre %s: %v", genre, err)
+		}
+	}
 }
