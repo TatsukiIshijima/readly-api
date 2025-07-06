@@ -11,9 +11,13 @@ import (
 	"net"
 	"net/http"
 	"path/filepath"
+	bookDomain "readly/book/domain"
+	bookRepo "readly/book/repository"
+	bookServer "readly/book/server"
+	bookUseCase "readly/book/usecase"
 	"readly/configs"
 	sqlc "readly/db/sqlc"
-	"readly/entity"
+	"readly/db/transaction"
 	imageRepo "readly/image/repository"
 	imageServer "readly/image/server"
 	imageUseCase "readly/image/usecase"
@@ -22,8 +26,6 @@ import (
 	"readly/pb/readly/v1"
 	"readly/repository"
 	router "readly/router"
-	"readly/server"
-	"readly/usecase"
 	userRepo "readly/user/repository"
 	userServer "readly/user/server"
 	userUseCase "readly/user/usecase"
@@ -37,11 +39,11 @@ func main() {
 
 	a := sqlc.Adapter{}
 	db, q := a.Connect(config.DBDriver, config.DBSource)
-	t := repository.New(db)
+	t := transaction.New(db)
 
-	bookRepo := repository.NewBookRepository(q)
+	bookRepository := bookRepo.NewBookRepository(q)
 	userRepository := userRepo.NewUserRepository(q)
-	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
+	readingHistoryRepository := bookRepo.NewReadingHistoryRepository(q)
 	sessionRepo := repository.NewSessionRepository(q)
 	imgRepo := imageRepo.NewImageRepository()
 
@@ -50,9 +52,9 @@ func main() {
 		log.Fatal("cannot start server:", err)
 	}
 
-	createGenresUseCase := usecase.NewCreateGenresUseCase(t, bookRepo)
-	registerBookUseCase := usecase.NewRegisterBookUseCase(t, bookRepo, readingHistoryRepo)
-	deleteBookUseCase := usecase.NewDeleteBookUseCase(t, bookRepo, readingHistoryRepo)
+	createGenresUseCase := bookUseCase.NewCreateGenresUseCase(t, bookRepository)
+	registerBookUseCase := bookUseCase.NewRegisterBookUseCase(t, bookRepository, readingHistoryRepository)
+	deleteBookUseCase := bookUseCase.NewDeleteBookUseCase(t, bookRepository, readingHistoryRepository)
 	signUpUseCase := userUseCase.NewSignUpUseCase(config, maker, t, sessionRepo, userRepository)
 	signInUseCase := userUseCase.NewSignInUseCase(config, maker, t, sessionRepo, userRepository)
 	refreshTokenUseCase := userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
@@ -118,8 +120,8 @@ func main() {
 func runGRPCServer(
 	config configs.Config,
 	maker auth.TokenMaker,
-	registerBookUseCase usecase.RegisterBookUseCase,
-	deleteBookUseCase usecase.DeleteBookUseCase,
+	registerBookUseCase bookUseCase.RegisterBookUseCase,
+	deleteBookUseCase bookUseCase.DeleteBookUseCase,
 	signUpUseCase userUseCase.SignUpUseCase,
 	signInUseCase userUseCase.SignInUseCase,
 	refreshTokenUseCase userUseCase.RefreshAccessTokenUseCase,
@@ -133,13 +135,13 @@ func runGRPCServer(
 		signInUseCase,
 		refreshTokenUseCase,
 	)
-	bookServer := server.NewBookServer(
+	bookSrv := bookServer.NewBookServer(
 		maker,
 		registerBookUseCase,
 		deleteBookUseCase,
 	)
 	pb.RegisterUserServiceServer(grpcServer, userSrv)
-	pb.RegisterBookServiceServer(grpcServer, bookServer)
+	pb.RegisterBookServiceServer(grpcServer, bookSrv)
 	reflection.Register(grpcServer)
 
 	listener, err := net.Listen("tcp", config.GRPCServerAddress)
@@ -155,12 +157,12 @@ func runGRPCServer(
 }
 
 // registerGenres registers predefined genres in the database
-func registerGenres(createGenresUseCase usecase.CreateGenresUseCase) {
+func registerGenres(createGenresUseCase bookUseCase.CreateGenresUseCase) {
 	// Get the list of genres from entity
-	genreNames := entity.GetGenres()
+	genreNames := bookDomain.GetGenres()
 
 	// Create a request with the genre names
-	request := usecase.NewCreateGenresRequest(genreNames)
+	request := bookUseCase.NewCreateGenresRequest(genreNames)
 
 	// Call the use case to register the genres
 	err := createGenresUseCase.CreateGenres(context.Background(), request)
@@ -174,8 +176,8 @@ func registerGenres(createGenresUseCase usecase.CreateGenresUseCase) {
 func runGatewayServer(
 	config configs.Config,
 	maker auth.TokenMaker,
-	registerBookUseCase usecase.RegisterBookUseCase,
-	deleteBookUseCase usecase.DeleteBookUseCase,
+	registerBookUseCase bookUseCase.RegisterBookUseCase,
+	deleteBookUseCase bookUseCase.DeleteBookUseCase,
 	signUpUseCase userUseCase.SignUpUseCase,
 	signInUseCase userUseCase.SignInUseCase,
 	refreshTokenUseCase userUseCase.RefreshAccessTokenUseCase,
@@ -188,7 +190,7 @@ func runGatewayServer(
 		signInUseCase,
 		refreshTokenUseCase,
 	)
-	bookServer := server.NewBookServer(
+	bookSrv := bookServer.NewBookServer(
 		maker,
 		registerBookUseCase,
 		deleteBookUseCase,
@@ -213,7 +215,7 @@ func runGatewayServer(
 	if err != nil {
 		log.Fatalf("cannot register handle server: %v", err)
 	}
-	err = pb.RegisterBookServiceHandlerServer(ctx, grpcMux, bookServer)
+	err = pb.RegisterBookServiceHandlerServer(ctx, grpcMux, bookSrv)
 	if err != nil {
 		log.Fatalf("cannot register handle server: %v", err)
 	}
