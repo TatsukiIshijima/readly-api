@@ -17,6 +17,7 @@ import (
 	bookUseCase "readly/book/usecase"
 	"readly/configs"
 	sqlc "readly/db/sqlc"
+	"readly/db/transaction"
 	imageRepo "readly/image/repository"
 	imageServer "readly/image/server"
 	imageUseCase "readly/image/usecase"
@@ -38,7 +39,7 @@ func main() {
 
 	a := sqlc.Adapter{}
 	db, q := a.Connect(config.DBDriver, config.DBSource)
-	t := repository.New(db)
+	t := transaction.New(db)
 
 	bookRepository := bookRepo.NewBookRepository(q)
 	userRepository := userRepo.NewUserRepository(q)

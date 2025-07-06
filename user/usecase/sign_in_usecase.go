@@ -4,6 +4,7 @@ import (
 	"context"
 	"golang.org/x/crypto/bcrypt"
 	"readly/configs"
+	"readly/db/transaction"
 	"readly/middleware/auth"
 	"readly/repository"
 	userRepo "readly/user/repository"
@@ -18,7 +19,7 @@ type SignInUseCase interface {
 type SignInUseCaseImpl struct {
 	config      configs.Config
 	maker       auth.TokenMaker
-	transactor  repository.Transactor
+	transactor  transaction.Transactor
 	sessionRepo repository.SessionRepository
 	userRepo    userRepo.UserRepository
 }
@@ -26,7 +27,7 @@ type SignInUseCaseImpl struct {
 func NewSignInUseCase(
 	config configs.Config,
 	maker auth.TokenMaker,
-	transactor repository.Transactor,
+	transactor transaction.Transactor,
 	sessionRepo repository.SessionRepository,
 	userRepo userRepo.UserRepository,
 ) SignInUseCase {

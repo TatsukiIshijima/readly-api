@@ -6,7 +6,7 @@ import (
 	"github.com/lib/pq"
 	"readly/book/domain"
 	bookRepo "readly/book/repository"
-	"readly/repository"
+	"readly/db/transaction"
 )
 
 type RegisterBookUseCase interface {
@@ -14,13 +14,13 @@ type RegisterBookUseCase interface {
 }
 
 type RegisterBookUseCaseImpl struct {
-	transactor         repository.Transactor
+	transactor         transaction.Transactor
 	bookRepo           bookRepo.BookRepository
 	readingHistoryRepo bookRepo.ReadingHistoryRepository
 }
 
 func NewRegisterBookUseCase(
-	transactor repository.Transactor,
+	transactor transaction.Transactor,
 	bookRepo bookRepo.BookRepository,
 	readingHistoryRepo bookRepo.ReadingHistoryRepository,
 ) RegisterBookUseCase {

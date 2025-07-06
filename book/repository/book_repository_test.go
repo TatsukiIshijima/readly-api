@@ -23,32 +23,12 @@ func TestCreateAuthor(t *testing.T) {
 	require.Equal(t, a.Name, ga.Name)
 }
 
-func createRandomBook(t *testing.T) *CreateBookResponse {
-	title := testdata.RandomString(8)
-	description := testdata.RandomString(10)
-	coverImageUrl := "https://example.com"
-	url := "https://example.com"
-	publishDate := domain.Now()
-	isbn := testdata.RandomString(13)
-
-	req := CreateBookRequest{
-		Title:         title,
-		Description:   &description,
-		CoverImageURL: &coverImageUrl,
-		URL:           &url,
-		Author:        nil,
-		Publisher:     nil,
-		PublishDate:   &publishDate,
-		ISBN:          &isbn,
-	}
-
-	b, err := bookRepo.CreateBook(context.Background(), req)
-	require.NoError(t, err)
-	return b
-}
-
 func TestCreateBook(t *testing.T) {
-	b := createRandomBook(t)
+	b, err := bookRepo.CreateBook(context.Background(), CreateBookRequest{
+		Title: testdata.RandomString(10),
+	})
+	require.NoError(t, err)
+
 	gb, err := querier.GetBooksByID(context.Background(), b.ID)
 	require.NoError(t, err)
 

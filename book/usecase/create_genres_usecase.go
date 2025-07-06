@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/lib/pq"
 	bookRepo "readly/book/repository"
-	"readly/repository"
+	"readly/db/transaction"
 )
 
 type CreateGenresUseCase interface {
@@ -13,12 +13,12 @@ type CreateGenresUseCase interface {
 }
 
 type CreateGenresUseCaseImpl struct {
-	transactor repository.Transactor
+	transactor transaction.Transactor
 	bookRepo   bookRepo.BookRepository
 }
 
 func NewCreateGenresUseCase(
-	transactor repository.Transactor,
+	transactor transaction.Transactor,
 	bookRepo bookRepo.BookRepository,
 ) CreateGenresUseCase {
 	return &CreateGenresUseCaseImpl{

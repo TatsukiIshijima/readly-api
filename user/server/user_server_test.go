@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/status"
 	"readly/configs"
 	sqlc "readly/db/sqlc"
+	"readly/db/transaction"
 	"readly/middleware/auth"
 	"readly/pb/readly/v1"
 	"readly/repository"
@@ -29,7 +30,7 @@ func NewTestUserServer(t *testing.T) *UserServerImpl {
 	// TODO:本物のDBを使うよう変更
 	fa := sqlc.FakeAdapter{}
 	db, q := fa.Connect("", "")
-	transaction := repository.New(db)
+	transactor := transaction.New(db)
 
 	userRepository := userRepo.NewUserRepository(q)
 	sessionRepo := repository.NewSessionRepository(q)
@@ -37,8 +38,8 @@ func NewTestUserServer(t *testing.T) *UserServerImpl {
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	require.NoError(t, err)
 
-	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transaction, sessionRepo, userRepository)
-	signInUseCase := usecase.NewSignInUseCase(config, maker, transaction, sessionRepo, userRepository)
+	signUpUseCase := usecase.NewSignUpUseCase(config, maker, transactor, sessionRepo, userRepository)
+	signInUseCase := usecase.NewSignInUseCase(config, maker, transactor, sessionRepo, userRepository)
 	refreshTokenUseCase := usecase.NewRefreshAccessTokenUseCase(config, maker, sessionRepo)
 
 	return NewUserServer(

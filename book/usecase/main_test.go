@@ -10,8 +10,8 @@ import (
 	"readly/book/repository"
 	"readly/configs"
 	sqlc "readly/db/sqlc"
+	"readly/db/transaction"
 	"readly/middleware/auth"
-	coreRepo "readly/repository"
 	"readly/testdata"
 	"testing"
 	"time"
@@ -28,7 +28,7 @@ func TestMain(m *testing.M) {
 
 var config configs.Config
 var querier sqlc.Querier
-var tx coreRepo.Transactor
+var tx transaction.Transactor
 var maker auth.TokenMaker
 
 func setupMain() {
@@ -42,7 +42,7 @@ func setupMain() {
 	db, q := a.Connect(c.DBDriver, c.DBSource)
 	querier = q
 
-	tx = coreRepo.New(db)
+	tx = transaction.New(db)
 
 	maker, err = auth.NewPasetoMaker(c.TokenSymmetricKey)
 	if err != nil {

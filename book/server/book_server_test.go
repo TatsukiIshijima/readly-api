@@ -8,6 +8,7 @@ import (
 	"readly/book/usecase"
 	"readly/configs"
 	sqlc "readly/db/sqlc"
+	"readly/db/transaction"
 	"readly/middleware/auth"
 	"readly/testdata"
 	"testing"
@@ -22,7 +23,7 @@ func NewTestBookServer(t *testing.T) *BookServerImpl {
 	}
 	fa := sqlc.FakeAdapter{}
 	db, q := fa.Connect("", "")
-	transaction := repository.New(db)
+	transactor := transaction.New(db)
 
 	bookRepo := repository.NewBookRepository(q)
 	readingHistoryRepo := repository.NewReadingHistoryRepository(q)
@@ -30,8 +31,8 @@ func NewTestBookServer(t *testing.T) *BookServerImpl {
 	maker, err := auth.NewPasetoMaker(config.TokenSymmetricKey)
 	require.NoError(t, err)
 
-	registerBookUseCase := usecase.NewRegisterBookUseCase(transaction, bookRepo, readingHistoryRepo)
-	deleteBookUseCase := usecase.NewDeleteBookUseCase(transaction, bookRepo, readingHistoryRepo)
+	registerBookUseCase := usecase.NewRegisterBookUseCase(transactor, bookRepo, readingHistoryRepo)
+	deleteBookUseCase := usecase.NewDeleteBookUseCase(transactor, bookRepo, readingHistoryRepo)
 
 	return NewBookServer(
 		maker,
