@@ -2,6 +2,11 @@ package db
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/stretchr/testify/require"
 	"log"
 	"math/rand"
@@ -24,6 +29,12 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal("cannot load config:", err)
 	}
+
+	// Run migrations before tests
+	if err := runMigrations(config.DBDriver, config.DBSource); err != nil {
+		log.Fatal("migration failed:", err)
+	}
+
 	h := &Adapter{}
 	_, q := h.Connect(config.DBDriver, config.DBSource)
 	querier = q
@@ -45,6 +56,41 @@ func createRandomUser(t *testing.T) User {
 	require.NoError(t, err)
 	require.NotEmpty(t, user)
 	return user
+}
+
+func runMigrations(dbDriver string, dbSource string) error {
+	// Connect to database
+	db, err := sql.Open(dbDriver, dbSource)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	// Create a db driver instance
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	if err != nil {
+		return err
+	}
+
+	// Create migrate instance
+	migrationPath := filepath.Join(configs.ProjectRoot(), "db/migration")
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://"+migrationPath,
+		"postgres",
+		driver,
+	)
+	if err != nil {
+		return err
+	}
+
+	// Run migrations
+	err = m.Up()
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return err
+	}
+
+	log.Println("Migrations completed successfully")
+	return nil
 }
 
 func EqualDate(t *testing.T, a, b time.Time) {
