@@ -84,6 +84,62 @@ type BookGenre struct {
 	GenreName string `json:"genre_name"`
 }
 
+type Books0 struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+type Books1 struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+type Books2 struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
+type Books3 struct {
+	ID            int64          `json:"id"`
+	Title         string         `json:"title"`
+	Description   sql.NullString `json:"description"`
+	CoverImageUrl sql.NullString `json:"cover_image_url"`
+	Url           sql.NullString `json:"url"`
+	AuthorName    sql.NullString `json:"author_name"`
+	PublisherName sql.NullString `json:"publisher_name"`
+	PublishedDate sql.NullTime   `json:"published_date"`
+	Isbn          sql.NullString `json:"isbn"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+}
+
 // Stores genre data.
 type Genre struct {
 	Name      string    `json:"name"`
@@ -94,6 +150,256 @@ type Genre struct {
 type Publisher struct {
 	Name      string    `json:"name"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type ReadingHistoriesDefault struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m01 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m02 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m03 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m04 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m05 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m06 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m07 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m08 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m09 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m10 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m11 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2025m12 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m01 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m02 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m03 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m04 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m05 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m06 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m07 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m08 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m09 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m10 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m11 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
+}
+
+type ReadingHistoriesY2026m12 struct {
+	UserID    int64         `json:"user_id"`
+	BookID    int64         `json:"book_id"`
+	Status    ReadingStatus `json:"status"`
+	StartDate sql.NullTime  `json:"start_date"`
+	EndDate   sql.NullTime  `json:"end_date"`
+	CreatedAt time.Time     `json:"created_at"`
+	UpdatedAt time.Time     `json:"updated_at"`
 }
 
 // Stores reading history.
@@ -109,6 +415,306 @@ type ReadingHistory struct {
 
 // Stores session data.
 type Session struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsDefault struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m01 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m02 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m03 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m04 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m05 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m06 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m07 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m08 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m09 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m10 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m11 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2025m12 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m01 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m02 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m03 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m04 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m05 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m06 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m07 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m08 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m09 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m10 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m11 struct {
+	ID           uuid.UUID      `json:"id"`
+	UserID       int64          `json:"user_id"`
+	RefreshToken string         `json:"refresh_token"`
+	ExpiresAt    time.Time      `json:"expires_at"`
+	CreatedAt    time.Time      `json:"created_at"`
+	IpAddress    sql.NullString `json:"ip_address"`
+	UserAgent    sql.NullString `json:"user_agent"`
+	Revoked      bool           `json:"revoked"`
+	RevokedAt    sql.NullTime   `json:"revoked_at"`
+}
+
+type SessionsY2026m12 struct {
 	ID           uuid.UUID      `json:"id"`
 	UserID       int64          `json:"user_id"`
 	RefreshToken string         `json:"refresh_token"`
