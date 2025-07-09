@@ -55,6 +55,8 @@ func main() {
 	createGenresUseCase := bookUseCase.NewCreateGenresUseCase(t, bookRepository)
 	registerBookUseCase := bookUseCase.NewRegisterBookUseCase(t, bookRepository, readingHistoryRepository)
 	deleteBookUseCase := bookUseCase.NewDeleteBookUseCase(t, bookRepository, readingHistoryRepository)
+	getBookUseCase := bookUseCase.NewGetBookUseCase(bookRepository, readingHistoryRepository)
+	getBookListUseCase := bookUseCase.NewGetBookListUseCase(readingHistoryRepository)
 	signUpUseCase := userUseCase.NewSignUpUseCase(config, maker, t, sessionRepository, userRepository)
 	signInUseCase := userUseCase.NewSignInUseCase(config, maker, t, sessionRepository, userRepository)
 	refreshTokenUseCase := userUseCase.NewRefreshAccessTokenUseCase(config, maker, sessionRepository)
@@ -70,6 +72,8 @@ func main() {
 		maker,
 		registerBookUseCase,
 		deleteBookUseCase,
+		getBookUseCase,
+		getBookListUseCase,
 		signUpUseCase,
 		signInUseCase,
 		refreshTokenUseCase,
@@ -91,6 +95,8 @@ func main() {
 		maker,
 		registerBookUseCase,
 		deleteBookUseCase,
+		getBookUseCase,
+		getBookListUseCase,
 		signUpUseCase,
 		signInUseCase,
 		refreshTokenUseCase,
@@ -122,6 +128,8 @@ func runGRPCServer(
 	maker auth.TokenMaker,
 	registerBookUseCase bookUseCase.RegisterBookUseCase,
 	deleteBookUseCase bookUseCase.DeleteBookUseCase,
+	getBookUseCase bookUseCase.GetBookUseCase,
+	getBookListUseCase bookUseCase.GetBookListUseCase,
 	signUpUseCase userUseCase.SignUpUseCase,
 	signInUseCase userUseCase.SignInUseCase,
 	refreshTokenUseCase userUseCase.RefreshAccessTokenUseCase,
@@ -139,6 +147,8 @@ func runGRPCServer(
 		maker,
 		registerBookUseCase,
 		deleteBookUseCase,
+		getBookUseCase,
+		getBookListUseCase,
 	)
 	pb.RegisterUserServiceServer(grpcServer, userSrv)
 	pb.RegisterBookServiceServer(grpcServer, bookSrv)
@@ -178,6 +188,8 @@ func runGatewayServer(
 	maker auth.TokenMaker,
 	registerBookUseCase bookUseCase.RegisterBookUseCase,
 	deleteBookUseCase bookUseCase.DeleteBookUseCase,
+	getBookUseCase bookUseCase.GetBookUseCase,
+	getBookListUseCase bookUseCase.GetBookListUseCase,
 	signUpUseCase userUseCase.SignUpUseCase,
 	signInUseCase userUseCase.SignInUseCase,
 	refreshTokenUseCase userUseCase.RefreshAccessTokenUseCase,
@@ -194,6 +206,8 @@ func runGatewayServer(
 		maker,
 		registerBookUseCase,
 		deleteBookUseCase,
+		getBookUseCase,
+		getBookListUseCase,
 	)
 	imgServer := imageServer.NewImageServer(uploadImgUseCase)
 

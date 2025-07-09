@@ -12,20 +12,26 @@ import (
 
 type BookServerImpl struct {
 	pb.UnimplementedBookServiceServer
-	maker           auth.TokenMaker
-	registerUseCase usecase.RegisterBookUseCase
-	deleteUseCase   usecase.DeleteBookUseCase
+	maker              auth.TokenMaker
+	registerUseCase    usecase.RegisterBookUseCase
+	deleteUseCase      usecase.DeleteBookUseCase
+	getBookUseCase     usecase.GetBookUseCase
+	getBookListUseCase usecase.GetBookListUseCase
 }
 
 func NewBookServer(
 	maker auth.TokenMaker,
 	registerUseCase usecase.RegisterBookUseCase,
 	deleteUseCase usecase.DeleteBookUseCase,
+	getBookUseCase usecase.GetBookUseCase,
+	getBookListUseCase usecase.GetBookListUseCase,
 ) *BookServerImpl {
 	return &BookServerImpl{
-		maker:           maker,
-		registerUseCase: registerUseCase,
-		deleteUseCase:   deleteUseCase,
+		maker:              maker,
+		registerUseCase:    registerUseCase,
+		deleteUseCase:      deleteUseCase,
+		getBookUseCase:     getBookUseCase,
+		getBookListUseCase: getBookListUseCase,
 	}
 }
 
@@ -56,4 +62,36 @@ func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookReque
 		return nil, gRPCStatusError(err)
 	}
 	return &emptypb.Empty{}, nil
+}
+
+func (b *BookServerImpl) GetBook(ctx context.Context, req *pb.GetBookRequest) (*pb.GetBookResponse, error) {
+	claims, err := auth.AuthenticateGRPC(ctx, b.maker)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, err.Error())
+	}
+
+	// TODO: バリデーション
+
+	args := usecase.NewGetBookRequest(claims.UserID, req.BookId)
+	res, err := b.getBookUseCase.GetBook(ctx, args)
+	if err != nil {
+		return nil, gRPCStatusError(err)
+	}
+	return res.ToProto(), nil
+}
+
+func (b *BookServerImpl) GetBookList(ctx context.Context, req *pb.GetBookListRequest) (*pb.GetBookListResponse, error) {
+	claims, err := auth.AuthenticateGRPC(ctx, b.maker)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, err.Error())
+	}
+
+	// TODO: バリデーション
+
+	args := usecase.NewGetBookListRequest(claims.UserID, req.Limit, req.Offset)
+	res, err := b.getBookListUseCase.GetBookList(ctx, args)
+	if err != nil {
+		return nil, gRPCStatusError(err)
+	}
+	return res.ToProto(), nil
 }
