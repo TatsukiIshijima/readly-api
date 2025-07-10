@@ -33,10 +33,14 @@ func NewTestBookServer(t *testing.T) *BookServerImpl {
 
 	registerBookUseCase := usecase.NewRegisterBookUseCase(transactor, bookRepo, readingHistoryRepo)
 	deleteBookUseCase := usecase.NewDeleteBookUseCase(transactor, bookRepo, readingHistoryRepo)
+	getBookUseCase := usecase.NewGetBookUseCase(bookRepo, readingHistoryRepo)
+	getBookListUseCase := usecase.NewGetBookListUseCase(readingHistoryRepo)
 
 	return NewBookServer(
 		maker,
 		registerBookUseCase,
 		deleteBookUseCase,
+		getBookUseCase,
+		getBookListUseCase,
 	)
 }
