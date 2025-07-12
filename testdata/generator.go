@@ -45,3 +45,19 @@ func HashPassword(password string) (string, error) {
 	}
 	return string(hashedPassword), nil
 }
+
+func RandomURL() string {
+	domain := RandomString(5 + rand.Intn(10)) // 5-14文字のドメイン名
+	tld := RandomString(2 + rand.Intn(3))     // 2-4文字のTLD
+
+	return fmt.Sprintf("https://%s.%s", domain, tld)
+}
+
+func RandomISBN() string {
+	var sb strings.Builder
+	for i := 0; i < 13; i++ {
+		digit := rand.Intn(10)
+		sb.WriteString(fmt.Sprintf("%d", digit))
+	}
+	return sb.String()
+}
