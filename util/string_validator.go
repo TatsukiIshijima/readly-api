@@ -6,12 +6,15 @@ import (
 )
 
 var (
-	usernameRegex  = regexp.MustCompile(`^[A-Za-z0-9]{5,30}$`)
-	emailRegex     = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	upperCaseRegex = regexp.MustCompile(`[A-Z]`)
-	lowerCaseRegex = regexp.MustCompile(`[a-z]`)
-	digitRegex     = regexp.MustCompile(`[0-9]`)
-	symbolRegex    = regexp.MustCompile(`[\-^$*.@]`)
+	usernameRegex     = regexp.MustCompile(`^[A-Za-z0-9]{5,30}$`)
+	emailRegex        = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	upperCaseRegex    = regexp.MustCompile(`[A-Z]`)
+	lowerCaseRegex    = regexp.MustCompile(`[a-z]`)
+	digitRegex        = regexp.MustCompile(`[0-9]`)
+	symbolRegex       = regexp.MustCompile(`[\-^$*.@]`)
+	urlRegex          = regexp.MustCompile(`^https?://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(/.*)?$`)
+	isbnRegex         = regexp.MustCompile(`^[0-9]{13}$`)
+	sqlInjectionRegex = regexp.MustCompile(`(?i)(select|insert|update|delete|drop|create|alter|exec|union|script|javascript|<script|</script>|--|;|/\*|\*/|'.*'|".*")`)
 )
 
 type StringValidator string
@@ -78,4 +81,19 @@ func (s StringValidator) hasSymbol() bool {
 	// -^$*.@ のいずれかの文字を含む
 	err := s.validateRegex(symbolRegex)
 	return err == nil
+}
+
+func (s StringValidator) ValidateURL() error {
+	return s.validateRegex(urlRegex)
+}
+
+func (s StringValidator) ValidateISBN() error {
+	return s.validateRegex(isbnRegex)
+}
+
+func (s StringValidator) ValidateNoSQLInjection() error {
+	if sqlInjectionRegex.MatchString(string(s)) {
+		return fmt.Errorf("potentially dangerous content detected")
+	}
+	return nil
 }
