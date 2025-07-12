@@ -32,6 +32,10 @@ func NewRegisterBookUseCase(
 }
 
 func (u *RegisterBookUseCaseImpl) RegisterBook(ctx context.Context, req RegisterBookRequest) (*RegisterBookResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, handle(err)
+	}
+
 	var book *domain.Book
 	err := u.transactor.Exec(ctx, func() error {
 		err := u.createAuthorIfNeed(ctx, req.AuthorName)
