@@ -132,6 +132,256 @@ func TestUpdateBook(t *testing.T) {
 				require.Equal(t, InvalidRequestError, e.ErrorCode)
 			},
 		},
+		{
+			name: "Update book failed when title is empty",
+			setup: func(t *testing.T) UpdateBookRequest {
+				return UpdateBookRequest{
+					UserID: user.ID,
+					BookID: registerBookRes.Book.ID,
+					Title:  "",
+					Genres: registerBookRes.Book.Genres,
+					Status: domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "title is required")
+			},
+		},
+		{
+			name: "Update book failed when title exceeds 255 characters",
+			setup: func(t *testing.T) UpdateBookRequest {
+				longTitle := testdata.RandomString(256)
+				return UpdateBookRequest{
+					UserID: user.ID,
+					BookID: registerBookRes.Book.ID,
+					Title:  longTitle,
+					Genres: registerBookRes.Book.Genres,
+					Status: domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "title must be between 1 and 255 characters")
+			},
+		},
+		{
+			name: "Update book failed when title contains SQL injection",
+			setup: func(t *testing.T) UpdateBookRequest {
+				return UpdateBookRequest{
+					UserID: user.ID,
+					BookID: registerBookRes.Book.ID,
+					Title:  "Book'; DROP TABLE books; --",
+					Genres: registerBookRes.Book.Genres,
+					Status: domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "title contains potentially dangerous content")
+			},
+		},
+		{
+			name: "Update book failed when description exceeds 500 characters",
+			setup: func(t *testing.T) UpdateBookRequest {
+				longDesc := testdata.RandomString(501)
+				return UpdateBookRequest{
+					UserID:      user.ID,
+					BookID:      registerBookRes.Book.ID,
+					Title:       testdata.RandomString(10),
+					Description: &longDesc,
+					Genres:      registerBookRes.Book.Genres,
+					Status:      domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "description must be less than 500 characters")
+			},
+		},
+		{
+			name: "Update book failed when URL has invalid format",
+			setup: func(t *testing.T) UpdateBookRequest {
+				invalidURL := "invalid-url"
+				return UpdateBookRequest{
+					UserID: user.ID,
+					BookID: registerBookRes.Book.ID,
+					Title:  testdata.RandomString(10),
+					URL:    &invalidURL,
+					Genres: registerBookRes.Book.Genres,
+					Status: domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "URL has invalid format")
+			},
+		},
+		{
+			name: "Update book failed when URL exceeds 2048 characters",
+			setup: func(t *testing.T) UpdateBookRequest {
+				longURL := "https://example.com/" + testdata.RandomString(2030)
+				return UpdateBookRequest{
+					UserID: user.ID,
+					BookID: registerBookRes.Book.ID,
+					Title:  testdata.RandomString(10),
+					URL:    &longURL,
+					Genres: registerBookRes.Book.Genres,
+					Status: domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "URL must be less than 2048 characters")
+			},
+		},
+		{
+			name: "Update book failed when cover image URL has invalid format",
+			setup: func(t *testing.T) UpdateBookRequest {
+				invalidURL := "not-a-url"
+				return UpdateBookRequest{
+					UserID:        user.ID,
+					BookID:        registerBookRes.Book.ID,
+					Title:         testdata.RandomString(10),
+					CoverImageURL: &invalidURL,
+					Genres:        registerBookRes.Book.Genres,
+					Status:        domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "cover image URL has invalid format")
+			},
+		},
+		{
+			name: "Update book failed when author name exceeds 255 characters",
+			setup: func(t *testing.T) UpdateBookRequest {
+				longAuthor := testdata.RandomString(256)
+				return UpdateBookRequest{
+					UserID: user.ID,
+					BookID: registerBookRes.Book.ID,
+					Title:  testdata.RandomString(10),
+					Author: &longAuthor,
+					Genres: registerBookRes.Book.Genres,
+					Status: domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "author name must be less than 255 characters")
+			},
+		},
+		{
+			name: "Update book failed when publisher name exceeds 255 characters",
+			setup: func(t *testing.T) UpdateBookRequest {
+				longPublisher := testdata.RandomString(256)
+				return UpdateBookRequest{
+					UserID:    user.ID,
+					BookID:    registerBookRes.Book.ID,
+					Title:     testdata.RandomString(10),
+					Publisher: &longPublisher,
+					Genres:    registerBookRes.Book.Genres,
+					Status:    domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "publisher name must be less than 255 characters")
+			},
+		},
+		{
+			name: "Update book failed when ISBN has invalid format",
+			setup: func(t *testing.T) UpdateBookRequest {
+				invalidISBN := "123abc"
+				return UpdateBookRequest{
+					UserID: user.ID,
+					BookID: registerBookRes.Book.ID,
+					Title:  testdata.RandomString(10),
+					ISBN:   &invalidISBN,
+					Genres: registerBookRes.Book.Genres,
+					Status: domain.Reading,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "ISBN must be 13 digits")
+			},
+		},
+		{
+			name: "Update book failed when end date is before start date",
+			setup: func(t *testing.T) UpdateBookRequest {
+				startDate := domain.Date{Year: 2023, Month: 12, Day: 31}
+				endDate := domain.Date{Year: 2023, Month: 1, Day: 1}
+				return UpdateBookRequest{
+					UserID:    user.ID,
+					BookID:    registerBookRes.Book.ID,
+					Title:     testdata.RandomString(10),
+					Genres:    registerBookRes.Book.Genres,
+					Status:    domain.Done,
+					StartDate: &startDate,
+					EndDate:   &endDate,
+				}
+			},
+			check: func(t *testing.T, res *UpdateBookResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, BadRequest, e.StatusCode)
+				require.Equal(t, InvalidRequestError, e.ErrorCode)
+				require.Contains(t, e.Message, "end date must be after start date")
+			},
+		},
 	}
 
 	for _, tc := range testCases {
