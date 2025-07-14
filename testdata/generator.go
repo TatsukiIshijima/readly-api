@@ -61,3 +61,36 @@ func RandomISBN() string {
 	}
 	return sb.String()
 }
+
+func RandomValidPassword() string {
+	symbols := "-^$*.@"
+	digits := "0123456789"
+	upper := "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	lower := "abcdefghijklmnopqrstuvwxyz"
+
+	// 8-48文字の範囲でランダムな長さを選択
+	length := 8 + rand.Intn(41) // 8 + 0~40 = 8~48
+
+	var password strings.Builder
+
+	// 必須文字を1文字ずつ追加
+	password.WriteByte(upper[rand.Intn(len(upper))])
+	password.WriteByte(lower[rand.Intn(len(lower))])
+	password.WriteByte(digits[rand.Intn(len(digits))])
+	password.WriteByte(symbols[rand.Intn(len(symbols))])
+
+	// 残りの文字をランダムに生成
+	allChars := upper + lower + digits + symbols
+	for i := 4; i < length; i++ {
+		password.WriteByte(allChars[rand.Intn(len(allChars))])
+	}
+
+	// 文字をシャッフル
+	passwordBytes := []byte(password.String())
+	for i := len(passwordBytes) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		passwordBytes[i], passwordBytes[j] = passwordBytes[j], passwordBytes[i]
+	}
+
+	return string(passwordBytes)
+}
