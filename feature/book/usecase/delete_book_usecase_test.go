@@ -23,12 +23,12 @@ func TestDeleteBook(t *testing.T) {
 			name: "Delete created book success",
 			setup: func(t *testing.T) DeleteBookRequest {
 				desc := testdata.RandomString(100)
-				coverImgURL := testdata.RandomString(255)
-				url := testdata.RandomString(255)
+				coverImgURL := testdata.RandomURL()
+				url := testdata.RandomURL()
 				author := testdata.RandomString(10)
 				publisher := testdata.RandomString(10)
 				publishDate := domain.Date{Year: 2018, Month: 12, Day: 31}
-				ISBN := testdata.RandomString(13)
+				ISBN := testdata.RandomISBN()
 				startDate := domain.Date{Year: 2018, Month: 12, Day: 31}
 				endDate := domain.Date{Year: 2019, Month: 1, Day: 30}
 
