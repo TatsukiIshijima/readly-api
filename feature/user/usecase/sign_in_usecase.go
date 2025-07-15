@@ -41,6 +41,10 @@ func NewSignInUseCase(
 }
 
 func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*SignInResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, handle(err)
+	}
+
 	var res *SignInResponse
 	err := u.transactor.Exec(ctx, func() error {
 		user, err := u.userRepo.GetUserByEmail(ctx, userRepo.NewGetUserByEmailRequest(req.Email))

@@ -23,7 +23,7 @@ func TestSignUp(t *testing.T) {
 				return SignUpRequest{
 					Name:      testdata.RandomString(10),
 					Email:     testdata.RandomEmail(),
-					Password:  testdata.RandomString(16),
+					Password:  testdata.RandomValidPassword(),
 					IPAddress: "127.0.0.1",
 					UserAgent: "Mozilla/5.0",
 				}
@@ -46,7 +46,7 @@ func TestSignUp(t *testing.T) {
 				req := SignUpRequest{
 					Name:      testdata.RandomString(10),
 					Email:     email,
-					Password:  testdata.RandomString(16),
+					Password:  testdata.RandomValidPassword(),
 					IPAddress: "127.0.0.1",
 				}
 				_, err := signUpUseCase.SignUp(context.Background(), req)
@@ -55,7 +55,7 @@ func TestSignUp(t *testing.T) {
 				return SignUpRequest{
 					Name:      testdata.RandomString(10),
 					Email:     email,
-					Password:  testdata.RandomString(16),
+					Password:  testdata.RandomValidPassword(),
 					IPAddress: "127.0.0.1",
 				}
 			},
@@ -66,6 +66,106 @@ func TestSignUp(t *testing.T) {
 				require.ErrorAs(t, err, &e)
 				require.Equal(t, e.StatusCode, Conflict)
 				require.Equal(t, e.ErrorCode, EmailAlreadyRegisteredError)
+			},
+		},
+		{
+			name: "Sign up failure with invalid name (empty)",
+			setup: func(t *testing.T) SignUpRequest {
+				return SignUpRequest{
+					Name:      "",
+					Email:     testdata.RandomEmail(),
+					Password:  testdata.RandomValidPassword(),
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
+				}
+			},
+			check: func(t *testing.T, req SignUpRequest, res *SignUpResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+			},
+		},
+		{
+			name: "Sign up failure with invalid email format",
+			setup: func(t *testing.T) SignUpRequest {
+				return SignUpRequest{
+					Name:      testdata.RandomString(10),
+					Email:     "invalid-email",
+					Password:  testdata.RandomValidPassword(),
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
+				}
+			},
+			check: func(t *testing.T, req SignUpRequest, res *SignUpResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+			},
+		},
+		{
+			name: "Sign up failure with invalid password (too short)",
+			setup: func(t *testing.T) SignUpRequest {
+				return SignUpRequest{
+					Name:      testdata.RandomString(10),
+					Email:     testdata.RandomEmail(),
+					Password:  "short",
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
+				}
+			},
+			check: func(t *testing.T, req SignUpRequest, res *SignUpResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+			},
+		},
+		{
+			name: "Sign up failure with invalid password (no uppercase)",
+			setup: func(t *testing.T) SignUpRequest {
+				return SignUpRequest{
+					Name:      testdata.RandomString(10),
+					Email:     testdata.RandomEmail(),
+					Password:  "lowercase123*",
+					IPAddress: "127.0.0.1",
+					UserAgent: "Mozilla/5.0",
+				}
+			},
+			check: func(t *testing.T, req SignUpRequest, res *SignUpResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+			},
+		},
+		{
+			name: "Sign up failure with invalid IP address",
+			setup: func(t *testing.T) SignUpRequest {
+				return SignUpRequest{
+					Name:      testdata.RandomString(10),
+					Email:     testdata.RandomEmail(),
+					Password:  testdata.RandomValidPassword(),
+					IPAddress: "invalid-ip",
+					UserAgent: "Mozilla/5.0",
+				}
+			},
+			check: func(t *testing.T, req SignUpRequest, res *SignUpResponse, err error) {
+				require.Error(t, err)
+				require.Nil(t, res)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
 			},
 		},
 	}

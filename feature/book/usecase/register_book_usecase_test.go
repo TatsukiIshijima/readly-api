@@ -49,12 +49,12 @@ func TestRegisterBook(t *testing.T) {
 			name: "New read book with all fields register success",
 			setup: func(t *testing.T) RegisterBookRequest {
 				desc := testdata.RandomString(100)
-				coverImgURL := testdata.RandomString(255)
-				url := testdata.RandomString(255)
+				coverImgURL := testdata.RandomURL()
+				url := testdata.RandomURL()
 				author := testdata.RandomString(10)
 				publisher := testdata.RandomString(10)
 				publishDate := domain.Date{Year: 2018, Month: 12, Day: 31}
-				ISBN := testdata.RandomString(13)
+				ISBN := testdata.RandomISBN()
 				startDate := domain.Date{Year: 2018, Month: 12, Day: 31}
 				endDate := domain.Date{Year: 2019, Month: 1, Day: 30}
 
@@ -152,6 +152,255 @@ func TestRegisterBook(t *testing.T) {
 				require.ErrorAs(t, err, &e)
 				require.Equal(t, e.StatusCode, BadRequest)
 				require.Equal(t, e.ErrorCode, InvalidGenreError)
+			},
+		},
+		{
+			name: "Register book failed when title is empty",
+			setup: func(t *testing.T) RegisterBookRequest {
+				return RegisterBookRequest{
+					UserID: user.ID,
+					Title:  "",
+					Genres: []string{testdata.GetGenres()[0]},
+					Status: 0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "title is required")
+			},
+		},
+		{
+			name: "Register book failed when title exceeds 255 characters",
+			setup: func(t *testing.T) RegisterBookRequest {
+				longTitle := testdata.RandomString(256)
+				return RegisterBookRequest{
+					UserID: user.ID,
+					Title:  longTitle,
+					Genres: []string{testdata.GetGenres()[0]},
+					Status: 0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "title must be between 1 and 255 characters")
+			},
+		},
+		{
+			name: "Register book failed when title contains SQL injection",
+			setup: func(t *testing.T) RegisterBookRequest {
+				return RegisterBookRequest{
+					UserID: user.ID,
+					Title:  "Book'; DROP TABLE books; --",
+					Genres: []string{testdata.GetGenres()[0]},
+					Status: 0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "title contains potentially dangerous content")
+			},
+		},
+		{
+			name: "Register book failed when description exceeds 500 characters",
+			setup: func(t *testing.T) RegisterBookRequest {
+				longDesc := testdata.RandomString(501)
+				return RegisterBookRequest{
+					UserID:      user.ID,
+					Title:       testdata.RandomString(10),
+					Description: &longDesc,
+					Genres:      []string{testdata.GetGenres()[0]},
+					Status:      0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "description must be less than 500 characters")
+			},
+		},
+		{
+			name: "Register book failed when description contains SQL injection",
+			setup: func(t *testing.T) RegisterBookRequest {
+				sqlDesc := "Description with <script>alert('xss')</script>"
+				return RegisterBookRequest{
+					UserID:      user.ID,
+					Title:       testdata.RandomString(10),
+					Description: &sqlDesc,
+					Genres:      []string{testdata.GetGenres()[0]},
+					Status:      0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "description contains potentially dangerous content")
+			},
+		},
+		{
+			name: "Register book failed when URL has invalid format",
+			setup: func(t *testing.T) RegisterBookRequest {
+				invalidURL := "invalid-url"
+				return RegisterBookRequest{
+					UserID: user.ID,
+					Title:  testdata.RandomString(10),
+					URL:    &invalidURL,
+					Genres: []string{testdata.GetGenres()[0]},
+					Status: 0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "URL has invalid format")
+			},
+		},
+		{
+			name: "Register book failed when URL exceeds 2048 characters",
+			setup: func(t *testing.T) RegisterBookRequest {
+				longURL := "https://example.com/" + testdata.RandomString(2030)
+				return RegisterBookRequest{
+					UserID: user.ID,
+					Title:  testdata.RandomString(10),
+					URL:    &longURL,
+					Genres: []string{testdata.GetGenres()[0]},
+					Status: 0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "URL must be less than 2048 characters")
+			},
+		},
+		{
+			name: "Register book failed when cover image URL has invalid format",
+			setup: func(t *testing.T) RegisterBookRequest {
+				invalidURL := "not-a-url"
+				return RegisterBookRequest{
+					UserID:        user.ID,
+					Title:         testdata.RandomString(10),
+					CoverImageURL: &invalidURL,
+					Genres:        []string{testdata.GetGenres()[0]},
+					Status:        0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "cover image URL has invalid format")
+			},
+		},
+		{
+			name: "Register book failed when author name exceeds 255 characters",
+			setup: func(t *testing.T) RegisterBookRequest {
+				longAuthor := testdata.RandomString(256)
+				return RegisterBookRequest{
+					UserID:     user.ID,
+					Title:      testdata.RandomString(10),
+					AuthorName: &longAuthor,
+					Genres:     []string{testdata.GetGenres()[0]},
+					Status:     0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "author name must be less than 255 characters")
+			},
+		},
+		{
+			name: "Register book failed when publisher name exceeds 255 characters",
+			setup: func(t *testing.T) RegisterBookRequest {
+				longPublisher := testdata.RandomString(256)
+				return RegisterBookRequest{
+					UserID:        user.ID,
+					Title:         testdata.RandomString(10),
+					PublisherName: &longPublisher,
+					Genres:        []string{testdata.GetGenres()[0]},
+					Status:        0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "publisher name must be less than 255 characters")
+			},
+		},
+		{
+			name: "Register book failed when ISBN has invalid format",
+			setup: func(t *testing.T) RegisterBookRequest {
+				invalidISBN := "123abc"
+				return RegisterBookRequest{
+					UserID: user.ID,
+					Title:  testdata.RandomString(10),
+					ISBN:   &invalidISBN,
+					Genres: []string{testdata.GetGenres()[0]},
+					Status: 0,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "ISBN must be 13 digits")
+			},
+		},
+		{
+			name: "Register book failed when end date is before start date",
+			setup: func(t *testing.T) RegisterBookRequest {
+				startDate := domain.Date{Year: 2023, Month: 12, Day: 31}
+				endDate := domain.Date{Year: 2023, Month: 1, Day: 1}
+				return RegisterBookRequest{
+					UserID:    user.ID,
+					Title:     testdata.RandomString(10),
+					Genres:    []string{testdata.GetGenres()[0]},
+					Status:    2,
+					StartDate: &startDate,
+					EndDate:   &endDate,
+				}
+			},
+			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
+				require.Error(t, err)
+				var e *Error
+				require.ErrorAs(t, err, &e)
+				require.Equal(t, e.StatusCode, BadRequest)
+				require.Equal(t, e.ErrorCode, InvalidRequestError)
+				require.Contains(t, e.Message, "end date must be after start date")
 			},
 		},
 	}

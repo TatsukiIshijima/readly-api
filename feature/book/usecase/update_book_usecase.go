@@ -54,8 +54,8 @@ func (u UpdateBookUseCaseImpl) UpdateBook(ctx context.Context, request UpdateBoo
 }
 
 func (u UpdateBookUseCaseImpl) updateBook(ctx context.Context, req UpdateBookRequest) error {
-	if !req.isValid() {
-		return newError(BadRequest, InvalidRequestError, "validation error")
+	if err := req.Validate(); err != nil {
+		return handle(err)
 	}
 	updateBookReq := req.toBookRepoRequest()
 	_, err := u.bookRepository.UpdateBook(ctx, updateBookReq)

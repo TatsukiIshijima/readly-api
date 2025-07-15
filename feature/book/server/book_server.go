@@ -41,8 +41,6 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
 
-	// TODO:バリデーション
-
 	args := usecase.NewRegisterBookRequest(claims.UserID, req)
 	res, err := b.registerUseCase.RegisterBook(ctx, args)
 	if err != nil {
@@ -70,8 +68,6 @@ func (b *BookServerImpl) GetBook(ctx context.Context, req *pb.GetBookRequest) (*
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
 
-	// TODO: バリデーション
-
 	args := usecase.NewGetBookRequest(claims.UserID, req.BookId)
 	res, err := b.getBookUseCase.GetBook(ctx, args)
 	if err != nil {
@@ -85,8 +81,6 @@ func (b *BookServerImpl) GetBookList(ctx context.Context, req *pb.GetBookListReq
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
 	}
-
-	// TODO: バリデーション
 
 	args := usecase.NewGetBookListRequest(claims.UserID, req.Limit, req.Offset)
 	res, err := b.getBookListUseCase.GetBookList(ctx, args)

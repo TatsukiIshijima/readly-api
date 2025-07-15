@@ -22,7 +22,7 @@ func TestRefreshToken(t *testing.T) {
 			name: "Refresh token success if correct refresh token",
 			setup: func(t *testing.T) RefreshAccessTokenRequest {
 				email := testdata.RandomEmail()
-				password := testdata.RandomString(16)
+				password := testdata.RandomValidPassword()
 				signUpReq := SignUpRequest{
 					Name:     testdata.RandomString(16),
 					Email:    email,
