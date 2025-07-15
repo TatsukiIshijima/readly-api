@@ -42,7 +42,7 @@ func NewSignInUseCase(
 
 func (u *SignInUseCaseImpl) SignIn(ctx context.Context, req SignInRequest) (*SignInResponse, error) {
 	if err := req.Validate(); err != nil {
-		return nil, err
+		return nil, handle(err)
 	}
 
 	var res *SignInResponse
