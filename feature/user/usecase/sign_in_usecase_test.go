@@ -157,7 +157,7 @@ func TestSignIn(t *testing.T) {
 			name: "Sign in failed when email contains SQL injection",
 			setup: func(t *testing.T) SignInRequest {
 				return SignInRequest{
-					Email:    "user@example.com'; DROP TABLE users; --",
+					Email:    "user.select@example.com",
 					Password: password,
 				}
 			},
@@ -168,7 +168,7 @@ func TestSignIn(t *testing.T) {
 				require.ErrorAs(t, err, &e)
 				require.Equal(t, BadRequest, e.StatusCode)
 				require.Equal(t, InvalidRequestError, e.ErrorCode)
-				require.Contains(t, e.Message, "email has invalid format")
+				require.Contains(t, e.Message, "email contains potentially dangerous content")
 			},
 		},
 		{
