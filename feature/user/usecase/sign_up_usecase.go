@@ -41,6 +41,10 @@ func NewSignUpUseCase(
 }
 
 func (u *SignUpUseCaseImpl) SignUp(ctx context.Context, req SignUpRequest) (*SignUpResponse, error) {
+	if err := req.Validate(); err != nil {
+		return nil, handle(err)
+	}
+
 	var res *SignUpResponse
 	err := u.transactor.Exec(ctx, func() error {
 		hashedPassword, err := generateHashedPassword(req.Password)
