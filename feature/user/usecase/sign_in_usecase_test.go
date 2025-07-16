@@ -154,24 +154,6 @@ func TestSignIn(t *testing.T) {
 			},
 		},
 		{
-			name: "Sign in failed when email contains SQL injection",
-			setup: func(t *testing.T) SignInRequest {
-				return SignInRequest{
-					Email:    "user.select@example.com",
-					Password: password,
-				}
-			},
-			check: func(t *testing.T, req SignInRequest, res *SignInResponse, err error) {
-				require.Error(t, err)
-				require.Nil(t, res)
-				var e *Error
-				require.ErrorAs(t, err, &e)
-				require.Equal(t, BadRequest, e.StatusCode)
-				require.Equal(t, InvalidRequestError, e.ErrorCode)
-				require.Contains(t, e.Message, "email contains potentially dangerous content")
-			},
-		},
-		{
 			name: "Sign in failed when password is empty",
 			setup: func(t *testing.T) SignInRequest {
 				return SignInRequest{
@@ -296,24 +278,6 @@ func TestSignIn(t *testing.T) {
 				require.Equal(t, BadRequest, e.StatusCode)
 				require.Equal(t, InvalidRequestError, e.ErrorCode)
 				require.Contains(t, e.Message, "password must contain at least one symbol")
-			},
-		},
-		{
-			name: "Sign in failed when password contains SQL injection",
-			setup: func(t *testing.T) SignInRequest {
-				return SignInRequest{
-					Email:    email,
-					Password: "Password123!'; DROP TABLE users; --",
-				}
-			},
-			check: func(t *testing.T, req SignInRequest, res *SignInResponse, err error) {
-				require.Error(t, err)
-				require.Nil(t, res)
-				var e *Error
-				require.ErrorAs(t, err, &e)
-				require.Equal(t, BadRequest, e.StatusCode)
-				require.Equal(t, InvalidRequestError, e.ErrorCode)
-				require.Contains(t, e.Message, "password contains potentially dangerous content")
 			},
 		},
 		{

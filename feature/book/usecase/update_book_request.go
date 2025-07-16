@@ -31,17 +31,11 @@ func (r UpdateBookRequest) Validate() error {
 	if err := util.StringValidator(r.Title).ValidateLength(1, 255); err != nil {
 		return newError(BadRequest, InvalidRequestError, "title must be between 1 and 255 characters")
 	}
-	if err := util.StringValidator(r.Title).ValidateNoSQLInjection(); err != nil {
-		return newError(BadRequest, InvalidRequestError, "title contains potentially dangerous content")
-	}
 
 	// Description validation
 	if r.Description != nil {
 		if err := util.StringValidator(*r.Description).ValidateLength(0, 500); err != nil {
 			return newError(BadRequest, InvalidRequestError, "description must be less than 500 characters")
-		}
-		if err := util.StringValidator(*r.Description).ValidateNoSQLInjection(); err != nil {
-			return newError(BadRequest, InvalidRequestError, "description contains potentially dangerous content")
 		}
 	}
 
@@ -53,9 +47,6 @@ func (r UpdateBookRequest) Validate() error {
 		if err := util.StringValidator(*r.CoverImageURL).ValidateURL(); err != nil {
 			return newError(BadRequest, InvalidRequestError, "cover image URL has invalid format")
 		}
-		if err := util.StringValidator(*r.CoverImageURL).ValidateNoSQLInjection(); err != nil {
-			return newError(BadRequest, InvalidRequestError, "cover image URL contains potentially dangerous content")
-		}
 	}
 
 	// URL validation
@@ -66,9 +57,6 @@ func (r UpdateBookRequest) Validate() error {
 		if err := util.StringValidator(*r.URL).ValidateURL(); err != nil {
 			return newError(BadRequest, InvalidRequestError, "URL has invalid format")
 		}
-		if err := util.StringValidator(*r.URL).ValidateNoSQLInjection(); err != nil {
-			return newError(BadRequest, InvalidRequestError, "URL contains potentially dangerous content")
-		}
 	}
 
 	// Author validation
@@ -76,18 +64,12 @@ func (r UpdateBookRequest) Validate() error {
 		if err := util.StringValidator(*r.Author).ValidateLength(0, 255); err != nil {
 			return newError(BadRequest, InvalidRequestError, "author name must be less than 255 characters")
 		}
-		if err := util.StringValidator(*r.Author).ValidateNoSQLInjection(); err != nil {
-			return newError(BadRequest, InvalidRequestError, "author name contains potentially dangerous content")
-		}
 	}
 
 	// Publisher validation
 	if r.Publisher != nil {
 		if err := util.StringValidator(*r.Publisher).ValidateLength(0, 255); err != nil {
 			return newError(BadRequest, InvalidRequestError, "publisher name must be less than 255 characters")
-		}
-		if err := util.StringValidator(*r.Publisher).ValidateNoSQLInjection(); err != nil {
-			return newError(BadRequest, InvalidRequestError, "publisher name contains potentially dangerous content")
 		}
 	}
 

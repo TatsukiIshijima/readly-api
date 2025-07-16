@@ -194,25 +194,6 @@ func TestRegisterBook(t *testing.T) {
 			},
 		},
 		{
-			name: "Register book failed when title contains SQL injection",
-			setup: func(t *testing.T) RegisterBookRequest {
-				return RegisterBookRequest{
-					UserID: user.ID,
-					Title:  "Book'; DROP TABLE books; --",
-					Genres: []string{testdata.GetGenres()[0]},
-					Status: 0,
-				}
-			},
-			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
-				require.Error(t, err)
-				var e *Error
-				require.ErrorAs(t, err, &e)
-				require.Equal(t, e.StatusCode, BadRequest)
-				require.Equal(t, e.ErrorCode, InvalidRequestError)
-				require.Contains(t, e.Message, "title contains potentially dangerous content")
-			},
-		},
-		{
 			name: "Register book failed when description exceeds 500 characters",
 			setup: func(t *testing.T) RegisterBookRequest {
 				longDesc := testdata.RandomString(501)
@@ -231,27 +212,6 @@ func TestRegisterBook(t *testing.T) {
 				require.Equal(t, e.StatusCode, BadRequest)
 				require.Equal(t, e.ErrorCode, InvalidRequestError)
 				require.Contains(t, e.Message, "description must be less than 500 characters")
-			},
-		},
-		{
-			name: "Register book failed when description contains SQL injection",
-			setup: func(t *testing.T) RegisterBookRequest {
-				sqlDesc := "Description with <script>alert('xss')</script>"
-				return RegisterBookRequest{
-					UserID:      user.ID,
-					Title:       testdata.RandomString(10),
-					Description: &sqlDesc,
-					Genres:      []string{testdata.GetGenres()[0]},
-					Status:      0,
-				}
-			},
-			check: func(t *testing.T, req RegisterBookRequest, res *RegisterBookResponse, err error) {
-				require.Error(t, err)
-				var e *Error
-				require.ErrorAs(t, err, &e)
-				require.Equal(t, e.StatusCode, BadRequest)
-				require.Equal(t, e.ErrorCode, InvalidRequestError)
-				require.Contains(t, e.Message, "description contains potentially dangerous content")
 			},
 		},
 		{

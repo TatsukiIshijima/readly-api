@@ -176,27 +176,6 @@ func TestUpdateBook(t *testing.T) {
 			},
 		},
 		{
-			name: "Update book failed when title contains SQL injection",
-			setup: func(t *testing.T) UpdateBookRequest {
-				return UpdateBookRequest{
-					UserID: user.ID,
-					BookID: registerBookRes.Book.ID,
-					Title:  "Book'; DROP TABLE books; --",
-					Genres: registerBookRes.Book.Genres,
-					Status: domain.Reading,
-				}
-			},
-			check: func(t *testing.T, res *UpdateBookResponse, err error) {
-				require.Error(t, err)
-				require.Nil(t, res)
-				var e *Error
-				require.ErrorAs(t, err, &e)
-				require.Equal(t, BadRequest, e.StatusCode)
-				require.Equal(t, InvalidRequestError, e.ErrorCode)
-				require.Contains(t, e.Message, "title contains potentially dangerous content")
-			},
-		},
-		{
 			name: "Update book failed when description exceeds 500 characters",
 			setup: func(t *testing.T) UpdateBookRequest {
 				longDesc := testdata.RandomString(501)
