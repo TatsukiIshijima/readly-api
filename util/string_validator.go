@@ -6,15 +6,14 @@ import (
 )
 
 var (
-	usernameRegex     = regexp.MustCompile(`^[A-Za-z0-9]{5,30}$`)
-	emailRegex        = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
-	upperCaseRegex    = regexp.MustCompile(`[A-Z]`)
-	lowerCaseRegex    = regexp.MustCompile(`[a-z]`)
-	digitRegex        = regexp.MustCompile(`[0-9]`)
-	symbolRegex       = regexp.MustCompile(`[\-^$*.@]`)
-	urlRegex          = regexp.MustCompile(`^https?://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(/.*)?$`)
-	isbnRegex         = regexp.MustCompile(`^[0-9]{13}$`)
-	sqlInjectionRegex = regexp.MustCompile(`(?i)(select|insert|update|delete|drop|create|alter|exec|union|script|javascript|<script|</script>|--|;|/\*|\*/|'.*'|".*")`)
+	usernameRegex  = regexp.MustCompile(`^[A-Za-z0-9]{5,30}$`)
+	emailRegex     = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+	upperCaseRegex = regexp.MustCompile(`[A-Z]`)
+	lowerCaseRegex = regexp.MustCompile(`[a-z]`)
+	digitRegex     = regexp.MustCompile(`[0-9]`)
+	symbolRegex    = regexp.MustCompile(`[\-^$*.@]`)
+	urlRegex       = regexp.MustCompile(`^https?://[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}(/.*)?$`)
+	isbnRegex      = regexp.MustCompile(`^[0-9]{13}$`)
 )
 
 type StringValidator string
@@ -89,11 +88,4 @@ func (s StringValidator) ValidateURL() error {
 
 func (s StringValidator) ValidateISBN() error {
 	return s.validateRegex(isbnRegex)
-}
-
-func (s StringValidator) ValidateNoSQLInjection() error {
-	if sqlInjectionRegex.MatchString(string(s)) {
-		return fmt.Errorf("potentially dangerous content detected")
-	}
-	return nil
 }
