@@ -44,13 +44,7 @@ func NewDateEntityFromNullTime(nt sql.NullTime) *Date {
 	}
 }
 
-// TODO: methods on both value and pointer receivers
-// ポインターレシーバーではなく、値レシーバーにする
-// インスタンスの値を直接変更しないため
-func (d *Date) ToProto() *pb.Date {
-	if d == nil {
-		return nil
-	}
+func (d Date) ToProto() *pb.Date {
 	return &pb.Date{
 		Year:  d.Year,
 		Month: d.Month,
@@ -58,13 +52,7 @@ func (d *Date) ToProto() *pb.Date {
 	}
 }
 
-// TODO: methods on both value and pointer receivers
-// ポインターレシーバーではなく、値レシーバーにする
-// インスタンスの値を直接変更しないため
-func (d *Date) ToTime() *time.Time {
-	if d == nil {
-		return nil
-	}
+func (d Date) ToTime() *time.Time {
 	t := time.Date(int(d.Year), time.Month(d.Month), int(d.Day), 0, 0, 0, 0, time.UTC)
 	return &t
 }
