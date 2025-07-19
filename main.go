@@ -247,7 +247,7 @@ func runGatewayServer(
 	// CORSの設定
 	c := cors.New(cors.Options{
 		AllowedOrigins:   config.AllowedOrigins,
-		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete},
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodDelete},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	})
