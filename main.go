@@ -245,7 +245,9 @@ func runGatewayServer(
 	httpMux.Handle("/v1/image/upload", r)
 
 	// CORSの設定
-	c := cors.Default()
+	c := cors.New(cors.Options{
+		AllowedOrigins: config.AllowedOrigins,
+	})
 	handler := c.Handler(httpMux)
 
 	httpServer := &http.Server{
