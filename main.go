@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -243,14 +244,24 @@ func runGatewayServer(
 	r := router.Setup(auth.AuthenticateHTTP(maker), image.ValidateImageUpload(), imgServer)
 	httpMux.Handle("/v1/image/upload", r)
 
-	listener, err := net.Listen("tcp", config.HTTPServerAddress)
-	if err != nil {
-		log.Fatalf("cannot create listener: %v", err)
+	// CORSの設定
+	c := cors.New(cors.Options{
+		AllowedOrigins:   config.AllowedOrigins,
+		AllowedMethods:   []string{http.MethodGet, http.MethodPost, http.MethodDelete},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(httpMux)
+
+	httpServer := &http.Server{
+		Handler: handler,
+		Addr:    config.HTTPServerAddress,
 	}
 
-	log.Printf("start HTTP gateway server at %s", listener.Addr().String())
-	err = http.Serve(listener, httpMux)
+	err = httpServer.ListenAndServe()
 	if err != nil {
-		log.Fatalf("cannot start HTTP gateway server: %v", err)
+		log.Fatalf("cannot start HTTP server: %v", err)
 	}
+
+	// log.Printf("start HTTP gateway server at %s", httpServer.Addr)
 }
