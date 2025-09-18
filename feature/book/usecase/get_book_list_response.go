@@ -18,6 +18,18 @@ func NewGetBookListResponse(books []domain.Book) *GetBookListResponse {
 func (r *GetBookListResponse) ToProto() *pb.GetBookListResponse {
 	pbBooks := make([]*pb.Book, len(r.Books))
 	for i, book := range r.Books {
+		var publishDate *pb.Date
+		var startDate *pb.Date
+		var endDate *pb.Date
+		if book.PublishDate != nil {
+			publishDate = book.PublishDate.ToProto()
+		}
+		if book.StartDate != nil {
+			startDate = book.StartDate.ToProto()
+		}
+		if book.EndDate != nil {
+			endDate = book.EndDate.ToProto()
+		}
 		pbBooks[i] = &pb.Book{
 			Id:            book.ID,
 			Title:         book.Title,
@@ -27,11 +39,11 @@ func (r *GetBookListResponse) ToProto() *pb.GetBookListResponse {
 			Url:           book.URL,
 			AuthorName:    book.AuthorName,
 			PublisherName: book.PublisherName,
-			PublishDate:   book.PublishDate.ToProto(),
+			PublishDate:   publishDate,
 			Isbn:          book.ISBN,
 			ReadingStatus: pb.ReadingStatus(book.Status),
-			StartDate:     book.StartDate.ToProto(),
-			EndDate:       book.EndDate.ToProto(),
+			StartDate:     startDate,
+			EndDate:       endDate,
 		}
 	}
 	return &pb.GetBookListResponse{

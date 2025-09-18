@@ -16,6 +16,18 @@ func NewGetBookResponse(book domain.Book) *GetBookResponse {
 }
 
 func (r *GetBookResponse) ToProto() *pb.GetBookResponse {
+	var publishDate *pb.Date
+	var startDate *pb.Date
+	var endDate *pb.Date
+	if r.Book.PublishDate != nil {
+		publishDate = r.Book.PublishDate.ToProto()
+	}
+	if r.Book.StartDate != nil {
+		startDate = r.Book.StartDate.ToProto()
+	}
+	if r.Book.EndDate != nil {
+		endDate = r.Book.EndDate.ToProto()
+	}
 	return &pb.GetBookResponse{
 		Book: &pb.Book{
 			Id:            r.Book.ID,
@@ -26,11 +38,11 @@ func (r *GetBookResponse) ToProto() *pb.GetBookResponse {
 			Url:           r.Book.URL,
 			AuthorName:    r.Book.AuthorName,
 			PublisherName: r.Book.PublisherName,
-			PublishDate:   r.Book.PublishDate.ToProto(),
+			PublishDate:   publishDate,
 			Isbn:          r.Book.ISBN,
 			ReadingStatus: pb.ReadingStatus(r.Book.Status),
-			StartDate:     r.Book.StartDate.ToProto(),
-			EndDate:       r.Book.EndDate.ToProto(),
+			StartDate:     startDate,
+			EndDate:       endDate,
 		},
 	}
 }
