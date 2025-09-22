@@ -16,11 +16,11 @@ const (
 
 func NewReadingStatusFromProto(proto pb.ReadingStatus) ReadingStatus {
 	switch proto {
-	case pb.ReadingStatus_UNREAD:
+	case pb.ReadingStatus_READING_STATUS_UNREAD_UNSPECIFIED:
 		return Unread
-	case pb.ReadingStatus_READING:
+	case pb.ReadingStatus_READING_STATUS_READING:
 		return Reading
-	case pb.ReadingStatus_DONE:
+	case pb.ReadingStatus_READING_STATUS_DONE:
 		return Done
 	default:
 		return Unknown
