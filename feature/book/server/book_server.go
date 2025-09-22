@@ -2,12 +2,12 @@ package server
 
 import (
 	"context"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/emptypb"
 	"readly/feature/book/usecase"
 	"readly/middleware/auth"
 	"readly/pb/readly/v1"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type BookServerImpl struct {
@@ -49,7 +49,7 @@ func (b *BookServerImpl) RegisterBook(ctx context.Context, req *pb.RegisterBookR
 	return res.ToProto(), nil
 }
 
-func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*emptypb.Empty, error) {
+func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookRequest) (*pb.DeleteBookResponse, error) {
 	claims, err := auth.AuthenticateGRPC(ctx, b.maker)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, err.Error())
@@ -59,7 +59,7 @@ func (b *BookServerImpl) DeleteBook(ctx context.Context, req *pb.DeleteBookReque
 	if err != nil {
 		return nil, gRPCStatusError(err)
 	}
-	return &emptypb.Empty{}, nil
+	return &pb.DeleteBookResponse{}, nil
 }
 
 func (b *BookServerImpl) GetBook(ctx context.Context, req *pb.GetBookRequest) (*pb.GetBookResponse, error) {
